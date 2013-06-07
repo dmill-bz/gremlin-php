@@ -16,11 +16,11 @@
  * 		//etc..
  * }
  * 
- * @author Dylan Millikin <dylan.millikin@gmail.com>
+ * @author Dylan Millikin <dylan.millikin@brightzone.fr>
  * @link https://github.com/tinkerpop/rexster/wiki
  */
  
-namespace yii\helpers\rexster;
+namespace rexpro;
 
 class Connection
 {

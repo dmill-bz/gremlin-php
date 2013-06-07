@@ -2,18 +2,12 @@
 namespace rexpro\tests;
 
 require_once '../Connection.php';
-require_once '../Messages.php';
-require_once '../Exceptions.php';
-require_once '../Helper.php';
 
 use \rexpro\Connection;
-use \rexpro\Messages;
-use \rexpro\Exceptions;
-use \rexpro\Helper;
 
 
 /**
- * Unit testing of Rexpro helper
+ * Unit testing of Rexpro-php
  */
 class RexsterTest extends \PHPUnit_Framework_TestCase
 {

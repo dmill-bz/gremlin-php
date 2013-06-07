@@ -2,9 +2,6 @@
 namespace rexpro\tests;
 
 require_once '../Connection.php';
-require_once '../Messages.php';
-require_once '../Exceptions.php';
-require_once '../Helper.php';
 
 use \rexpro\Connection;
 use \rexpro\Messages;

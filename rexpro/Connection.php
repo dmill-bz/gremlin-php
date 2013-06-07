@@ -22,6 +22,10 @@
  
 namespace rexpro;
 
+require_once 'Exceptions.php';
+require_once 'Helper.php';
+require_once 'Messages.php';
+
 class Connection
 {
 	/**
