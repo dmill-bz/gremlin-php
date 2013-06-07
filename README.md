@@ -75,13 +75,12 @@ Example 4 (transaction):
 
 <pre>$db = new Connection;
 $db->open('localhost:8184','neo4jsample',null,null);
-
-$db->script = 'g.V';
-$db->runScript();
   	
 $db->transactionStart();
 
 $db->script = 'g.addVertex([name:"michael"])';
+$result = $db->runScript();
+$db->script = 'g.addVertex([name:"john"])';
 $result = $db->runScript();
 
 $db->transactionStop(true);//accept commit of changes. set to false if you wish to cancel changes</pre>
