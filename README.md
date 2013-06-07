@@ -16,7 +16,7 @@ phpize
 ./configure && make && make install</pre>
 
 Install MsgPack from PEAR:
-<pre> pecl channel-discover php-msgpack.googlecode.com/svn/pecl
+<pre>pecl channel-discover php-msgpack.googlecode.com/svn/pecl
 pecl install msgpack/msgpack-beta </pre>
 
 ### PHP Rexster Client
@@ -30,15 +30,13 @@ The PHP Client does not throw Exceptions. It was built with the goal of being wr
 
 For instance:
 
-<pre>
-if($db->open('localhost:8184','tinkergraph',null,null))
-  throw Exception($db->error->code,$db->error->description);
+<pre>if($db->open('localhost:8184','tinkergraph',null,null) === false)
+  throw Exception($db->error->code . ' : ' . $db->error->description);
 $db->script = 'g.v(2)';
 $result = $db->runScript();
 if($result === false)
-   throw Exception($db->error->code,$db->error->description);
-//else do something with results
-</pre>
+   throw Exception($db->error->code . ' : ' . $db->error->description);
+//do something with result</pre>
 
 Examples
 ===
