@@ -4,7 +4,7 @@ Installation
 ### Requirements
 
 
-First you'll need to install the required dependencies. Which is to say : [http://msgpack.org/ MsgPack].
+First you'll need to install the required dependencies. Which is to say : [MsgPack](http://msgpack.org/).
 
 Install MsgPack from git:
 <pre>git clone https://github.com/msgpack/msgpack-php.git
