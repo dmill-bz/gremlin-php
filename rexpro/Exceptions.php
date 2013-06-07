@@ -3,11 +3,11 @@
  * RexPro PHP client Messages class
  * Builds and parses binary messages for communication with RexPro
  * 
- * @author Dylan Millikin <dylan.millikin@gmail.com>
+ * @author Dylan Millikin <dylan.millikin@brihtzone.fr>
  * @link https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  * @link https://github.com/tinkerpop/rexster/wiki
  */
-namespace yii\helpers\rexster;
+namespace rexpro;
 
 class Exceptions
 {
@@ -15,12 +15,12 @@ class Exceptions
 	 * ERROR TYPES
 	 */
 	const INVALID_MESSAGE_ERROR = 0;
-    const INVALID_SESSION_ERROR = 1;
-    const SCRIPT_FAILURE_ERROR = 2;
-    const AUTH_FAILURE_ERROR = 3;
-    const GRAPH_CONFIG_ERROR = 4;
-    const CHANNEL_CONFIG_ERROR = 5;
-    const RESULT_SERIALIZATION_ERROR = 6;
+	const INVALID_SESSION_ERROR = 1;
+	const SCRIPT_FAILURE_ERROR = 2;
+	const AUTH_FAILURE_ERROR = 3;
+	const GRAPH_CONFIG_ERROR = 4;
+	const CHANNEL_CONFIG_ERROR = 5;
+	const RESULT_SERIALIZATION_ERROR = 6;
 	
 	/**
 	 * @var int code for the current error

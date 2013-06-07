@@ -14,18 +14,18 @@ class Messages
 	 * Message types
 	 */
 	const ERROR = 0;
-	const SESSION_REQUEST = 1;
-	const SESSION_RESPONSE = 2;
-	const SCRIPT_REQUEST = 3;
-	const CONSOLE_SCRIPT_RESPONSE = 4;
-	const MSGPACK_SCRIPT_RESPONSE = 5;
+    const SESSION_REQUEST = 1;
+    const SESSION_RESPONSE = 2;
+    const SCRIPT_REQUEST = 3;
+    const CONSOLE_SCRIPT_RESPONSE = 4;
+    const MSGPACK_SCRIPT_RESPONSE = 5;
 	
 	/**
 	 * Error types
 	 */
 	const CHANNEL_CONSOLE = 1;
-	const CHANNEL_MSGPACK = 2;
-	const CHANNEL_GRAPHSON = 3;
+    const CHANNEL_MSGPACK = 2;
+    const CHANNEL_GRAPHSON = 3;
 	
 	/**
 	 * @var string 16 byte request identifier

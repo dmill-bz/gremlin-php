@@ -1,18 +1,18 @@
 <?php
 /**
- * RexPro PHP client Exceptions class
- * Builds Error object
+ * RexPro PHP client Messages class
+ * Builds and parses binary messages for communication with RexPro
  * 
- * @author Dylan Millikin <dylan.millikin@gmail.com>
+ * @author Dylan Millikin <dylan.millikin@brihtzone.fr>
  * @link https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
+ * @link https://github.com/tinkerpop/rexster/wiki
  */
+namespace rexpro;
 
-namespace yii\helpers\rexster;
-
-class Exception
+class Exceptions
 {
 	/**
-	 * Error message types
+	 * ERROR TYPES
 	 */
 	const INVALID_MESSAGE_ERROR = 0;
     const INVALID_SESSION_ERROR = 1;
@@ -42,9 +42,10 @@ class Exception
 	}
 	
 	/**
-	 * Checks if the un packed message contains an error
+	 * Checks if an Error occured
 	 * 
-	 * @return mixed false if there is no error or an Exceptions object if there is an error 
+	 * @param string $unpacked Parsed response message from server
+	 * @return mixed false if no error or an array with error message of type array(code,description);
 	 */
 	public static function checkError($unpacked)
 	{
@@ -76,7 +77,7 @@ class Exception
 					break;
 				
 			}
-			return new Exceptions($unpacked[3][2]['flag'],$err.' > '.$unpacked[3][3]);
+			return new self($unpacked[3][2]['flag'],$err.' > '.$unpacked[3][3]);
 		}
 		else
 			return false;
