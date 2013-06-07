@@ -45,10 +45,12 @@ You can find more information by reading the API.
 
 Here are a few basic usages.
 
-
 Example 1:
 
-<pre>$db = new Connection;
+<pre>require_once 'rexpro-php/rexpro/Connection.php';
+use \rexpro\Connection;
+
+$db = new Connection;
 //you can set $db->timeout = 0.5; if you wish
 $db->open('localhost:8184','tinkergraph',null,null);
 $db->script = 'g.v(2)';
