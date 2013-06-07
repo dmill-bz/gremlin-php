@@ -1,8 +1,8 @@
-1 - Installation
-============
+Installation
+===
 
-1.1 - Requirements
----
+### Requirements
+
 
 First you'll need to install the required dependencies. Which is to say : [http://msgpack.org/ MsgPack].
 
@@ -16,15 +16,18 @@ Install MsgPack from PEAR:
 <pre>pecl channel-discover php-msgpack.googlecode.com/svn/pecl
 pecl install msgpack/msgpack-beta</pre>
 
-==== PHP Rexster Client ====
+### PHP Rexster Client
 
 <pre>git clone https://github.com/PommeVerte/rexpro-php.git</pre>
 
-== Error Handling ==
+Error Handling
+===
 
 The PHP Client does not throw Exceptions. It was built with the goal of being wrapped into a PHP framework and therefore fails silently (you can still get errors by checking method return values).
 
-== Examples ==
+Examples
+===
+
 You can find more information by reading the API. 
 
 Here are a few basic usages.
@@ -32,32 +35,32 @@ Here are a few basic usages.
 
 Example 1:
 
-<php>$db = new Connection;
+<pre>$db = new Connection;
 //you can set $db->timeout = 0.5; if you wish
 $message = $db->open('localhost:8184','tinkergraph',null,null);
 $db->script = 'g.v(2)';
-$result = $db->runScript();</php>
+$result = $db->runScript();</pre>
 
 Example 2 (with bindings):
 
-<php>$db = new Connection;
+<pre>$db = new Connection;
 $message = $db->open('localhost:8184','tinkergraph',null,null);
 
 $db->script = 'g.v(CUSTO_BINDING)';
 $db->bindValue('CUSTO_BINDING',2);
-$result = $db->runScript();</php>
+$result = $db->runScript();</pre>
 
 Example 3 (sessionless):
 
-<php>$db = new Connection;
+<pre>$db = new Connection;
 $message = $db->open('localhost:8184');
 $db->script = 'g.v(2).map()';
 $db->graph = 'tinkergraph'; //need to provide graph
-$result = $db->runScript(false); </php>
+$result = $db->runScript(false); </pre>
 
 Example 4 (transaction):
 
-<php>$db = new Connection;
+<pre>$db = new Connection;
 $message = $db->open('localhost:8184','neo4jsample',null,null);
 
 $db->script = 'g.V';
@@ -68,5 +71,5 @@ $db->transactionStart();
 $db->script = 'g.addVertex([name:"michael"])';
 $result = $db->runScript();
 
-$db->transactionStop(true);//accept commit of changes. set to false if you wish to cancel changes</php>
+$db->transactionStop(true);//accept commit of changes. set to false if you wish to cancel changes</pre>
 
