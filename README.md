@@ -68,7 +68,7 @@ $db = new \rexpro\Connection;
 Examples
 ===
 
-You can find more information by reading the API. 
+You can find more information by reading the API in the wiki. 
 
 Here are a few basic usages.
 
