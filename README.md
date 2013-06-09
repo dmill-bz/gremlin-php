@@ -10,18 +10,24 @@ Installation
 First you'll need to install the required dependencies. Which is to say : [MsgPack](http://msgpack.org/) .
 
 Install MsgPack from git:
-<pre>git clone https://github.com/msgpack/msgpack-php.git
+```bash
+git clone https://github.com/msgpack/msgpack-php.git
 cd msgpack-php
 phpize
-./configure && make && make install</pre>
+./configure && make && make install
+```
 
 Install MsgPack from PEAR:
-<pre>pecl channel-discover php-msgpack.googlecode.com/svn/pecl
-pecl install msgpack/msgpack-beta </pre>
+```bash
+pecl channel-discover php-msgpack.googlecode.com/svn/pecl
+pecl install msgpack/msgpack-beta
+```
 
 ### PHP Rexster Client
 
-<pre>git clone https://github.com/PommeVerte/rexpro-php.git</pre>
+```bash
+git clone https://github.com/PommeVerte/rexpro-php.git
+```
 
 Error Handling
 ===
@@ -30,14 +36,35 @@ The PHP Client does not throw Exceptions. It was built with the goal of being wr
 
 For instance:
 
-<pre>if($db->open('localhost:8184','tinkergraph',null,null) === false)
+```php
+if($db->open('localhost:8184','tinkergraph',null,null) === false)
   throw Exception($db->error->code . ' : ' . $db->error->description);
 $db->script = 'g.v(2)';
 $result = $db->runScript();
 if($result === false)
    throw Exception($db->error->code . ' : ' . $db->error->description);
-//do something with result</pre>
+//do something with result
+```
 
+Namespace
+===
+
+The Connection class exists within the `rexpro` namespace. This means that you have to do either of the two following:
+
+```php
+require_once 'rexpro-php/rexpro/Connection.php';
+use \rexpro\Connection;
+ 
+$db = new Connection;
+```
+
+Or
+
+```php
+require_once 'rexpro-php/rexpro/Connection.php';
+
+$db = new \rexpro\Connection;
+```
 Examples
 ===
 
@@ -47,35 +74,39 @@ Here are a few basic usages.
 
 Example 1:
 
-<pre>require_once 'rexpro-php/rexpro/Connection.php';
-use \rexpro\Connection;
-
+```php
 $db = new Connection;
 //you can set $db->timeout = 0.5; if you wish
 $db->open('localhost:8184','tinkergraph',null,null);
 $db->script = 'g.v(2)';
-$result = $db->runScript();</pre>
+$result = $db->runScript();
+```
 
 Example 2 (with bindings):
 
-<pre>$db = new Connection;
+```php
+$db = new Connection;
 $db->open('localhost:8184','tinkergraph',null,null);
 
 $db->script = 'g.v(CUSTO_BINDING)';
 $db->bindValue('CUSTO_BINDING',2);
-$result = $db->runScript();</pre>
+$result = $db->runScript();
+```
 
 Example 3 (sessionless):
 
-<pre>$db = new Connection;
+```php
+$db = new Connection;
 $db->open('localhost:8184');
 $db->script = 'g.v(2).map()';
 $db->graph = 'tinkergraph'; //need to provide graph
-$result = $db->runScript(false); </pre>
+$result = $db->runScript(false);
+```
 
 Example 4 (transaction):
 
-<pre>$db = new Connection;
+```php
+$db = new Connection;
 $db->open('localhost:8184','neo4jsample',null,null);
   	
 $db->transactionStart();
@@ -85,5 +116,5 @@ $result = $db->runScript();
 $db->script = 'g.addVertex([name:"john"])';
 $result = $db->runScript();
 
-$db->transactionStop(true);//accept commit of changes. set to false if you wish to cancel changes</pre>
-
+$db->transactionStop(true);//accept commit of changes. set to false if you wish to cancel changes
+```
