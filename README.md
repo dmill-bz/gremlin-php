@@ -80,6 +80,8 @@ $db = new Connection;
 $db->open('localhost:8184','tinkergraph',null,null);
 $db->script = 'g.v(2)';
 $result = $db->runScript();
+//do something with result
+$db->close();
 ```
 
 Example 2 (with bindings):
@@ -91,6 +93,8 @@ $db->open('localhost:8184','tinkergraph',null,null);
 $db->script = 'g.v(CUSTO_BINDING)';
 $db->bindValue('CUSTO_BINDING',2);
 $result = $db->runScript();
+//do something with result
+$db->close();
 ```
 
 Example 3 (sessionless):
@@ -101,6 +105,8 @@ $db->open('localhost:8184');
 $db->script = 'g.v(2).map()';
 $db->graph = 'tinkergraph'; //need to provide graph
 $result = $db->runScript(false);
+//do something with result
+$b->close();
 ```
 
 Example 4 (transaction):
@@ -117,4 +123,5 @@ $db->script = 'g.addVertex([name:"john"])';
 $result = $db->runScript();
 
 $db->transactionStop(true);//accept commit of changes. set to false if you wish to cancel changes
+$db->close();
 ```
