@@ -165,7 +165,7 @@ class Connection
 		$write = @fwrite($this->_socket,$msg->msgPack);
 		if($write === false)
 		{
-			$this->error = array(0,'Could not write to socket');
+			$this->error = new Exceptions(0,'Could not write to socket');
 			return false;
 		}
 		return true;
