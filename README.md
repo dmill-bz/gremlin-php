@@ -2,7 +2,7 @@ This is a rexpro client for PHP. It's main purpose was for it to be integrated i
 
 
 Installation
-===
+============
 
 ### Requirements
 
@@ -30,7 +30,7 @@ git clone https://github.com/PommeVerte/rexpro-php.git
 ```
 
 Error Handling
-===
+==============
 
 The PHP Client does not throw Exceptions. It was built with the goal of being wrapped into a PHP framework and therefore fails silently (you can still get errors by checking method return values).
 
@@ -47,7 +47,7 @@ if($result === false)
 ```
 
 Namespace
-===
+=========
 
 The Connection class exists within the `rexpro` namespace. This means that you have to do either of the two following:
 
@@ -66,7 +66,7 @@ require_once 'rexpro-php/rexpro/Connection.php';
 $db = new \rexpro\Connection;
 ```
 Examples
-===
+========
 
 You can find more information by reading the API in the wiki. 
 
