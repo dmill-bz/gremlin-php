@@ -21,6 +21,7 @@ class Exceptions
 	const GRAPH_CONFIG_ERROR = 4;
 	const CHANNEL_CONFIG_ERROR = 5;
 	const RESULT_SERIALIZATION_ERROR = 6;
+	const UNKNOWN_ERROR = 7;
 	
 	/**
 	 * @var int code for the current error
@@ -49,9 +50,9 @@ class Exceptions
 	 */
 	public static function checkError($unpacked)
 	{
-		if($unpacked[1]==0)
+		if($unpacked[2]==0)
 		{
-			switch($unpacked[3][2]['flag'])
+			switch($unpacked[4][2]['flag'])
 			{
 				
 				case self::INVALID_MESSAGE_ERROR:
@@ -75,9 +76,15 @@ class Exceptions
 				case self::RESULT_SERIALIZATION_ERROR:
 					$err = "The result or an item in the bindings could not be serialized properly.";
 					break;
+				case self::UNKNOWN_ERROR:
+					$err = "Unknown error returned by server.";
+					break;
+				default:
+					$err = "Unknown error type.";
+					break;
 				
 			}
-			return new self($unpacked[3][2]['flag'],$err.' > '.$unpacked[3][3]);
+			return new self($unpacked[4][2]['flag'],$err.' > '.$unpacked[4][3]);
 		}
 		else
 			return false;

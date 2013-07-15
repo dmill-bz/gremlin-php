@@ -93,7 +93,7 @@ class Connection
 	/**
 	 * @var int Protocol version to use. Currently only 0 should be used
 	 */
-	public $protocolVersion = 0;
+	public $protocolVersion = 1;
 	
 	/**
 	 * @var resource rexpro socket connection
@@ -148,7 +148,7 @@ class Connection
 				return false;
 				
 			$this->response = $response;
-			$this->sessionUuid = $this->response[3][0];
+			$this->sessionUuid = $this->response[4][0];
 			
 			return true;
 		}
@@ -179,7 +179,7 @@ class Connection
 	 */
 	public function getResponse()
 	{	
-		$header = @stream_get_contents($this->_socket,2);
+		$header = @stream_get_contents($this->_socket,7);
 		$messageLength = @stream_get_contents($this->_socket,4);
 		$body = @stream_get_contents($this->_socket,(int)hexdec(bin2hex($messageLength)));
 	
@@ -271,7 +271,7 @@ class Connection
 		if($response === false)
 			return false;
 		$this->response = $response;
-		return $this->response[3][3];
+		return $this->response[4][3];
 	}
 	
 	/**
