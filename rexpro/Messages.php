@@ -11,6 +11,13 @@ namespace rexpro;
 class Messages
 {
 	/**
+	 * Serializer types
+	 */
+	const SERIALIZER_MSGPACK = 0;
+	const SERIALIZER_JSON = 1;
+	
+	
+	/**
 	 * Message types
 	 */
 	const ERROR = 0;
@@ -18,7 +25,8 @@ class Messages
 	const SESSION_RESPONSE = 2;
 	const SCRIPT_REQUEST = 3;
 	const CONSOLE_SCRIPT_RESPONSE = 4;
-	const MSGPACK_SCRIPT_RESPONSE = 5;
+	const SCRIPT_RESPONSE_MESSAGE = 5;
+	const GRAPHSON_SCRIPT_RESPONSE = 6;
 	
 	/**
 	 * Error types
@@ -80,7 +88,6 @@ class Messages
 				Helper::uuidToBin($sessionUuid),
 				Helper::uuidToBin($this->requestUuid),
 				array_merge(array('killSession'=>false),$meta),//let caller overwrite (session close for instance)
-				self::CHANNEL_MSGPACK,
 				$username,
 				$password		
 		);
@@ -89,7 +96,13 @@ class Messages
 		$messageLength = $this->serializeMessage($message);
 		
 		//Now we need to build headers
-		$msg = pack('C*',$protocolVersion,self::SESSION_REQUEST).Helper::convertIntTo32Bit($messageLength);
+		$msg = pack('C*',$protocolVersion,
+						self::SERIALIZER_MSGPACK,
+						0, //reserved byte
+						0, //reserved byte
+						0, //reserved byte
+						0, //reserved byte
+						self::SESSION_REQUEST).Helper::convertIntTo32Bit($messageLength);
 		
 		//append message and return
 		$this->msgPack = $msg.$message;
@@ -117,9 +130,8 @@ class Messages
 				Helper::uuidToBin($sessionUuid),
 				Helper::uuidToBin($this->requestUuid),
 				array_merge(array('inSession'=>true),
-							$meta,
-							array('channel'=>self::CHANNEL_MSGPACK
-							)),//overwrite user value
+							$meta
+							),//overwrite user value
 				'groovy',
 				$script,
 				($bindings === null? new \stdClass : $bindings)		
@@ -129,7 +141,13 @@ class Messages
 		$messageLength = $this->serializeMessage($message);
 		
 		//Now we need to build headers
-		$msg = pack('C*',$protocolVersion,self::SCRIPT_REQUEST).Helper::convertIntTo32Bit($messageLength);
+		$msg = pack('C*',$protocolVersion,
+						self::SERIALIZER_MSGPACK,
+						0, //reserved byte
+						0, //reserved byte
+						0, //reserved byte
+						0, //reserved byte
+						self::SCRIPT_REQUEST).Helper::convertIntTo32Bit($messageLength);
 		
 		//append message and return
 		$this->msgPack = $msg.$message;
@@ -147,17 +165,18 @@ class Messages
 		$resp = str_split($bin,1);
 		
 		$proVersion = Helper::convertIntFrom32Bit($resp[0]); //cheating by using this function on non-32bit
-		$rqstType = Helper::convertIntFrom32Bit($resp[1]); //cheating by using this function on non-32bit
+		$serializerType = Helper::convertIntFrom32Bit($resp[1]); //cheating by using this function on non-32bit
+		$rqstType = Helper::convertIntFrom32Bit($resp[6]); //cheating by using this function on non-32bit
 		
-		$mssgLength = implode('',array_slice($resp,2,4));
+		$mssgLength = implode('',array_slice($resp,7,4));
 		$mssgLength = Helper::convertIntFrom32Bit($mssgLength);
 		
-		$mssg = msgpack_unpack(implode('',array_slice($resp,6,count($resp))));
-		
+		$mssg = msgpack_unpack(implode('',array_slice($resp,11,count($resp))));
+
 		//lets just make UUIDs readable incase we need to debug 
 		$mssg[0] = Helper::binToUuid($mssg[0]);
 		$mssg[1] = Helper::binToUuid($mssg[1]);
-		
-		return array($proVersion,$rqstType,$mssgLength,$mssg);
+
+		return array($proVersion,$serializerType,$rqstType,$mssgLength,$mssg);
 	}
 }

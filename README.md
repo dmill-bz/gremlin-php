@@ -25,9 +25,18 @@ pecl install msgpack/msgpack-beta
 
 ### PHP Rexster Client
 
+##### For Rexster 2.4
+
 ```bash
 git clone https://github.com/PommeVerte/rexpro-php.git
 ```
+
+##### For Rexster 2.3
+
+```bash
+git clone https://github.com/PommeVerte/rexpro-php.git -b 2.3
+```
+
 
 Error Handling
 ==============
