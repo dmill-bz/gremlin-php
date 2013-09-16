@@ -47,11 +47,11 @@ For instance:
 
 ```php
 if($db->open('localhost:8184','tinkergraph',null,null) === false)
-  throw Exception($db->error->code . ' : ' . $db->error->description);
+  throw new Exception($db->error->code . ' : ' . $db->error->description);
 $db->script = 'g.v(2)';
 $result = $db->runScript();
 if($result === false)
-   throw Exception($db->error->code . ' : ' . $db->error->description);
+   throw new Exception($db->error->code . ' : ' . $db->error->description);
 //do something with result
 ```
 
