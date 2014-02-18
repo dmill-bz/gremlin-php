@@ -1,7 +1,7 @@
 <?php
 namespace rexpro\tests;
 
-require_once '../Connection.php';
+require_once __DIR__.'/../Connection.php';
 
 use \rexpro\Connection;
 use \rexpro\Messages;

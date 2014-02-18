@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="rexpro/tests/" tests="11" assertions="38" failures="7" errors="0" time="20.032297">
+    <testsuite name="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" namespace="rexpro\tests" fullPackage="rexpro.tests" tests="11" assertions="38" failures="7" errors="0" time="20.032297">
+      <testcase name="testCreateUuid" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="18" assertions="8" time="0.005264"/>
+      <testcase name="testConvertIntTo32Bit" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="36" assertions="7" time="0.003462"/>
+      <testcase name="testConvertIntFrom32Bit" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="55" assertions="3" time="0.000379"/>
+      <testcase name="testConnectSuccess" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="67" assertions="1" time="0.001267">
+        <failure type="PHPUnit_Framework_ExpectationFailedException">rexpro\tests\RexsterTest::testConnectSuccess
+Failed to connect with no params
+Failed asserting that false is not equal to false.
+
+/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php:74
+</failure>
+      </testcase>
+      <testcase name="testConnectErrors" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="88" assertions="13" time="20.018473"/>
+      <testcase name="testConnectCloseSuccess" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="118" assertions="1" time="0.000902">
+        <failure type="PHPUnit_Framework_ExpectationFailedException">rexpro\tests\RexsterTest::testConnectCloseSuccess
+Closing connection on empty param connect creates an Error
+Failed asserting that false is not equal to false.
+
+/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php:127
+</failure>
+      </testcase>
+      <testcase name="testRunScript" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="132" assertions="1" time="0.000614">
+        <failure type="PHPUnit_Framework_ExpectationFailedException">rexpro\tests\RexsterTest::testRunScript
+Script request throws an error
+Failed asserting that false is not equal to false.
+
+/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php:140
+</failure>
+      </testcase>
+      <testcase name="testRunScriptWithBindings" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="156" assertions="1" time="0.000453">
+        <failure type="PHPUnit_Framework_ExpectationFailedException">rexpro\tests\RexsterTest::testRunScriptWithBindings
+Failed asserting that false is not equal to false.
+
+/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php:160
+</failure>
+      </testcase>
+      <testcase name="testRunScriptWithoutIsolation" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="175" assertions="1" time="0.000433">
+        <failure type="PHPUnit_Framework_ExpectationFailedException">rexpro\tests\RexsterTest::testRunScriptWithoutIsolation
+Failed asserting that false is not equal to false.
+
+/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php:179
+</failure>
+      </testcase>
+      <testcase name="testRunSessionlessScript" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="206" assertions="1" time="0.000554">
+        <failure type="PHPUnit_Framework_ExpectationFailedException">rexpro\tests\RexsterTest::testRunSessionlessScript
+Running a sessionless script returned an error
+Failed asserting that false is not equal to false.
+
+/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php:214
+</failure>
+      </testcase>
+      <testcase name="testTransactions" class="rexpro\tests\RexsterTest" file="/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php" line="223" assertions="1" time="0.000496">
+        <failure type="PHPUnit_Framework_ExpectationFailedException">rexpro\tests\RexsterTest::testTransactions
+Failed asserting that false is not equal to false.
+
+/home/dev-h/devs/rexpro-php/rexpro/tests/RexsterTest.php:227
+</failure>
+      </testcase>
+    </testsuite>
+  </testsuite>
+</testsuites>
