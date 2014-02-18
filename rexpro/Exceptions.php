@@ -52,38 +52,26 @@ class Exceptions
 	{
 		if($unpacked[2]==0)
 		{
-			switch($unpacked[4][2]['flag'])
+			$error_array = array(
+				self::INVALID_MESSAGE_ERROR		=> "The message sent to the RexPro Server was malformed.",
+				self::INVALID_SESSION_ERROR		=> "A session was requested that has either expired or no longer exists.",
+				self::SCRIPT_FAILURE_ERROR		=> "A script failed to execute (likely cause is syntax error).",
+				self::AUTH_FAILURE_ERROR		=> "Invalid username/password if authentication is turned on.",
+				self::GRAPH_CONFIG_ERROR		=> "A graph requested via 'graphName' meta attribute did not exist",
+				self::CHANNEL_CONFIG_ERROR		=> "The channel requested did not exist or the channel was changed after being established on the session. ",
+				self::RESULT_SERIALIZATION_ERROR => "The result or an item in the bindings could not be serialized properly.",
+				self::UNKNOWN_ERROR				=> "Unknown error returned by server.",
+			);
+			
+			if(isset($error_array[$unpacked[4][2]['flag']]))
 			{
-				
-				case self::INVALID_MESSAGE_ERROR:
-					$err = "The message sent to the RexPro Server was malformed.";
-					break;
-				case self::INVALID_SESSION_ERROR:
-					$err = "A session was requested that has either expired or no longer exists.";
-					break;
-				case self::SCRIPT_FAILURE_ERROR:
-					$err = "A script failed to execute (likely cause is syntax error).";
-					break;
-				case self::AUTH_FAILURE_ERROR:
-					$err = "Invalid username/password if authentication is turned on.";
-					break;
-				case self::GRAPH_CONFIG_ERROR:
-					$err = "A graph requested via 'graphName' meta attribute did not exist";
-					break;
-				case self::CHANNEL_CONFIG_ERROR:
-					$err = "The channel requested did not exist or the channel was changed after being established on the session. ";
-					break;
-				case self::RESULT_SERIALIZATION_ERROR:
-					$err = "The result or an item in the bindings could not be serialized properly.";
-					break;
-				case self::UNKNOWN_ERROR:
-					$err = "Unknown error returned by server.";
-					break;
-				default:
-					$err = "Unknown error type.";
-					break;
-				
+				$err = $error_array[$unpacked[4][2]['flag']];
 			}
+			else
+			{
+				$err = "Unknown error type.";
+			}
+			
 			return new self($unpacked[4][2]['flag'],$err.' > '.$unpacked[4][3]);
 		}
 		else
