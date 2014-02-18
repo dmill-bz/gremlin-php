@@ -38,12 +38,12 @@
   <apply executable="php" failonerror="true">
    <arg value="-l" />
 
-   <fileset dir="${basedir}">
+   <fileset dir="${basedir}/rexpro">
     <include name="**/*.php" />
     <modified />
    </fileset>
 
-   <fileset dir="${basedir}/tests">
+   <fileset dir="${basedir}/rexpro/tests">
     <include name="**/*.php" />
     <modified />
    </fileset>
