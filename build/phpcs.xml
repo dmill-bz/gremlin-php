@@ -5,6 +5,5 @@
  <rule ref="PSR1.Methods.CamelCapsMethodName"/>
  <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
  <rule ref="Generic.Formatting.DisallowMultipleStatements"/>
- <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
 
 </ruleset>
