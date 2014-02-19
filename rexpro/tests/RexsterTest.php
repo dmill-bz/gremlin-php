@@ -69,18 +69,18 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$message = new Messages;
 		
 		$db = new Connection;
-		$result = $db->open();
+		$result = $db->open('localhost','tinkergraph','test','ghJK5-hG');
 		
 		$this->assertNotEquals($result,false,'Failed to connect with no params');
 		$this->assertTrue($db->response[2] == 2,'Result for session connection (without params) is not a session start response packet');//check it's a session start server packet
 		
 		$db = new Connection;
-		$result = $db->open('localhost');
+		$result = $db->open('localhost','tinkergraph','test','ghJK5-hG');
 		$this->assertNotEquals($result,false,'Failed to connect with "localhost"');
 		$this->assertTrue($db->response[2] == 2,'Result for session connection (with localhost) is not a session start response packet');//check it's a session start server packet
 		
 		$db = new Connection;
-		$result = $db->open('localhost','neo4jsample',null,null);
+		$result = $db->open('localhost','neo4jsample','test','ghJK5-hG');
 		$this->assertNotEquals($result,false,'Failed to connect with localhost and neo4jsample graph');
 		$this->assertTrue($db->response[2] == 2,'Result for session connection (with localhost and neo4jsample graph) is not a session start response packet');//check it's a session start server packet
 	}
@@ -107,19 +107,27 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse(null === $db->error->description,'Error object does not contain an error description for unknown port');
 		
 		$db = new Connection;
-		$result = $db->open('localhost','doesnt exist',null,null);
+		$result = $db->open('localhost','doesnt exist','test','ghJK5-hG');
 		$this->assertEquals($result,false,'Loading a non-existing graph doesn\'t throw error');
 		
 		$this->assertTrue($db->error instanceof Exceptions,'Error object is not an Exceptions Object for unknown graph');
 		$this->assertFalse(null === $db->error->code,'Error object does not contain an error code for unknown graph');
 		$this->assertFalse(null === $db->error->description,'Error object does not contain an error description for unknown graph');
+		
+		$db = new Connection;
+		$result = $db->open('localhost','doesnt exist','test','g-hG');
+		$this->assertEquals($result,false,'Loading a non-existing user doesn\'t throw error');
+		
+		$this->assertTrue($db->error instanceof Exceptions,'Error object is not an Exceptions Object for unknown user');
+		$this->assertFalse(null === $db->error->code,'Error object does not contain an error code for unknown user');
+		$this->assertFalse(null === $db->error->description,'Error object does not contain an error description for unknown user');
 	}
 	
 	public function testConnectCloseSuccess()
 	{
 		//do all connection checks
 		$db = new Connection;
-		$result = $db->open();
+		$result = $db->open('localhost','tinkergraph','test','ghJK5-hG');
 
 		//check disconnection
 		$response = $db->close();
@@ -132,7 +140,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunScript()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8184','tinkergraph',null,null);
+		$message = $db->open('localhost:8184','tinkergraph','test','ghJK5-hG');
 		
 		$db->script = '5+5';
 		$result = $db->runScript();
@@ -156,7 +164,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunScriptWithBindings()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8184','tinkergraph',null,null);
+		$message = $db->open('localhost:8184','tinkergraph','test','ghJK5-hG');
 		$this->assertNotEquals($message,false);
 		
 		$db->script = 'g.v(CUSTO_BINDING)';
@@ -175,7 +183,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunScriptWithoutIsolation()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8184','tinkergraph',null,null);
+		$message = $db->open('localhost:8184','tinkergraph','test','ghJK5-hG');
 		$this->assertNotEquals($message,false);
 		
 		$db->script = 'g.v(CUSTO_BINDING)';
@@ -206,7 +214,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunSessionlessScript()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8184');
+		$message = $db->open('localhost:8184','tinkergraph','test','ghJK5-hG');
 		
 		$db->script = 'g.v(2).map()';
 		$db->graph = 'tinkergraph';
@@ -223,7 +231,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testTransactions()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8184','neo4jsample',null,null);
+		$message = $db->open('localhost:8184','neo4jsample','test','ghJK5-hG');
 		$this->assertNotEquals($message,false);
 
 		$db->script = 'g.V';
