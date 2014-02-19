@@ -6,10 +6,10 @@ namespace rexpro;
  * RexPro PHP client Helper class
  * 
  * @category DB
- * @package  rexproPhp
+ * @package  Rexpro
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
- * @link     https://github.com/tinkerpop/rexster/wiki
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
+ * @link     https://github.com/tinkerpop/rexster/wiki
  */
 class Helper
 {
@@ -44,7 +44,7 @@ class Helper
 	/**
 	 * Convert binary 16 byte UUID to it's canonical representation
 	 * 
-	 * @param string 16 byte binary UUID
+	 * @param string $binary 16 byte binary UUID
 	 * 
 	 * @return string canonical representation of UUID
 	 */

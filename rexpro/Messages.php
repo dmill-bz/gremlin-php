@@ -7,10 +7,10 @@ namespace rexpro;
  * Builds and parses binary messages for communication with RexPro
  * 
  * @category DB
- * @package  rexproPhp
+ * @package  Rexpro
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
- * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
+ * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
 class Messages
 {
@@ -52,6 +52,8 @@ class Messages
 
 	/**
 	 * Create and set request UUID
+	 * 
+	 * @return string the UUID
 	 */
 	public function createUuid()
 	{
@@ -60,10 +62,11 @@ class Messages
 	
 	/**
 	 * Serializes the meta with messagePack
+	 * 
 	 * @link http://msgpack.org/
 	 * @link https://github.com/msgpack/msgpack-php
 	 * 
-	 * @param array &$message Meta with request information
+	 * @param array $message Meta with request information
 	 * 
 	 * @return int length of generated string
 	 */
@@ -162,7 +165,7 @@ class Messages
 	/**
 	 * Parses full message (including outter envelope)
 	 * 
-	 * @param string $msg binary Data from server packet
+	 * @param string $bin binary Data from server packet
 	 * 
 	 * @return array Array containing all results
 	 */

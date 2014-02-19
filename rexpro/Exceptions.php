@@ -7,11 +7,11 @@ namespace rexpro;
  * Builds and parses binary messages for communication with RexPro
  * 
  * @category DB
- * @package  rexproPhp
+ * @package  Rexpro
  * @author   Dylan Millikin <dylan.millikin@brihtzone.fr>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  * @link     https://github.com/tinkerpop/rexster/wiki
- * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  */
 class Exceptions
 {
@@ -39,6 +39,9 @@ class Exceptions
 	
 	/**
 	 * Overriding construct to set error code and description
+	 * 
+	 * @param int    $code        code for the error
+	 * @param string $description description for the error
 	 */
 	public function __construct($code,$description)
 	{
