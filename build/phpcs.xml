@@ -1,9 +1,14 @@
 <?xml version="1.0"?>
 <ruleset name="Custom Standard">
 
- <rule ref="Generic.PHP.DisallowShortOpenTag"/>
- <rule ref="PSR1.Methods.CamelCapsMethodName"/>
- <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
- <rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+	<rule ref="Generic.PHP.DisallowShortOpenTag"/>
+	<rule ref="PSR1.Methods.CamelCapsMethodName"/>
+	<rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
+	<rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+	<rule ref="PEAR.Commenting.ClassComment"/>
+	<rule ref="PEAR.Commenting.FileComment"/>
+	<rule ref="PEAR.Commenting.FunctionComment"/>
+	<rule ref="PEAR.Commenting.InlineComment"/>
+	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
 
 </ruleset>
