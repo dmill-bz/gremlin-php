@@ -6,11 +6,11 @@ namespace rexpro;
  * RexPro PHP client Messages class
  * Builds and parses binary messages for communication with RexPro
  * 
+ * @category DB
+ * @package  rexproPhp
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
- * @category DB
- * @package  rexpro-php
- * @license  apache2
+ * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  */
 class Messages
 {

@@ -8,6 +8,5 @@
 	<rule ref="PEAR.Commenting.ClassComment"/>
 	<rule ref="PEAR.Commenting.FunctionComment"/>
 	<rule ref="PEAR.Commenting.InlineComment"/>
-	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
 
 </ruleset>
