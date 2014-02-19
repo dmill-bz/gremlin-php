@@ -65,8 +65,7 @@ class Messages
 	 * 
 	 * @link http://msgpack.org/
 	 * @link https://github.com/msgpack/msgpack-php
-	 * 
-	 * @param array $message Meta with request information
+	 * @param array &$message Meta with request information
 	 * 
 	 * @return int length of generated string
 	 */

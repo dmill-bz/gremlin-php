@@ -20,7 +20,9 @@ use \rexpro\Helper;
  */
 class RexsterTest extends \PHPUnit_Framework_TestCase
 {
- 
+	/**
+	 * Testing UUID
+	 */
 	public function testCreateUuid()
 	{
 	    $uuid1 = Helper::createUuid();
@@ -39,6 +41,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($uuid,$uuid1,'UUID before and after convertion do not match');
 	}
 	
+	/**
+	 * Testing binary conversion TO
+	 */
 	public function testConvertIntTo32Bit()
 	{
 		$converted = Helper::convertIntTo32Bit(84);
@@ -58,6 +63,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		
 	}
 	
+	/**
+	 * Testing binary conversion FROM
+	 */
 	public function testConvertIntFrom32Bit()
 	{
 		$converted = Helper::convertIntFrom32Bit(Helper::convertIntTo32Bit(84));
@@ -70,6 +78,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($converted,1410065408,'The conversion of 32bit int to int is incorrect. Bit truncating issue'); //bit truncating check
 	}
 	
+	/**
+	 * Testing Connection
+	 */
 	public function testConnectSuccess()
 	{
 		$message = new Messages;
@@ -91,6 +102,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($db->response[2] == 2,'Result for session connection (with localhost and neo4jsample graph) is not a session start response packet');//check it's a session start server packet
 	}
 	
+	/**
+	 * Testing connection errors
+	 */
 	public function testConnectErrors()
 	{	
 		$db = new Connection;
@@ -129,6 +143,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse(null === $db->error->description,'Error object does not contain an error description for unknown user');
 	}
 	
+	/**
+	 * Testing connection close
+	 */
 	public function testConnectCloseSuccess()
 	{
 		//do all connection checks
@@ -143,6 +160,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($db->response[2] == 2,'Response packet for closing session is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
 	}	
 	
+	/**
+	 * Testing Script run against DB
+	 */
 	public function testRunScript()
 	{
 		$db = new Connection;
@@ -167,6 +187,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($db->response[2] == 2,'Response packet for closing session is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
 	}	
 	
+	/**
+	 * Testing Script run with bindings
+	 */
 	public function testRunScriptWithBindings()
 	{
 		$db = new Connection;
@@ -186,6 +209,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($db->response[2] == 2,'Response packet for closing session with bindings is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
 	}
 	
+	/**
+	 * Testing Script run without isolation
+	 */
 	public function testRunScriptWithoutIsolation()
 	{
 		$db = new Connection;
@@ -217,6 +243,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($db->response[2] == 2,'Response packet for closing session with bindings used in consequent non-isolated scripts is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
 	}	
 	
+	/**
+	 * Testing sessionless script run
+	 */
 	public function testRunSessionlessScript()
 	{
 		$db = new Connection;
@@ -234,6 +263,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($db->response[2] == 2,'Response packet for closing session after sessionless script is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet		
 	}
 	
+	/**
+	 * Testing transactions
+	 */
 	public function testTransactions()
 	{
 		$db = new Connection;
