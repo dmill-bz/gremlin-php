@@ -63,9 +63,9 @@ class Messages
 	/**
 	 * Serializes the meta with messagePack
 	 * 
+	 * @param array &$message Meta with request information
 	 * @link http://msgpack.org/
 	 * @link https://github.com/msgpack/msgpack-php
-	 * @param array &$message Meta with request information
 	 * 
 	 * @return int length of generated string
 	 */

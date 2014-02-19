@@ -22,6 +22,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 {
 	/**
 	 * Testing UUID
+	 * 
+	 * @return void
 	 */
 	public function testCreateUuid()
 	{
@@ -43,6 +45,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	
 	/**
 	 * Testing binary conversion TO
+	 * 
+	 * @return void
 	 */
 	public function testConvertIntTo32Bit()
 	{
@@ -65,6 +69,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	
 	/**
 	 * Testing binary conversion FROM
+	 * 
+	 * @return void
 	 */
 	public function testConvertIntFrom32Bit()
 	{
@@ -80,6 +86,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	
 	/**
 	 * Testing Connection
+	 * 
+	 * @return void
 	 */
 	public function testConnectSuccess()
 	{
@@ -104,6 +112,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	
 	/**
 	 * Testing connection errors
+	 * 
+	 * @return void
 	 */
 	public function testConnectErrors()
 	{	
@@ -145,6 +155,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	
 	/**
 	 * Testing connection close
+	 * 
+	 * @return void
 	 */
 	public function testConnectCloseSuccess()
 	{
@@ -162,6 +174,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	
 	/**
 	 * Testing Script run against DB
+	 * 
+	 * @return void
 	 */
 	public function testRunScript()
 	{
@@ -189,6 +203,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	
 	/**
 	 * Testing Script run with bindings
+	 * 
+	 * @return void
 	 */
 	public function testRunScriptWithBindings()
 	{
@@ -211,6 +227,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	
 	/**
 	 * Testing Script run without isolation
+	 * 
+	 * @return void
 	 */
 	public function testRunScriptWithoutIsolation()
 	{
@@ -245,6 +263,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	
 	/**
 	 * Testing sessionless script run
+	 * 
+	 * @return void
 	 */
 	public function testRunSessionlessScript()
 	{
@@ -265,6 +285,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	
 	/**
 	 * Testing transactions
+	 * 
+	 * @return void
 	 */
 	public function testTransactions()
 	{
