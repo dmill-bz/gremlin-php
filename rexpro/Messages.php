@@ -64,6 +64,7 @@ class Messages
 	 * Serializes the meta with messagePack
 	 * 
 	 * @param array &$message Meta with request information
+	 * 
 	 * @link http://msgpack.org/
 	 * @link https://github.com/msgpack/msgpack-php
 	 * 
