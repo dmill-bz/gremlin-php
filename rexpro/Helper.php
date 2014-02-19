@@ -1,12 +1,12 @@
 <?php
+
+namespace rexpro;
+
 /**
  * RexPro PHP client Helper class
  * @author Dylan Millikin <dylan.millikin@brightzone.fr>
  * @link https://github.com/tinkerpop/rexster/wiki
  */
- 
-namespace rexpro;
-
 class Helper
 {
 	/**

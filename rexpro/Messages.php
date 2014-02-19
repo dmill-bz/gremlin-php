@@ -1,4 +1,7 @@
 <?php
+
+namespace rexpro;
+
 /**
  * RexPro PHP client Messages class
  * Builds and parses binary messages for communication with RexPro
@@ -6,8 +9,6 @@
  * @author Dylan Millikin <dylan.millikin@brightzone.fr>
  * @link https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
-namespace rexpro;
-
 class Messages
 {
 	/**

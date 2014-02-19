@@ -1,4 +1,7 @@
 <?php
+
+namespace rexpro;
+
 /**
  * RexPro PHP client Messages class
  * Builds and parses binary messages for communication with RexPro
@@ -7,8 +10,6 @@
  * @link https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  * @link https://github.com/tinkerpop/rexster/wiki
  */
-namespace rexpro;
-
 class Exceptions
 {
 	/**

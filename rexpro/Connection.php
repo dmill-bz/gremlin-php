@@ -1,4 +1,11 @@
 <?php
+ 
+namespace rexpro;
+
+require_once 'Exceptions.php';
+require_once 'Helper.php';
+require_once 'Messages.php';
+
 /**
  * RexPro PHP client Connection class
  * 
@@ -19,13 +26,6 @@
  * @author Dylan Millikin <dylan.millikin@brightzone.fr>
  * @link https://github.com/tinkerpop/rexster/wiki
  */
- 
-namespace rexpro;
-
-require_once 'Exceptions.php';
-require_once 'Helper.php';
-require_once 'Messages.php';
-
 class Connection
 {
 	/**
