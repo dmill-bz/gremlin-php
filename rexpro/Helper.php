@@ -4,8 +4,12 @@ namespace rexpro;
 
 /**
  * RexPro PHP client Helper class
- * @author Dylan Millikin <dylan.millikin@brightzone.fr>
- * @link https://github.com/tinkerpop/rexster/wiki
+ * 
+ * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
+ * @link     https://github.com/tinkerpop/rexster/wiki
+ * @category DB
+ * @package  rexpro-php
+ * @license  apache2
  */
 class Helper
 {
@@ -41,6 +45,7 @@ class Helper
 	 * Convert binary 16 byte UUID to it's canonical representation
 	 * 
 	 * @param string 16 byte binary UUID
+	 * 
 	 * @return string canonical representation of UUID
 	 */
 	public static function binToUuid($binary)
@@ -54,7 +59,8 @@ class Helper
 	/**
 	 * Convert canonical representation of UUID to it's binary 16 byte equivalent 
 	 * 
-	 * @param string canonical representation of UUID
+	 * @param string $string canonical representation of UUID
+	 * 
 	 * @return string 16 byte binary UUID
 	 */
 	public static function uuidToBin($string)
@@ -76,6 +82,7 @@ class Helper
 	 * > hex = 0000 002c
 	 * 
 	 * @param int $int number to be converted
+	 * 
 	 * @return string binary data
 	 */
 	public static function convertIntTo32Bit($int)
@@ -98,6 +105,7 @@ class Helper
 	 * returned value = 44
 	 * 
 	 * @param binary $bin binary data to be converted
+	 * 
 	 * @return string number
 	 */	
 	public static function convertIntFrom32Bit($bin)

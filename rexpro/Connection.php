@@ -23,8 +23,11 @@ require_once 'Messages.php';
  * 		//etc..
  * }
  * 
- * @author Dylan Millikin <dylan.millikin@brightzone.fr>
- * @link https://github.com/tinkerpop/rexster/wiki
+ * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
+ * @link     https://github.com/tinkerpop/rexster/wiki
+ * @category DB
+ * @package  rexpro-php
+ * @license  apache2
  */
 class Connection
 {
@@ -109,10 +112,10 @@ class Connection
 	/**
 	 * Connects to socket and starts a session on RexPro
 	 * 
-	 * @param string $host host and port seperated by ":"
-	 * @param string $graph graph to load into session. defaults to tinkergraph
-	 * @param string $username username for authentification
-	 * @param string $password password to use for authentification
+	 * @param string $host        host and port seperated by ":"
+	 * @param string $graph       graph to load into session. defaults to tinkergraph
+	 * @param string $username    username for authentification
+	 * @param string $password    password to use for authentification
 	 * @param string $graphObject Graph object name. defaults to 'g'
 	 * 
 	 * @return bool true on success false on error
@@ -157,7 +160,8 @@ class Connection
 	/**
 	 * Sends binary data over socket
 	 * 
-	 * @param $msg Messages Object containing the message to send
+	 * @param Messages $msg Object containing the message to send
+	 * 
 	 * @return bool true if success false on error
 	 */
 	public function send($msg)
@@ -174,7 +178,6 @@ class Connection
 	/**
 	 * Recieves binary data over socket and parses it
 	 * 
-	 * @param $msg Messages Object containing the message to send
 	 * @return mixed unpacked message if true, false on error
 	 */
 	public function getResponse()
@@ -237,7 +240,9 @@ class Connection
 	/**
 	 * runs a gremlin script against the graph
 	 * 
-	 * @param bool $sessionless whether or not to run this script without session. 
+	 * @param bool $inSession whether or not to run this script without session. 
+	 * @param bool $isolated  whether or not to run this script without acces to variable binds made previously. 
+	 * 
 	 * @return mixed message on success false on error.
 	 */
 	public function runScript($inSession=true,$isolated=true)
@@ -312,8 +317,9 @@ class Connection
 	/**
 	 * Binds a value to be used inside gremlin script
 	 * 
-	 * @param string $bind The binding name
-	 * @param mixed value the value that the binding name refers to
+	 * @param string $bind  The binding name
+	 * @param mixed  $value the value that the binding name refers to
+	 * 
 	 * @return void
 	 */
 	public function bindValue($bind,$value)
@@ -345,6 +351,7 @@ class Connection
 	 * End a transaction
 	 * 
 	 * @param bool $success should the transaction commit or revert changes
+	 * 
 	 * @return bool true on success false on failure.
 	 */
 	 public function transactionStop($success = true)

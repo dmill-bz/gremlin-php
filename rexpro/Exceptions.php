@@ -6,9 +6,12 @@ namespace rexpro;
  * RexPro PHP client Messages class
  * Builds and parses binary messages for communication with RexPro
  * 
- * @author Dylan Millikin <dylan.millikin@brihtzone.fr>
- * @link https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
- * @link https://github.com/tinkerpop/rexster/wiki
+ * @author   Dylan Millikin <dylan.millikin@brihtzone.fr>
+ * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
+ * @link     https://github.com/tinkerpop/rexster/wiki
+ * @category DB
+ * @package  rexpro-php
+ * @license  apache2
  */
 class Exceptions
 {
@@ -47,6 +50,7 @@ class Exceptions
 	 * Checks if an Error occured
 	 * 
 	 * @param string $unpacked Parsed response message from server
+	 * 
 	 * @return mixed false if no error or an array with error message of type array(code,description);
 	 */
 	public static function checkError($unpacked)

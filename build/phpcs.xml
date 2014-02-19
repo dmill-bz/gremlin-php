@@ -6,7 +6,6 @@
 	<rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
 	<rule ref="Generic.Formatting.DisallowMultipleStatements"/>
 	<rule ref="PEAR.Commenting.ClassComment"/>
-	<rule ref="PEAR.Commenting.FileComment"/>
 	<rule ref="PEAR.Commenting.FunctionComment"/>
 	<rule ref="PEAR.Commenting.InlineComment"/>
 	<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>

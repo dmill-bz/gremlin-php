@@ -6,8 +6,11 @@ namespace rexpro;
  * RexPro PHP client Messages class
  * Builds and parses binary messages for communication with RexPro
  * 
- * @author Dylan Millikin <dylan.millikin@brightzone.fr>
- * @link https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
+ * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
+ * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
+ * @category DB
+ * @package  rexpro-php
+ * @license  apache2
  */
 class Messages
 {
@@ -61,6 +64,7 @@ class Messages
 	 * @link https://github.com/msgpack/msgpack-php
 	 * 
 	 * @param array &$message Meta with request information
+	 * 
 	 * @return int length of generated string
 	 */
 	protected function serializeMessage(&$message)
@@ -72,11 +76,11 @@ class Messages
 	/**
 	 * Constructs full binary message (including outter envelope) For use in Session creation
 	 * 
-	 * @param string $sessionUuid session ID. This is not necessary at this stage but still included
-	 * @param string $username Username to use for connection to rexpro server
-	 * @param string $password Password to use for connection to rexpro server
-	 * @param array $meta Metadata to add to request message
-	 * @param int $protocolVersion Protocol to use, only current option is 0
+	 * @param string $sessionUuid     session ID. This is not necessary at this stage but still included
+	 * @param string $username        Username to use for connection to rexpro server
+	 * @param string $password        Password to use for connection to rexpro server
+	 * @param array  $meta            Metadata to add to request message
+	 * @param int    $protocolVersion Protocol to use, only current option is 0
 	 * 
 	 * @return string Returns binary data to be written to socket
 	 */
@@ -113,11 +117,11 @@ class Messages
 	/**
 	 * Constructs full binary message (including outter envelope) For use in script execution
 	 * 
-	 * @param string $sessionUuid session ID. This is not necessary at this stage but still included
-	 * @param string $script Gremlin (groovy flavored) script to run
-	 * @param array $bindings Associated bindings
-	 * @param array $meta Metadata to add to request message
-	 * @param int $protocolVersion Protocol to use, only current option is 0
+	 * @param string $sessionUuid     session ID. This is not necessary at this stage but still included
+	 * @param string $script          Gremlin (groovy flavored) script to run
+	 * @param array  $bindings        Associated bindings
+	 * @param array  $meta            Metadata to add to request message
+	 * @param int    $protocolVersion Protocol to use, only current option is 0
 	 * 
 	 * @return string Returns binary data to be written to socket
 	 */
@@ -159,6 +163,7 @@ class Messages
 	 * Parses full message (including outter envelope)
 	 * 
 	 * @param string $msg binary Data from server packet
+	 * 
 	 * @return array Array containing all results
 	 */
 	public function parse($bin)
