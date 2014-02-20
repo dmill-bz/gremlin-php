@@ -22,7 +22,7 @@
 	<rule ref="rulesets/naming.xml" />
 
 	<!-- Import entire controversal rule set and exclude rules -->
-	<rule ref="rulesets/controversal.xml">
+	<rule ref="rulesets/controversial.xml">
 		<exclude name="SuperGlobals" />
 	</rule>
     
