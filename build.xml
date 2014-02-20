@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="rexpro-php" default="build">
  <target name="build"
-   depends="prepare,lint,phploc,pdepend,phpmd-ci,phpcs-ci,phpcpd,phpunit"/>
+   depends="prepare,lint,phploc,pdepend,phpmd-ci,phpcs-ci,phpcpd,phpdox,phpunit"/>
 
  <target name="build-parallel"
    depends="prepare,lint,tools-parallel,phpunit"/>
@@ -15,6 +15,7 @@
    <antcall target="phpcpd"/>
    <antcall target="phpcs-ci"/>
    <antcall target="phploc"/>
+   <antcall target="phpdox"/>
   </parallel>
  </target>
 
@@ -40,11 +41,7 @@
     <include name="**/*.php" />
     <modified />
    </fileset>
-
-   <fileset dir="${basedir}/rexpro/tests">
-    <include name="**/*.php" />
-    <modified />
-   </fileset>
+   
   </apply>
  </target>
 
@@ -109,7 +106,11 @@
    <arg path="${basedir}" />
   </exec>
  </target>
-
+ 
+ <target name="phpdox" description="Generate API documentation using phpDox">
+  <exec executable="phpdox"/>
+ </target>
+ 
  <target name="phpunit" description="Run unit tests with PHPUnit">
   <exec executable="phpunit" failonerror="true"/>
  </target>
