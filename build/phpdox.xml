@@ -1,5 +1,5 @@
 <phpdox xmlns="http://phpdox.net/config">
- <project name="rexpro-php" source="rexpro" workdir="build/phpdox">
+ <project name="rexpro-php" source="rexpro" workdir="build/coverage">
   <collector publiconly="false">
    <include mask="*.php" />
    <exclude mask="*Autoload.php" />
