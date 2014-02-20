@@ -1,11 +1,11 @@
 <phpdox xmlns="http://phpdox.net/config">
- <project name="rexpro-php" source="${basedir}/rexpro" workdir="${basedir}/build/phpdox">
+ <project name="rexpro-php" source="rexpro" workdir="${basedir}/phpdox">
   <collector publiconly="false">
    <include mask="*.php" />
    <exclude mask="*Autoload.php" />
   </collector>
 
-  <generator output="${basedir}/build">
+  <generator output="${basedir}">
    <build engine="html" enabled="true" output="api"/>
   </generator>
  </project>
