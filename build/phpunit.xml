@@ -7,7 +7,7 @@
        
   <testsuites>
     <testsuite name="rexpro-php">
-      <directory suffix="Test.php">rexpro/tests/</directory>
+      <directory suffix="Test.php">${basedir}/rexpro/tests/</directory>
     </testsuite>
   </testsuites>
 
