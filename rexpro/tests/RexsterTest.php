@@ -91,8 +91,6 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testConnectSuccess()
 	{
-		$message = new Messages;
-		
 		$db = new Connection;
 		$result = $db->open('localhost','tinkergraph','test','ghJK5-hG');
 		
@@ -162,7 +160,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	{
 		//do all connection checks
 		$db = new Connection;
-		$result = $db->open('localhost','tinkergraph','test','ghJK5-hG');
+		$db->open('localhost','tinkergraph','test','ghJK5-hG');
 
 		//check disconnection
 		$response = $db->close();
