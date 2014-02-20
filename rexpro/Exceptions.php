@@ -60,7 +60,7 @@ class Exceptions
 	{
 		if($unpacked[2]==0)
 		{
-			$error_array = array(
+			$errorArray = array(
 				self::INVALID_MESSAGE_ERROR		=> "The message sent to the RexPro Server was malformed.",
 				self::INVALID_SESSION_ERROR		=> "A session was requested that has either expired or no longer exists.",
 				self::SCRIPT_FAILURE_ERROR		=> "A script failed to execute (likely cause is syntax error).",
@@ -71,9 +71,9 @@ class Exceptions
 				self::UNKNOWN_ERROR				=> "Unknown error returned by server.",
 			);
 			
-			if(isset($error_array[$unpacked[4][2]['flag']]))
+			if(isset($errorArray[$unpacked[4][2]['flag']]))
 			{
-				$err = $error_array[$unpacked[4][2]['flag']];
+				$err = $errorArray[$unpacked[4][2]['flag']];
 			}
 			else
 			{
