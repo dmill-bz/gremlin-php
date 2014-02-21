@@ -5,6 +5,14 @@
 	<rule ref="PSR1.Methods.CamelCapsMethodName"/>
 	<rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
 	<rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+	<rule ref="Generic.Classes.DuplicateClassName"/>
+	<rule ref="Generic.PHP.DisallowShortOpenTag"/>
+	<rule ref="Generic.PHP.UpperCaseConstant"/>
+	<rule ref="Squiz.Classes.DuplicateProperty"/>
+	<rule ref="Generic.Functions.OpeningFunctionBraceBsdAllman"/>
+	
+	<rule ref="Brightzone.ControlSignatureSniff"/>
+
 	<rule ref="PEAR.Commenting.ClassComment"/>
 	<rule ref="PEAR.Commenting.FunctionComment"/>
 	<rule ref="PEAR.Commenting.InlineComment"/>
