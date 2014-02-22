@@ -11,7 +11,7 @@
 	<rule ref="Squiz.Classes.DuplicateProperty"/>
 	<rule ref="Generic.Functions.OpeningFunctionBraceBsdAllman"/>
 	
-	<rule ref="Brightzone.ControleStructures.ControlSignature"/>
+	<rule ref="Brightzone.ControlStructures.ControlSignature"/>
 
 	<rule ref="PEAR.Commenting.ClassComment"/>
 	<rule ref="PEAR.Commenting.FunctionComment"/>
