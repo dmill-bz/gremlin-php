@@ -85,16 +85,16 @@
   </exec>
  </target>
 
- <target name="phpcs" failonerror="true"
+ <target name="phpcs"
          description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
-  <exec executable="phpcs">
+  <exec executable="phpcs" failonerror="true">
    <arg value="--standard=${basedir}/build/phpcs.xml" />
    <arg path="${basedir}/rexpro" />
   </exec>
  </target>
 
  <target name="phpcs-ci" description="Find coding standard violations using PHP_CodeSniffer creating a log file for the continuous integration server">
-  <exec executable="phpcs" output="/dev/null">
+  <exec executable="phpcs" output="/dev/null" >
    <arg value="--report=checkstyle" />
    <arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
    <arg value="--standard=${basedir}/build/phpcs.xml" />
