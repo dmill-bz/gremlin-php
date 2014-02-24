@@ -37,8 +37,5 @@
 	<rule ref="Generic.NamingConventions.ConstructorName"/>
 	<rule ref="Squiz.PHP.NonExecutableCode"/>
 	
-	<rule ref="Squiz.Classes.ValidClassName"/>
-	<rule ref="Squiz.Classes.ValidClassName"/>
-	
 
 </ruleset>
