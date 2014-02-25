@@ -50,7 +50,7 @@ class Helper
 	 */
 	public static function binToUuid($binary)
 	{
-		$string = implode('',unpack("H*", $binary));
+		$string = implode('', unpack("H*", $binary));
 		$string = preg_replace("/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/", "$1-$2-$3-$4-$5", $string);
 		return $string;
 	}
@@ -90,11 +90,11 @@ class Helper
 		$result = array();
 		for($i=0;$i<4;$i++)
 		{
-			array_unshift($result,pack('C*',$int & 0xff));
+			array_unshift($result, pack('C*', $int & 0xff));
 			$int >>= 8;
 			
 		}
-		return implode('',$result);
+		return implode('', $result);
 	}
 	
 	/**

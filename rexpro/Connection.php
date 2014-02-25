@@ -211,7 +211,9 @@ class Connection
 		//lets check if this is an error message from the server
 		$error = Exceptions::checkError($unpacked);
 		if( $error === FALSE)
+		{
 			return $unpacked;
+		}
 		$this->error = $error;
 		return FALSE;
 
@@ -312,7 +314,9 @@ class Connection
 										$this->protocolVersion);
 			
 			if(!$this->send($msg))
+			{
 				return FALSE;
+			}
 			
 			//lets get the response
 			$response = $this->getResponse();

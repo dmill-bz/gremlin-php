@@ -87,7 +87,7 @@ class Messages
 	 * 
 	 * @return string Returns binary data to be written to socket
 	 */
-	public function buildSessionMessage($sessionUuid,$username,$password,$meta,$protocolVersion=0)
+	public function buildSessionMessage($sessionUuid, $username, $password, $meta, $protocolVersion=0)
 	{
 		$this->createUuid();
 					
@@ -128,7 +128,7 @@ class Messages
 	 * 
 	 * @return string Returns binary data to be written to socket
 	 */
-	public function buildScriptMessage($sessionUuid,$script,$bindings,$meta,$protocolVersion=0)
+	public function buildScriptMessage($sessionUuid, $script, $bindings, $meta, $protocolVersion=0)
 	{
 		//lets start by packing message
 		$this->createUuid();
@@ -171,21 +171,21 @@ class Messages
 	 */
 	public function parse($bin)
 	{
-		$resp = str_split($bin,1);
+		$resp = str_split($bin, 1);
 		
 		$proVersion = Helper::convertIntFrom32Bit($resp[0]); //cheating by using this function on non-32bit
 		$serializerType = Helper::convertIntFrom32Bit($resp[1]); //cheating by using this function on non-32bit
 		$rqstType = Helper::convertIntFrom32Bit($resp[6]); //cheating by using this function on non-32bit
 		
-		$mssgLength = implode('',array_slice($resp,7,4));
+		$mssgLength = implode('', array_slice($resp, 7, 4));
 		$mssgLength = Helper::convertIntFrom32Bit($mssgLength);
 		
-		$mssg = msgpack_unpack(implode('',array_slice($resp,11,count($resp))));
+		$mssg = msgpack_unpack(implode('', array_slice($resp, 11, count($resp))));
 
 		//lets just make UUIDs readable incase we need to debug 
 		$mssg[0] = Helper::binToUuid($mssg[0]);
 		$mssg[1] = Helper::binToUuid($mssg[1]);
 
-		return array($proVersion,$serializerType,$rqstType,$mssgLength,$mssg);
+		return array($proVersion, $serializerType, $rqstType, $mssgLength,$mssg);
 	}
 }
