@@ -114,7 +114,7 @@ class Messages
 		
 		//append message and return
 		$this->msgPack = $msg.$message;
-		return $this->msgPack;	
+		return $this->msgPack;
 	}	
 	
 	/**

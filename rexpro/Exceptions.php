@@ -87,5 +87,4 @@ class Exceptions
 			return FALSE;
 		}
 	}
-	
 }

@@ -120,7 +120,7 @@ class Connection
 	 * 
 	 * @return bool TRUE on success FALSE on error
 	 */
-	public function open($host='localhost:8184',$graph='tinkergraph',$username=NULL,$password=NULL,$graphObject='g')
+	public function open($host='localhost:8184', $graph='tinkergraph', $username=NULL, $password=NULL, $graphObject='g')
 	{
 		if($this->_socket === NULL)
 		{
@@ -132,7 +132,9 @@ class Connection
 			$this->password = $password;
 
 			if(!$this->connectSocket())
+			{
 				return FALSE;
+			}
 				
 			//lets make opening session message:
 			$msg = new Messages;
@@ -143,13 +145,17 @@ class Connection
 										$this->protocolVersion);
 			
 			if(!$this->send($msg))
+			{
 				return FALSE;
+			}
 			
 			//lets get the response
 			$response = $this->getResponse();
 			if($response === FALSE)
+			{
 				return FALSE;
-				
+			}
+			
 			$this->response = $response;
 			$this->sessionUuid = $this->response[4][0];
 			
@@ -166,10 +172,10 @@ class Connection
 	 */
 	public function send($msg)
 	{	
-		$write = @fwrite($this->_socket,$msg->msgPack);
+		$write = @fwrite($this->_socket, $msg->msgPack);
 		if($write === FALSE)
 		{
-			$this->error = new Exceptions(0,'Could not write to socket');
+			$this->error = new Exceptions(0, 'Could not write to socket');
 			return FALSE;
 		}
 		return TRUE;
@@ -182,18 +188,18 @@ class Connection
 	 */
 	public function getResponse()
 	{	
-		$header = @stream_get_contents($this->_socket,7);
-		$messageLength = @stream_get_contents($this->_socket,4);
-		$body = @stream_get_contents($this->_socket,(int)hexdec(bin2hex($messageLength)));
+		$header = @stream_get_contents($this->_socket, 7);
+		$messageLength = @stream_get_contents($this->_socket, 4);
+		$body = @stream_get_contents($this->_socket, (int)hexdec(bin2hex($messageLength)));
 	
 		if($header === FALSE || $messageLength === FALSE || $body === FALSE )
 		{
-			$this->error = new Exceptions(0,'Could not stream contents');
+			$this->error = new Exceptions(0, 'Could not stream contents');
 			return FALSE;
 		} 
 		if(empty($header) || empty($messageLength) || empty($body) )
 		{
-			$this->error = new Exceptions(0,'Empty reply. Most likely the result of an irregular request. (Check custom Meta, or lack of in the case of a non-isolated query)');
+			$this->error = new Exceptions(0, 'Empty reply. Most likely the result of an irregular request. (Check custom Meta, or lack of in the case of a non-isolated query)');
 			return FALSE;
 		} 
 		
@@ -218,7 +224,8 @@ class Connection
 	 */
 	protected function connectSocket()
 	{
-		if (strpos($this->host, ':')===FALSE) {
+		if (strpos($this->host, ':')===FALSE)
+		{
 				$this->host .= ':8184';
 		}
 		
@@ -230,7 +237,7 @@ class Connection
 									);
 		if(!$this->_socket)
 		{
-			$this->error = new Exceptions($errno,$errorMessage);
+			$this->error = new Exceptions($errno, $errorMessage);
 			return FALSE;
 		}	
 			
@@ -245,7 +252,7 @@ class Connection
 	 * 
 	 * @return mixed message on success FALSE on error.
 	 */
-	public function runScript($inSession=TRUE,$isolated=TRUE)
+	public function runScript($inSession=TRUE, $isolated=TRUE)
 	{	
 		//lets make a script message:
 		$msg = new Messages;
@@ -254,8 +261,10 @@ class Connection
 						'transaction'=>$this->_inTransaction?FALSE:TRUE,
 						'isolate'=>$inSession?$isolated:FALSE);
 		if($inSession===FALSE)
+		{
 			$meta = array_merge($meta,array('graphName'=>$this->graph,
 											'graphObjName'=>$this->graphObject?$this->graphObject:'g'));
+		}
 		
 		$msg->buildScriptMessage(	($inSession?$this->sessionUuid:'00000000-0000-0000-0000-000000000000'),
 									$this->script,
@@ -268,13 +277,17 @@ class Connection
 		$this->script = NULL;
 		
 		if(!$this->send($msg))
+		{
 			return FALSE;
-
+		}
 		//lets get the response
 		$response = $this->getResponse();
 		
 		if($response === FALSE)
+		{
 			return FALSE;
+		}
+		
 		$this->response = $response;
 		return $this->response[4][3];
 	}
@@ -304,7 +317,9 @@ class Connection
 			//lets get the response
 			$response = $this->getResponse();
 			if($response === FALSE)
+			{
 				return FALSE;
+			}
 			$this->response = $response;
 			@stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR); //ignore error
 			$this->_socket = NULL;
@@ -325,7 +340,9 @@ class Connection
 	public function bindValue($bind,$value)
 	{
 		if($this->bindings === NULL)
+		{
 			$this->bindings = array();
+		}
 		$this->bindings[$bind]=$value;
 	}
 	 
@@ -386,9 +403,6 @@ class Connection
 	 */
 	public function __destroy()
 	{
-		$this->close();	
+		$this->close();
 	}
-	
-	
-	
-} 
+}
