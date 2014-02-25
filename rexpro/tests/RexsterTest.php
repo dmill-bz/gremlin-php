@@ -33,9 +33,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		
 		$uuid = Helper::uuidToBin($uuid1);
 		$this->assertTRUE(mb_strlen($uuid, 'ISO-8859-1') == 16, 'The conversion to bin of the UUID is not the correct length (16 bytes)');
-		$this->assertTRUE(count(str_split($uuid,1)) == 16, 'The conversion to bin of the UUID is not the correct length (16 bytes)');
+		$this->assertTRUE(count(str_split($uuid, 1)) == 16, 'The conversion to bin of the UUID is not the correct length (16 bytes)');
 		//test that the bin format is correct for rexPro
-		$this->assertEquals(bin2hex($uuid),str_replace('-', '', trim($uuid1)), 'The conversion to bin of the UUID is incorrect');
+		$this->assertEquals(bin2hex($uuid), str_replace('-', '', trim($uuid1)), 'The conversion to bin of the UUID is incorrect');
 		
 		$uuid = Helper::binToUuid($uuid);
 		$this->assertTRUE(mb_strlen($uuid, 'ISO-8859-1') == 36, 'The conversion of bin UUID to UUID is not the correct length');
@@ -104,7 +104,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		
 		$db = new Connection;
 		$result = $db->open('localhost', 'neo4jsample', 'test', 'ghJK5-hG');
-		$this->assertNotEquals($result,FALSE, 'Failed to connect with localhost and neo4jsample graph');
+		$this->assertNotEquals($result, FALSE, 'Failed to connect with localhost and neo4jsample graph');
 		$this->assertTRUE($db->response[2] == 2, 'Result for session connection (with localhost and neo4jsample graph) is not a session start response packet');//check it's a session start server packet
 	}
 	

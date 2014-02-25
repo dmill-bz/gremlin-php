@@ -17,7 +17,7 @@
 	<rule ref="PEAR.NamingConventions.ValidVariableName"/>
 	
 	<rule ref="Generic.Classes.DuplicateClassName"/>
-	<rule ref="Generic.PHP.DisallowShortOpenTag"/>
+	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>
 	<rule ref="Generic.PHP.UpperCaseConstant"/>
 	<rule ref="Squiz.Classes.DuplicateProperty"/>
 	<rule ref="Brightzone.ControlStructures.FunctionCallArgumentSpacing"/>
