@@ -264,8 +264,8 @@ class Connection
 						'isolate'=>$inSession?$isolated:FALSE);
 		if($inSession===FALSE)
 		{
-			$meta = array_merge($meta,array('graphName'=>$this->graph,
-											'graphObjName'=>$this->graphObject?$this->graphObject:'g'));
+			$meta = array_merge($meta, array(	'graphName'=>$this->graph,
+												'graphObjName'=>$this->graphObject?$this->graphObject:'g'));
 		}
 		
 		$msg->buildScriptMessage(	($inSession?$this->sessionUuid:'00000000-0000-0000-0000-000000000000'),

@@ -95,22 +95,23 @@ class Messages
 		$message = array(
 				Helper::uuidToBin($sessionUuid),
 				Helper::uuidToBin($this->requestUuid),
-				array_merge(array('killSession'=>FALSE),$meta),//let caller overwrite (session close for instance)
+				array_merge(array('killSession'=>FALSE), $meta),//let caller overwrite (session close for instance)
 				$username,
-				$password		
+				$password
 		);
 		
 		//lets pack the message
 		$messageLength = $this->serializeMessage($message);
 		
 		//Now we need to build headers
-		$msg = pack('C*',$protocolVersion,
-						self::SERIALIZER_MSGPACK,
-						0, //reserved byte
-						0, //reserved byte
-						0, //reserved byte
-						0, //reserved byte
-						self::SESSION_REQUEST).Helper::convertIntTo32Bit($messageLength);
+		$msg = pack('C*',
+					$protocolVersion,
+					self::SERIALIZER_MSGPACK,
+					0, //reserved byte
+					0, //reserved byte
+					0, //reserved byte
+					0, //reserved byte
+					self::SESSION_REQUEST).Helper::convertIntTo32Bit($messageLength);
 		
 		//append message and return
 		$this->msgPack = $msg.$message;
@@ -149,13 +150,14 @@ class Messages
 		$messageLength = $this->serializeMessage($message);
 		
 		//Now we need to build headers
-		$msg = pack('C*',$protocolVersion,
-						self::SERIALIZER_MSGPACK,
-						0, //reserved byte
-						0, //reserved byte
-						0, //reserved byte
-						0, //reserved byte
-						self::SCRIPT_REQUEST).Helper::convertIntTo32Bit($messageLength);
+		$msg = pack('C*',
+					$protocolVersion,
+					self::SERIALIZER_MSGPACK,
+					0, //reserved byte
+					0, //reserved byte
+					0, //reserved byte
+					0, //reserved byte
+					self::SCRIPT_REQUEST).Helper::convertIntTo32Bit($messageLength);
 		
 		//append message and return
 		$this->msgPack = $msg.$message;
