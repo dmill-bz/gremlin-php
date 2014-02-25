@@ -83,8 +83,9 @@ class Exceptions
 			return new self($unpacked[4][2]['flag'],$err.' > '.$unpacked[4][3]);
 		}
 		else
+		{
 			return FALSE;
-		
+		}
 	}
 	
 }
