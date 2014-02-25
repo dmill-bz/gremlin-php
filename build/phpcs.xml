@@ -11,8 +11,8 @@
 	<rule ref="Generic.Formatting.DisallowMultipleStatements"/>
 	
 	<!-- Must use elseif instead of else if -->
-	<rule ref="Squiz.Classes.ClassDeclaration"/>
-	<rule ref="PEAR.ControlStructures.MultiLineCondition"/>
+	<rule ref="Brightzone.ControlStructures.ClassDeclaration"/>
+	
 	<rule ref="Squiz.Classes.ValidClassName"/>
 	<rule ref="PEAR.NamingConventions.ValidVariableName"/>
 	
@@ -20,7 +20,7 @@
 	<rule ref="Generic.PHP.DisallowShortOpenTag"/>
 	<rule ref="Generic.PHP.UpperCaseConstant"/>
 	<rule ref="Squiz.Classes.DuplicateProperty"/>
-	<rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
+	<rule ref="Brightzone.ControlStructures.FunctionCallArgumentSpacing"/>
 	<rule ref="Generic.Functions.OpeningFunctionBraceBsdAllman"/>
 	
 	<rule ref="Brightzone.ControlStructures.ControlSignature"/>
