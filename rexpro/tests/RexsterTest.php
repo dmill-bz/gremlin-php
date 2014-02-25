@@ -27,7 +27,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testCreateUuid()
 	{
-	    $uuid1 = Helper::createUuid();
+		$uuid1 = Helper::createUuid();
 		$this->assertTRUE(mb_strlen($uuid1, 'ISO-8859-1') == 36, 'The generated UUID is not the correct length ');
 		$this->assertTRUE(count(str_split($uuid1, 1)) == 36, 'The generated UUID is not the correct length');
 		

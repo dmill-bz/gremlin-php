@@ -1,5 +1,5 @@
 <?php
- 
+
 namespace rexpro;
 
 require_once 'Exceptions.php';
@@ -349,14 +349,14 @@ class Connection
 		}
 		$this->bindings[$bind]=$value;
 	}
-	 
+	
 	/**
 	 * Start a transaction
 	 * 
 	 * @return bool TRUE on success FALSE on failure
 	 */
-	 public function transactionStart()
-	 {
+	public function transactionStart()
+	{
 		if($this->_inTransaction)
 		{
 			$this->error = array(0,'already in transaction');
@@ -366,7 +366,7 @@ class Connection
 		}
 		$this->_inTransaction = TRUE;
 		return TRUE;
-	 }
+	}
 	
 	/**
 	 * End a transaction
@@ -375,8 +375,8 @@ class Connection
 	 * 
 	 * @return bool TRUE on success FALSE on failure.
 	 */
-	 public function transactionStop($success = TRUE)
-	 {
+	public function transactionStop($success = TRUE)
+	{
 		if(!$this->_inTransaction)
 		{
 			$this->error = array(0,'No ongoing transaction');
@@ -385,10 +385,10 @@ class Connection
 		//send message to stop transaction
 		$this->script='g.stopTransaction('.($success?'SUCCESS':'FAILURE').')';
 		$this->runScript();
-			
+		
 		$this->_inTransaction = FALSE;
 		return TRUE;
-	 }
+	}
 	
 	/**
 	 * Checks if the socket is currently open
