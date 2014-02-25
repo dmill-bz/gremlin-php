@@ -28,18 +28,18 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testCreateUuid()
 	{
 	    $uuid1 = Helper::createUuid();
-		$this->assertTrue(mb_strlen($uuid1, 'ISO-8859-1') == 36,'The generated UUID is not the correct length ');
-		$this->assertTrue(count(str_split($uuid1,1)) == 36,'The generated UUID is not the correct length');
+		$this->assertTRUE(mb_strlen($uuid1, 'ISO-8859-1') == 36,'The generated UUID is not the correct length ');
+		$this->assertTRUE(count(str_split($uuid1,1)) == 36,'The generated UUID is not the correct length');
 		
 		$uuid = Helper::uuidToBin($uuid1);
-		$this->assertTrue(mb_strlen($uuid, 'ISO-8859-1') == 16,'The conversion to bin of the UUID is not the correct length (16 bytes)');
-		$this->assertTrue(count(str_split($uuid,1)) == 16,'The conversion to bin of the UUID is not the correct length (16 bytes)');
+		$this->assertTRUE(mb_strlen($uuid, 'ISO-8859-1') == 16,'The conversion to bin of the UUID is not the correct length (16 bytes)');
+		$this->assertTRUE(count(str_split($uuid,1)) == 16,'The conversion to bin of the UUID is not the correct length (16 bytes)');
 		//test that the bin format is correct for rexPro
 		$this->assertEquals(bin2hex($uuid),str_replace('-','',trim($uuid1)),'The conversion to bin of the UUID is incorrect');
 		
 		$uuid = Helper::binToUuid($uuid);
-		$this->assertTrue(mb_strlen($uuid, 'ISO-8859-1') == 36,'The conversion of bin UUID to UUID is not the correct length');
-		$this->assertTrue(count(str_split($uuid,1)) == 36,'The conversion of bin UUID to UUID is not the correct length');
+		$this->assertTRUE(mb_strlen($uuid, 'ISO-8859-1') == 36,'The conversion of bin UUID to UUID is not the correct length');
+		$this->assertTRUE(count(str_split($uuid,1)) == 36,'The conversion of bin UUID to UUID is not the correct length');
 		$this->assertEquals($uuid,$uuid1,'UUID before and after convertion do not match');
 	}
 	
@@ -94,18 +94,18 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$db = new Connection;
 		$result = $db->open('localhost','tinkergraph','test','ghJK5-hG');
 		
-		$this->assertNotEquals($result,false,'Failed to connect with no params');
-		$this->assertTrue($db->response[2] == 2,'Result for session connection (without params) is not a session start response packet');//check it's a session start server packet
+		$this->assertNotEquals($result,FALSE,'Failed to connect with no params');
+		$this->assertTRUE($db->response[2] == 2,'Result for session connection (without params) is not a session start response packet');//check it's a session start server packet
 		
 		$db = new Connection;
 		$result = $db->open('localhost','tinkergraph','test','ghJK5-hG');
-		$this->assertNotEquals($result,false,'Failed to connect with "localhost"');
-		$this->assertTrue($db->response[2] == 2,'Result for session connection (with localhost) is not a session start response packet');//check it's a session start server packet
+		$this->assertNotEquals($result,FALSE,'Failed to connect with "localhost"');
+		$this->assertTRUE($db->response[2] == 2,'Result for session connection (with localhost) is not a session start response packet');//check it's a session start server packet
 		
 		$db = new Connection;
 		$result = $db->open('localhost','neo4jsample','test','ghJK5-hG');
-		$this->assertNotEquals($result,false,'Failed to connect with localhost and neo4jsample graph');
-		$this->assertTrue($db->response[2] == 2,'Result for session connection (with localhost and neo4jsample graph) is not a session start response packet');//check it's a session start server packet
+		$this->assertNotEquals($result,FALSE,'Failed to connect with localhost and neo4jsample graph');
+		$this->assertTRUE($db->response[2] == 2,'Result for session connection (with localhost and neo4jsample graph) is not a session start response packet');//check it's a session start server packet
 	}
 	
 	/**
@@ -118,37 +118,37 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$db = new Connection;
 		$db->timeout = 0.5;
 		$result = $db->open('unknownhost');
-		$this->assertEquals($result,false,'Connecting to an unknown host does not throw an error');
+		$this->assertEquals($result,FALSE,'Connecting to an unknown host does not throw an error');
 		
-		$this->assertNotEquals($db->error,null,'Error object was not properly populated for unknown host');
-		$this->assertTrue($db->error instanceof Exceptions,'Error object is not an Exceptions Object for unknown host');
-		$this->assertFalse(null === $db->error->code,'Error object does not contain an error code for unknown host');
-		$this->assertFalse(null === $db->error->description,'Error object does not contain an error description for unknown host');
+		$this->assertNotEquals($db->error,NULL,'Error object was not properly populated for unknown host');
+		$this->assertTRUE($db->error instanceof Exceptions,'Error object is not an Exceptions Object for unknown host');
+		$this->assertFALSE(NULL === $db->error->code,'Error object does not contain an error code for unknown host');
+		$this->assertFALSE(NULL === $db->error->description,'Error object does not contain an error description for unknown host');
 		
 		$db = new Connection;
 		$db->timeout = 0.5;
 		$result = $db->open('localhost:8787');
-		$this->assertEquals($result,false,'Connecting to the wrong port for localhost does not throw an error');
+		$this->assertEquals($result,FALSE,'Connecting to the wrong port for localhost does not throw an error');
 		
-		$this->assertTrue($db->error instanceof Exceptions,'Error object is not an Exceptions Object for unknown port');
-		$this->assertFalse(null === $db->error->code,'Error object does not contain an error code for unknown port');
-		$this->assertFalse(null === $db->error->description,'Error object does not contain an error description for unknown port');
+		$this->assertTRUE($db->error instanceof Exceptions,'Error object is not an Exceptions Object for unknown port');
+		$this->assertFALSE(NULL === $db->error->code,'Error object does not contain an error code for unknown port');
+		$this->assertFALSE(NULL === $db->error->description,'Error object does not contain an error description for unknown port');
 		
 		$db = new Connection;
 		$result = $db->open('localhost','doesnt exist','test','ghJK5-hG');
-		$this->assertEquals($result,false,'Loading a non-existing graph doesn\'t throw error');
+		$this->assertEquals($result,FALSE,'Loading a non-existing graph doesn\'t throw error');
 		
-		$this->assertTrue($db->error instanceof Exceptions,'Error object is not an Exceptions Object for unknown graph');
-		$this->assertFalse(null === $db->error->code,'Error object does not contain an error code for unknown graph');
-		$this->assertFalse(null === $db->error->description,'Error object does not contain an error description for unknown graph');
+		$this->assertTRUE($db->error instanceof Exceptions,'Error object is not an Exceptions Object for unknown graph');
+		$this->assertFALSE(NULL === $db->error->code,'Error object does not contain an error code for unknown graph');
+		$this->assertFALSE(NULL === $db->error->description,'Error object does not contain an error description for unknown graph');
 		
 		$db = new Connection;
 		$result = $db->open('localhost','doesnt exist','test','g-hG');
-		$this->assertEquals($result,false,'Loading a non-existing user doesn\'t throw error');
+		$this->assertEquals($result,FALSE,'Loading a non-existing user doesn\'t throw error');
 		
-		$this->assertTrue($db->error instanceof Exceptions,'Error object is not an Exceptions Object for unknown user');
-		$this->assertFalse(null === $db->error->code,'Error object does not contain an error code for unknown user');
-		$this->assertFalse(null === $db->error->description,'Error object does not contain an error description for unknown user');
+		$this->assertTRUE($db->error instanceof Exceptions,'Error object is not an Exceptions Object for unknown user');
+		$this->assertFALSE(NULL === $db->error->code,'Error object does not contain an error code for unknown user');
+		$this->assertFALSE(NULL === $db->error->description,'Error object does not contain an error description for unknown user');
 	}
 	
 	/**
@@ -165,9 +165,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		//check disconnection
 		$response = $db->close();
 		
-		$this->assertNotEquals($response,false,'Closing connection on empty param connect creates an Error');
-		$this->assertFalse($db->isConnected(),'Despite not throwing errors, Socket connection is not established');
-		$this->assertTrue($db->response[2] == 2,'Response packet for closing session is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
+		$this->assertNotEquals($response,FALSE,'Closing connection on empty param connect creates an Error');
+		$this->assertFALSE($db->isConnected(),'Despite not throwing errors, Socket connection is not established');
+		$this->assertTRUE($db->response[2] == 2,'Response packet for closing session is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
 	}	
 	
 	/**
@@ -183,20 +183,20 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$db->script = '5+5';
 		$result = $db->runScript();
 
-		$this->assertNotEquals($result,false,'Script request throws an error');
-		$this->assertTrue($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		$this->assertNotEquals($result,FALSE,'Script request throws an error');
+		$this->assertTRUE($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
 		$db->script = 'g.v(2)';
 		$result = $db->runScript();
 		
-		$this->assertNotEquals($result,false,'Script request throws an error');
-		$this->assertTrue($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		$this->assertNotEquals($result,FALSE,'Script request throws an error');
+		$this->assertTRUE($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
 		//check disconnection
 		$message = $db->close();
-		$this->assertNotEquals($message,false,'Closing connection on script creates an Error');
-		$this->assertFalse($db->isConnected(),'Despite not throwing errors, Socket connection is not established');
-		$this->assertTrue($db->response[2] == 2,'Response packet for closing session is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
+		$this->assertNotEquals($message,FALSE,'Closing connection on script creates an Error');
+		$this->assertFALSE($db->isConnected(),'Despite not throwing errors, Socket connection is not established');
+		$this->assertTRUE($db->response[2] == 2,'Response packet for closing session is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
 	}	
 	
 	/**
@@ -208,19 +208,19 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$message = $db->open('localhost:8184','tinkergraph','test','ghJK5-hG');
-		$this->assertNotEquals($message,false);
+		$this->assertNotEquals($message,FALSE);
 		
 		$db->script = 'g.v(CUSTO_BINDING)';
 		$db->bindValue('CUSTO_BINDING',2);
 		$result = $db->runScript();
 		//print_r($db->error);
-		$this->assertNotEquals($result,false,'Running a script with bindings produced an error');
-		$this->assertTrue($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		$this->assertNotEquals($result,FALSE,'Running a script with bindings produced an error');
+		$this->assertTRUE($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
 		//check disconnection
 		$message = $db->close();
-		$this->assertNotEquals($message,false,'Disconnecting from a session where bindings were used created an error');
-		$this->assertTrue($db->response[2] == 2,'Response packet for closing session with bindings is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
+		$this->assertNotEquals($message,FALSE,'Disconnecting from a session where bindings were used created an error');
+		$this->assertTRUE($db->response[2] == 2,'Response packet for closing session with bindings is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
 	}
 	
 	/**
@@ -232,31 +232,31 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$message = $db->open('localhost:8184','tinkergraph','test','ghJK5-hG');
-		$this->assertNotEquals($message,false);
+		$this->assertNotEquals($message,FALSE);
 		
 		$db->script = 'g.v(CUSTO_BINDING)';
 		$db->bindValue('CUSTO_BINDING',2);
-		$result = $db->runScript(true,false);
+		$result = $db->runScript(TRUE,FALSE);
 		
-		$this->assertNotEquals($result,false,'There was an error when running a script with bindings in non-isolated mode');
-		$this->assertTrue($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		$this->assertNotEquals($result,FALSE,'There was an error when running a script with bindings in non-isolated mode');
+		$this->assertTRUE($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 	
 		$db->script = 'g.v(CUSTO_BINDING)';
-		$result = $db->runScript(true,false); // would return an error if isolate was true
-		$this->assertNotEquals($result,false,'Script created an error when using bindings that were set in a previous script call in non-isolation mode' );
-		$this->assertTrue($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		$result = $db->runScript(TRUE,FALSE); // would return an error if isolate was TRUE
+		$this->assertNotEquals($result,FALSE,'Script created an error when using bindings that were set in a previous script call in non-isolation mode' );
+		$this->assertTRUE($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
 		/*$db->script = 'g.v(CUSTO_BINDING)';
-		$result = $db->runScript(); // would return an error if isolate was true
+		$result = $db->runScript(); // would return an error if isolate was TRUE
 		print_r($result);
-		$this->assertEquals($result,false,'No error occured when trying to use a binding from a previous message in isolated mode' );
-		$this->assertTrue($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		$this->assertEquals($result,FALSE,'No error occured when trying to use a binding from a previous message in isolated mode' );
+		$this->assertTRUE($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		*/
 		
 		//check disconnection
 		$message = $db->close();
-		$this->assertNotEquals($message,false,'Disconnecting from a session where bindings were used in consequent non-isolated scripts created an error');
-		$this->assertTrue($db->response[2] == 2,'Response packet for closing session with bindings used in consequent non-isolated scripts is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
+		$this->assertNotEquals($message,FALSE,'Disconnecting from a session where bindings were used in consequent non-isolated scripts created an error');
+		$this->assertTRUE($db->response[2] == 2,'Response packet for closing session with bindings used in consequent non-isolated scripts is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet
 	}	
 	
 	/**
@@ -271,14 +271,14 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		
 		$db->script = 'g.v(2).map()';
 		$db->graph = 'tinkergraph';
-		$result = $db->runScript(false); //need to provide graph
-		$this->assertNotEquals($result,false, 'Running a sessionless script returned an error');
-		$this->assertTrue($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		$result = $db->runScript(FALSE); //need to provide graph
+		$this->assertNotEquals($result,FALSE, 'Running a sessionless script returned an error');
+		$this->assertTRUE($db->response[2] == 5,'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
 		//check disconnection
 		$message = $db->close();
-		$this->assertNotEquals($message,false,'Disconnecting from a session after sessionless script created an error');
-		$this->assertTrue($db->response[2] == 2,'Response packet for closing session after sessionless script is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet		
+		$this->assertNotEquals($message,FALSE,'Disconnecting from a session after sessionless script created an error');
+		$this->assertTRUE($db->response[2] == 2,'Response packet for closing session after sessionless script is not the proper type. (Maybe it\'s an error)');//check it's a session stop server packet		
 	}
 	
 	/**
@@ -290,7 +290,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$message = $db->open('localhost:8184','neo4jsample','test','ghJK5-hG');
-		$this->assertNotEquals($message,false);
+		$this->assertNotEquals($message,FALSE);
 
 		$db->script = 'g.V';
 		$elementCount = count($db->runScript());
@@ -299,10 +299,10 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 
 		$db->script = 'g.addVertex([name:"michael"])';
 		$result = $db->runScript();
-		$this->assertNotEquals($result,false,'Script request throws an error in transaction mode');
-		$this->assertTrue($db->response[2] == 5,'Script response message in transaction mode is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		$this->assertNotEquals($result,FALSE,'Script request throws an error in transaction mode');
+		$this->assertTRUE($db->response[2] == 5,'Script response message in transaction mode is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
-		$db->transactionStop(false);
+		$db->transactionStop(FALSE);
 		
 		$db->script = 'g.V';
 		$elementCount2 = count($db->runScript());
@@ -312,10 +312,10 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 
 		$db->script = 'g.addVertex([name:"michael"])';
 		$result = $db->runScript();
-		$this->assertNotEquals($result,false,'Script request throws an error in transaction mode');
-		$this->assertTrue($db->response[2] == 5,'Script response message in transaction mode is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		$this->assertNotEquals($result,FALSE,'Script request throws an error in transaction mode');
+		$this->assertTRUE($db->response[2] == 5,'Script response message in transaction mode is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
-		$db->transactionStop(true);
+		$db->transactionStop(TRUE);
 		
 		$db->script = 'g.V';
 		$elementCount2 = count($db->runScript());

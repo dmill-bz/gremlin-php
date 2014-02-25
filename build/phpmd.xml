@@ -27,6 +27,8 @@
 	<!-- Import entire controversal rule set and exclude rules -->
 	<rule ref="rulesets/controversial.xml">
 		<exclude name="SuperGlobals" />
+		<exclude name="CamelCaseMethodName" />
+		<exclude name="CamelCasePropertyName" />
 	</rule>
     
   <!-- ... -->

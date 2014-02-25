@@ -95,7 +95,7 @@ class Messages
 		$message = array(
 				Helper::uuidToBin($sessionUuid),
 				Helper::uuidToBin($this->requestUuid),
-				array_merge(array('killSession'=>false),$meta),//let caller overwrite (session close for instance)
+				array_merge(array('killSession'=>FALSE),$meta),//let caller overwrite (session close for instance)
 				$username,
 				$password		
 		);
@@ -137,12 +137,12 @@ class Messages
 		$message = array(
 				Helper::uuidToBin($sessionUuid),
 				Helper::uuidToBin($this->requestUuid),
-				array_merge(array('inSession'=>true),
+				array_merge(array('inSession'=>TRUE),
 							$meta
 							),//overwrite user value
 				'groovy',
 				$script,
-				($bindings === null? new \stdClass : $bindings)		
+				($bindings === NULL? new \stdClass : $bindings)		
 		);
 		
 		//lets pack the message

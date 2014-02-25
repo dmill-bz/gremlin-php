@@ -54,7 +54,7 @@ class Exceptions
 	 * 
 	 * @param string $unpacked Parsed response message from server
 	 * 
-	 * @return mixed false if no error or an array with error message of type array(code,description);
+	 * @return mixed FALSE if no error or an array with error message of type array(code,description);
 	 */
 	public static function checkError($unpacked)
 	{
@@ -83,7 +83,7 @@ class Exceptions
 			return new self($unpacked[4][2]['flag'],$err.' > '.$unpacked[4][3]);
 		}
 		else
-			return false;
+			return FALSE;
 		
 	}
 	

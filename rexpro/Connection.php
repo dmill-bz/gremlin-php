@@ -12,11 +12,11 @@ require_once 'Messages.php';
  * Example of use:
  * 
  * $connection = new Connection;
- * $connection->open('localhost:8184','tinkergraph'); //can return false on error
+ * $connection->open('localhost:8184','tinkergraph'); //can return FALSE on error
  * $connection->script = 'g.V';
- * $resultSet = $connection->runScript(); //returns array with results or false on error
+ * $resultSet = $connection->runScript(); //returns array with results or FALSE on error
  * //error handling: (It is worth noting that open() can also return errors in this way)
- * if($resultSet === false)
+ * if($resultSet === FALSE)
  * {
  * 		$errorCode = $connection->error->code;
  * 		$errorDescription = $connection->error->description;
@@ -41,12 +41,12 @@ class Connection
 	public $host;
 	
 	/**
-	 * @var string the username for establishing DB connection. Defaults to null.
+	 * @var string the username for establishing DB connection. Defaults to NULL.
 	 */
 	public $username;
 	
 	/**
-	 * @var string the password for establishing DB connection. Defaults to null.
+	 * @var string the password for establishing DB connection. Defaults to NULL.
 	 */
 	public $password;
 	
@@ -86,7 +86,7 @@ class Connection
 	/**
 	 * @var bool tells us if we're inside a transaction
 	 */
-	private $_inTransaction = false;
+	private $_inTransaction = FALSE;
 	
 	/**
 	 * @var array -Complete- parsed response message from the server. Also contains headers and additional data
@@ -118,13 +118,13 @@ class Connection
 	 * @param string $password    password to use for authentification
 	 * @param string $graphObject Graph object name. defaults to 'g'
 	 * 
-	 * @return bool true on success false on error
+	 * @return bool TRUE on success FALSE on error
 	 */
-	public function open($host='localhost:8184',$graph='tinkergraph',$username=null,$password=null,$graphObject='g')
+	public function open($host='localhost:8184',$graph='tinkergraph',$username=NULL,$password=NULL,$graphObject='g')
 	{
-		if($this->_socket === null)
+		if($this->_socket === NULL)
 		{
-			$this->error = null;
+			$this->error = NULL;
 			$this->host = $host;
 			$this->graph = $graph;
 			$this->graphObject = $graphObject;
@@ -132,7 +132,7 @@ class Connection
 			$this->password = $password;
 
 			if(!$this->connectSocket())
-				return false;
+				return FALSE;
 				
 			//lets make opening session message:
 			$msg = new Messages;
@@ -143,17 +143,17 @@ class Connection
 										$this->protocolVersion);
 			
 			if(!$this->send($msg))
-				return false;
+				return FALSE;
 			
 			//lets get the response
 			$response = $this->getResponse();
-			if($response === false)
-				return false;
+			if($response === FALSE)
+				return FALSE;
 				
 			$this->response = $response;
 			$this->sessionUuid = $this->response[4][0];
 			
-			return true;
+			return TRUE;
 		}
 	}
 	
@@ -162,23 +162,23 @@ class Connection
 	 * 
 	 * @param Messages $msg Object containing the message to send
 	 * 
-	 * @return bool true if success false on error
+	 * @return bool TRUE if success FALSE on error
 	 */
 	public function send($msg)
 	{	
 		$write = @fwrite($this->_socket,$msg->msgPack);
-		if($write === false)
+		if($write === FALSE)
 		{
 			$this->error = new Exceptions(0,'Could not write to socket');
-			return false;
+			return FALSE;
 		}
-		return true;
+		return TRUE;
 	}
 
 	/**
 	 * Recieves binary data over socket and parses it
 	 * 
-	 * @return mixed unpacked message if true, false on error
+	 * @return mixed unpacked message if TRUE, FALSE on error
 	 */
 	public function getResponse()
 	{	
@@ -186,15 +186,15 @@ class Connection
 		$messageLength = @stream_get_contents($this->_socket,4);
 		$body = @stream_get_contents($this->_socket,(int)hexdec(bin2hex($messageLength)));
 	
-		if($header === false || $messageLength === false || $body === false )
+		if($header === FALSE || $messageLength === FALSE || $body === FALSE )
 		{
 			$this->error = new Exceptions(0,'Could not stream contents');
-			return false;
+			return FALSE;
 		} 
 		if(empty($header) || empty($messageLength) || empty($body) )
 		{
 			$this->error = new Exceptions(0,'Empty reply. Most likely the result of an irregular request. (Check custom Meta, or lack of in the case of a non-isolated query)');
-			return false;
+			return FALSE;
 		} 
 		
 		$msgPack = $header.$messageLength.$body;
@@ -204,21 +204,21 @@ class Connection
 		$unpacked = $message->parse($msgPack);
 		//lets check if this is an error message from the server
 		$error = Exceptions::checkError($unpacked);
-		if( $error === false)
+		if( $error === FALSE)
 			return $unpacked;
 		$this->error = $error;
-		return false;
+		return FALSE;
 
 	}
 	
 	/**
 	 * Opens socket
 	 * 
-	 * @return bool true on success false on error
+	 * @return bool TRUE on success FALSE on error
 	 */
 	protected function connectSocket()
 	{
-		if (strpos($this->host, ':')===false) {
+		if (strpos($this->host, ':')===FALSE) {
 				$this->host .= ':8184';
 		}
 		
@@ -231,10 +231,10 @@ class Connection
 		if(!$this->_socket)
 		{
 			$this->error = new Exceptions($errno,$errorMessage);
-			return false;
+			return FALSE;
 		}	
 			
-		return true;
+		return TRUE;
 	}
 	
 	/**
@@ -243,17 +243,17 @@ class Connection
 	 * @param bool $inSession whether or not to run this script without session. 
 	 * @param bool $isolated  whether or not to run this script without acces to variable binds made previously. 
 	 * 
-	 * @return mixed message on success false on error.
+	 * @return mixed message on success FALSE on error.
 	 */
-	public function runScript($inSession=true,$isolated=true)
+	public function runScript($inSession=TRUE,$isolated=TRUE)
 	{	
 		//lets make a script message:
 		$msg = new Messages;
 		
 		$meta = array(	'inSession'=>$inSession,
-						'transaction'=>$this->_inTransaction?false:true,
-						'isolate'=>$inSession?$isolated:false);
-		if($inSession===false)
+						'transaction'=>$this->_inTransaction?FALSE:TRUE,
+						'isolate'=>$inSession?$isolated:FALSE);
+		if($inSession===FALSE)
 			$meta = array_merge($meta,array('graphName'=>$this->graph,
 											'graphObjName'=>$this->graphObject?$this->graphObject:'g'));
 		
@@ -264,17 +264,17 @@ class Connection
 									$this->protocolVersion);
 		
 		//reset script information after building
-		$this->bindings = null;
-		$this->script = null;
+		$this->bindings = NULL;
+		$this->script = NULL;
 		
 		if(!$this->send($msg))
-			return false;
+			return FALSE;
 
 		//lets get the response
 		$response = $this->getResponse();
 		
-		if($response === false)
-			return false;
+		if($response === FALSE)
+			return FALSE;
 		$this->response = $response;
 		return $this->response[4][3];
 	}
@@ -283,34 +283,34 @@ class Connection
 	 * Close connection to server
 	 * This closes the current session on the server then closes the socket
 	 * 
-	 * @return bool true on success false on error
+	 * @return bool TRUE on success FALSE on error
 	 */
 	public function close()
 	{
-		if($this->_socket !== null)
+		if($this->_socket !== NULL)
 		{
-			$this->error = null;
+			$this->error = NULL;
 			//lets make opening session message:
 			$msg = new Messages;
 			$msg->buildSessionMessage(	$this->sessionUuid,
 										$this->username,
 										$this->password,
-										array('killSession'=>true),
+										array('killSession'=>TRUE),
 										$this->protocolVersion);
 			
 			if(!$this->send($msg))
-				return false;
+				return FALSE;
 			
 			//lets get the response
 			$response = $this->getResponse();
-			if($response === false)
-				return false;
+			if($response === FALSE)
+				return FALSE;
 			$this->response = $response;
 			@stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR); //ignore error
-			$this->_socket = null;
-			$this->sessionUuid = null;
+			$this->_socket = NULL;
+			$this->sessionUuid = NULL;
 			
-			return true;
+			return TRUE;
 		}
 	}
 	
@@ -324,7 +324,7 @@ class Connection
 	 */
 	public function bindValue($bind,$value)
 	{
-		if($this->bindings === null)
+		if($this->bindings === NULL)
 			$this->bindings = array();
 		$this->bindings[$bind]=$value;
 	}
@@ -332,7 +332,7 @@ class Connection
 	/**
 	 * Start a transaction
 	 * 
-	 * @return bool true on success false on failure
+	 * @return bool TRUE on success FALSE on failure
 	 */
 	 public function transactionStart()
 	 {
@@ -341,10 +341,10 @@ class Connection
 			$this->error = array(0,'already in transaction');
 			$this->script='g.stopTransaction(FAILURE)';
 			$this->runScript();
-			return false;
+			return FALSE;
 		}
-		$this->_inTransaction = true;
-		return true;
+		$this->_inTransaction = TRUE;
+		return TRUE;
 	 }
 	
 	/**
@@ -352,31 +352,31 @@ class Connection
 	 * 
 	 * @param bool $success should the transaction commit or revert changes
 	 * 
-	 * @return bool true on success false on failure.
+	 * @return bool TRUE on success FALSE on failure.
 	 */
-	 public function transactionStop($success = true)
+	 public function transactionStop($success = TRUE)
 	 {
 		if(!$this->_inTransaction)
 		{
 			$this->error = array(0,'No ongoing transaction');
-			return false;
+			return FALSE;
 		}
 		//send message to stop transaction
 		$this->script='g.stopTransaction('.($success?'SUCCESS':'FAILURE').')';
 		$this->runScript();
 			
-		$this->_inTransaction = false;
-		return true;
+		$this->_inTransaction = FALSE;
+		return TRUE;
 	 }
 	
 	/**
 	 * Checks if the socket is currently open
 	 * 
-	 * @return bool true if it is open false if not
+	 * @return bool TRUE if it is open FALSE if not
 	 */
 	public function isConnected()
 	{
-		return $this->_socket !== null;
+		return $this->_socket !== NULL;
 	}
 	
 	/**
