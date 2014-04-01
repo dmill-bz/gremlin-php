@@ -62,6 +62,7 @@
    <arg value="--jdepend-xml=${basedir}/build/logs/jdepend.xml" />
    <arg value="--jdepend-chart=${basedir}/build/pdepend/dependencies.svg" />
    <arg value="--overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg" />
+   <arg value="--ignore=${basedir}/vendor"/>
    <arg path="${basedir}" />
   </exec>
  </target>
@@ -72,6 +73,8 @@
    <arg path="${basedir}" />
    <arg value="text" />
    <arg value="${basedir}/build/phpmd.xml" />
+   <arg value="--ignore" />
+   <arg value="${basedir}/vendor" />
   </exec>
  </target>
 
@@ -80,6 +83,8 @@
    <arg path="${basedir}" />
    <arg value="xml" />
    <arg value="${basedir}/build/phpmd.xml" />
+   <arg value="--ignore" />
+   <arg value="${basedir}/vendor" />
    <arg value="--reportfile" />
    <arg value="${basedir}/build/logs/pmd.xml" />
   </exec>
@@ -89,6 +94,7 @@
          description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
   <exec executable="phpcs">
    <arg value="--standard=${basedir}/build/phpcs.xml" />
+   <arg value="--ignore=${basedir}/vendor" />
    <arg path="${basedir}/rexpro" />
   </exec>
  </target>
@@ -98,6 +104,7 @@
    <arg value="--report=checkstyle" />
    <arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
    <arg value="--standard=${basedir}/build/phpcs.xml" />
+   <arg value="--ignore=${basedir}/vendor" />
    <arg path="${basedir}/rexpro" />
   </exec>
  </target>
@@ -106,6 +113,8 @@
   <exec executable="phpcpd">
    <arg value="--log-pmd" />
    <arg value="${basedir}/build/logs/pmd-cpd.xml" />
+   <arg value="--exclude"/>
+   <arg value="${basedir}/vendor"/>
    <arg path="${basedir}" />
   </exec>
  </target>
