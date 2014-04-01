@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e39b343a501aee07ebb081181bbdb321",
+    "hash": "7cd25a7fab4a3ddc66d0b55a57f766ad",
     "packages": [
         {
             "name": "epokmedia/msgpackrpc",
