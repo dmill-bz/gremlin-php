@@ -10,6 +10,6 @@
     ],
     "keywords": ["rexpro-php", "rexpro"],
     "require": {
-        "epokmedia/msgpackrpc": "dev-master"
+        "ext-msgpack": "*"
     }
 }
