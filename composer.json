@@ -1,0 +1,15 @@
+{
+    "name": "brightzone/rexpro-php",
+    "description": "rexpro client for php",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Brightzone",
+            "email": "dylan.millikin@brightzone.fr"
+        }
+    ],
+    "keywords": ["rexpro-php", "rexpro"],
+    "require": {
+        "epokmedia/msgpackrpc": "dev-master"
+    }
+}

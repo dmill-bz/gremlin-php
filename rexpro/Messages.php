@@ -2,6 +2,8 @@
 
 namespace rexpro;
 
+use Zend\Serializer\Adapter\MsgPack;
+
 /**
  * RexPro PHP client Messages class
  * Builds and parses binary messages for communication with RexPro
@@ -50,6 +52,12 @@ class Messages
 	 */
 	public $msgPack;
 
+	
+	/**
+	 * @var MsgPack Seriallizer to use 
+	 */
+	public $serializer;
+
 	/**
 	 * Create and set request UUID
 	 * 
@@ -72,7 +80,8 @@ class Messages
 	 */
 	protected function serializeMessage(&$message)
 	{
-		$message = msgpack_pack($message);
+		$this->serializer = new MsgPack();
+		$message = $this->serializer->serialize($message);
 		return mb_strlen($message, 'ISO-8859-1');
 	}
 	
@@ -181,8 +190,9 @@ class Messages
 		
 		$mssgLength = implode('', array_slice($resp, 7, 4));
 		$mssgLength = Helper::convertIntFrom32Bit($mssgLength);
-		
-		$mssg = msgpack_unpack(implode('', array_slice($resp, 11, count($resp))));
+
+		$this->serializer = new MsgPack();
+		$mssg = $this->serializer->unserialize(implode('', array_slice($resp, 11, count($resp))));
 
 		//lets just make UUIDs readable incase we need to debug 
 		$mssg[0] = Helper::binToUuid($mssg[0]);
