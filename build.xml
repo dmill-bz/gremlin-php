@@ -37,11 +37,11 @@
   <apply executable="php" failonerror="true">
    <arg value="-l" />
 
-   <fileset dir="${basedir}/rexpro">
+   <fileset dir="${basedir}/src">
     <include name="**/*.php" />
     <modified />
    </fileset>
-   <fileset dir="${basedir}/rexpro/tests">
+   <fileset dir="${basedir}/src/tests">
     <include name="**/*.php" />
     <modified />
    </fileset>
@@ -93,9 +93,9 @@
  <target name="phpcs"
          description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
   <exec executable="phpcs">
-   <arg value="--standard=${basedir}/build/phpcs.xml" />
+   <arg value="--standard=${basedir}/build/logs/phpcs.xml" />
    <arg value="--ignore=${basedir}/vendor" />
-   <arg path="${basedir}/rexpro" />
+   <arg path="${basedir}/src" />
   </exec>
  </target>
 
@@ -105,7 +105,7 @@
    <arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
    <arg value="--standard=${basedir}/build/phpcs.xml" />
    <arg value="--ignore=${basedir}/vendor" />
-   <arg path="${basedir}/rexpro" />
+   <arg path="${basedir}/src" />
   </exec>
  </target>
 

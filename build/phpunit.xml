@@ -7,7 +7,7 @@
        
   <testsuites>
     <testsuite name="rexpro-php">
-      <directory suffix="Test.php">../rexpro/tests/</directory>
+      <directory suffix="Test.php">../src/tests/</directory>
     </testsuite>
   </testsuites>
 
