@@ -1,12 +1,12 @@
 <?php
-namespace rexpro\tests;
+namespace brightzone\rexpro\tests;
 
 require_once __DIR__.'/../Connection.php';
 
-use \rexpro\Connection;
-use \rexpro\Messages;
-use \rexpro\Exceptions;
-use \rexpro\Helper;
+use \brightzone\rexpro\Connection;
+use \brightzone\rexpro\Messages;
+use \brightzone\rexpro\Exceptions;
+use \brightzone\rexpro\Helper;
 
 
 /**

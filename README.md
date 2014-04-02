@@ -31,12 +31,6 @@ pecl install msgpack/msgpack-beta
 git clone https://github.com/PommeVerte/rexpro-php.git
 ```
 
-##### For Rexster 2.3
-
-```bash
-git clone https://github.com/PommeVerte/rexpro-php.git -b 2.3
-```
-
 
 Error Handling
 ==============
@@ -62,7 +56,7 @@ The Connection class exists within the `rexpro` namespace. This means that you h
 
 ```php
 require_once 'rexpro-php/rexpro/Connection.php';
-use \rexpro\Connection;
+use \brightzone\rexpro\Connection;
  
 $db = new Connection;
 ```
@@ -72,7 +66,7 @@ Or
 ```php
 require_once 'rexpro-php/rexpro/Connection.php';
 
-$db = new \rexpro\Connection;
+$db = new \brightzone\rexpro\Connection;
 ```
 Examples
 ========
@@ -97,7 +91,7 @@ Example 2 (with bindings):
 
 ```php
 $db = new Connection;
-$db->open('localhost:8184','tinkergraph',null,null);
+$db->open('localhost:8184','tinkergraph','username','password');
 
 $db->script = 'g.v(CUSTO_BINDING)';
 $db->bindValue('CUSTO_BINDING',2);

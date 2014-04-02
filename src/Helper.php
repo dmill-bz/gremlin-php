@@ -1,6 +1,6 @@
 <?php
 
-namespace rexpro;
+namespace brightzone\rexpro;
 
 /**
  * RexPro PHP client Helper class
