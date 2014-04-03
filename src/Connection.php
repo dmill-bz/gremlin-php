@@ -10,7 +10,8 @@ require_once 'Messages.php';
  * RexPro PHP client Connection class
  * 
  * Example of use:
- * 
+ *
+ * <code>
  * $connection = new Connection;
  * $connection->open('localhost:8184','tinkergraph'); //can return FALSE on error
  * $connection->script = 'g.V';
@@ -22,6 +23,7 @@ require_once 'Messages.php';
  * 		$errorDescription = $connection->error->description;
  * 		//etc..
  * }
+ * </code>
  * 
  * @category DB
  * @package  Rexpro
