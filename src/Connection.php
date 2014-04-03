@@ -21,7 +21,7 @@ require_once 'Messages.php';
  * {
  * 		$errorCode = $connection->error->code;
  * 		$errorDescription = $connection->error->description;
- * 		//etc..
+ * 		//etc.
  * }
  * </code>
  * 
