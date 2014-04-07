@@ -72,7 +72,7 @@
    <arg path="${basedir}" />
    <arg value="text" />
    <arg value="${basedir}/build/phpmd.xml" />
-   <arg value="--ignore" />
+   <arg value="--exclude" />
    <arg value="${basedir}/vendor" />
   </exec>
  </target>
@@ -113,7 +113,7 @@
    <arg value="--log-pmd" />
    <arg value="${basedir}/build/logs/pmd-cpd.xml" />
    <arg value="--exclude"/>
-   <arg value="${basedir}/vendor"/>
+   <arg value="vendor"/>
    <arg path="${basedir}" />
   </exec>
  </target>
