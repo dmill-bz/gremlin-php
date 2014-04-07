@@ -12,5 +12,8 @@
     "require": {
         "ext-msgpack": "*",
         "yiisoft/yii2-apidoc": "*"
+    },
+    "autoload": {
+        "classmap": ["src/"]
     }
 }
