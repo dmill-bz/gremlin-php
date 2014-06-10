@@ -103,9 +103,9 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertTRUE($db->response[2] == 2, 'Result for session connection (with localhost) is not a session start response packet');//check it's a session start server packet
 		
 		$db = new Connection;
-		$result = $db->open('localhost', 'neo4jsample', 'test', 'ghJK5-hG');
-		$this->assertNotEquals($result, FALSE, 'Failed to connect with localhost and neo4jsample graph');
-		$this->assertTRUE($db->response[2] == 2, 'Result for session connection (with localhost and neo4jsample graph) is not a session start response packet');//check it's a session start server packet
+		$result = $db->open('localhost', 'graph', 'test', 'ghJK5-hG');
+		$this->assertNotEquals($result, FALSE, 'Failed to connect with localhost and titan graph');
+		$this->assertTRUE($db->response[2] == 2, 'Result for session connection (with localhost and titan graph) is not a session start response packet');//check it's a session start server packet
 	}
 	
 	/**
@@ -188,7 +188,6 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		
 		$db->script = 'g.v(2)';
 		$result = $db->runScript();
-		
 		$this->assertNotEquals($result, FALSE, 'Script request throws an error');
 		$this->assertTRUE($db->response[2] == 5, 'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
@@ -289,7 +288,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testTransactions()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8184', 'neo4jsample', 'test', 'ghJK5-hG');
+		$message = $db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
 		$this->assertNotEquals($message, FALSE);
 
 		$db->script = 'g.V';
