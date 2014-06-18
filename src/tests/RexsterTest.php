@@ -319,6 +319,125 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$db->script = 'g.V';
 		$elementCount2 = count($db->runScript());
 		$this->AssertEquals($elementCount + 1, $elementCount2, 'Transaction submition didn\'t work');
-		
+	}
+
+	/**
+	 * Testing Unknown error type
+	 * 
+	 * @return void
+	 */
+	public function testUnknownErrorType()
+	{
+		$unpacked = Array
+		(
+			1,
+			0,
+			0,
+			44,
+			Array
+				(
+					'721afec3-c9c9-407f-8beb-7cfee17dde7d',
+					'91bfab5-8069-4a83-a52e-55fae4dc4f72',
+					array('flag'=>10),
+					"Custom error message",
+				),
+		);
+		$error = Exceptions::checkError($unpacked);
+		$this->AssertTrue($error instanceof Exceptions, 'testUnknownErrorType doesn\'t return Exceptions object');
+		$this->AssertTrue($error->code == 10, 'testUnknownErrorType doesn\'t return the correct error code');
+		$this->AssertTrue($error->description == 'Unknown error type. > Custom error message', 'testUnknownErrorType doesn\'t return the correct error description');
+	}
+
+	/**
+	 * Testing getResponse() without making a previous 
+	 * socket connection with open()
+	 * 
+	 * @return void
+	 */
+	public function testGetResponseWithoutConnection()
+	{
+		$db = new Connection;
+		$result = $db->getResponse();
+		$this->assertFalse($result, 'Failed to return false with no established connection');
+	}
+
+	/**
+	 * Testing sendMessage without previous connection
+	 * 
+	 * @return void
+	 */
+	public function testSendMessageWithoutConnection()
+	{
+		$db = new Connection;
+		$msg = new Messages;
+		$result = $db->send($msg);
+		$this->assertFalse($result, 'Failed to return false with no established connection');
+	}
+
+	/**
+	 * Testing runScript() without making a previous 
+	 * socket connection with open()
+	 * 
+	 * @return void
+	 */
+	public function testRunScriptWithoutConnection()
+	{
+		$db = new Connection;
+		$result = $db->runScript();
+		$this->assertFalse($result, 'Failed to return false with no established connection');
+	}
+
+	/**
+	 * Testing runScript() with wrong message parameters sent
+	 * 
+	 * @return void
+	 */
+	public function testRunScriptWithWrongParameters()
+	{
+		$db = new Connection;
+		$db->open('localhost:8184', '', '', '','');
+		$result = $db->runScript();
+		$this->assertFalse($result, 'Failed to return false with a connection failed');
+	}
+
+	/**
+	 * Testing transactionStart() with an other running transaction
+	 * 
+	 * @return void
+	 */
+	public function testSeveralRunningTransactionStart()
+	{
+		$db = new Connection;
+		$message = $db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
+		$db->transactionStart();
+		$result = $db->transactionStart();
+		$this->assertFalse($result, 'Failed to return false with an other started transaction');
+	}
+
+	/**
+	 * Testing transactionStop() with no running transaction
+	 * 
+	 * @return void
+	 */
+	public function testTransactionStopWithNoTransaction()
+	{
+		$db = new Connection;
+		$message = $db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
+		$result = $db->transactionStop();
+		$this->assertFalse($result, 'Failed to return false with no transaction started');
+	}
+
+	/**
+	 * Testing failing message connection close()
+	 * 
+	 * @return void
+	 */
+	public function testConnectCloseFailingMessage()
+	{
+		$db = new Connection;
+		$db->open('localhost', 'tinkergraph', 'test', 'ghJK5-hG');
+		$db->sessionUuid = '';
+		$result = $db->close();
+		$this->assertFalse($result, 'Failed to return false with no transaction started');
 	}
 }
