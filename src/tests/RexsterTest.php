@@ -395,7 +395,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunScriptWithWrongParameters()
 	{
 		$db = new Connection;
-		$db->open('localhost:8184', '', '', '','');
+		$db->open('localhost:8184', '', '', '', '');
 		$result = $db->runScript();
 		$this->assertFalse($result, 'Failed to return false with a connection failed');
 	}
