@@ -10,6 +10,7 @@ Installation
 First you'll need to install the required dependencies. Which is to say : [MsgPack](http://msgpack.org/) .
 
 Install MsgPack from git:
+
 ```bash
 git clone https://github.com/msgpack/msgpack-php.git
 cd msgpack-php
@@ -18,6 +19,7 @@ phpize
 ```
 
 Install MsgPack from PEAR:
+
 ```bash
 pecl channel-discover php-msgpack.googlecode.com/svn/pecl
 pecl install msgpack/msgpack-beta
@@ -27,14 +29,18 @@ pecl install msgpack/msgpack-beta
 
 ##### For Rexster 2.4
 
-```bash
-git clone https://github.com/PommeVerte/rexpro-php.git
-```
+Prefered method is composer:
 
-##### For Rexster 2.3
-
-```bash
-git clone https://github.com/PommeVerte/rexpro-php.git -b 2.3
+```json
+"require": {
+		"brightzone/rexpro-php": "dev-master"
+	},
+"repositories": [
+        {
+            "type": "vcs",
+            "url":  "ssh://git@adm.brightzone.fr:7999/rex/rexpro-php.git"
+        }
+    ]
 ```
 
 
@@ -61,8 +67,8 @@ Namespace
 The Connection class exists within the `rexpro` namespace. This means that you have to do either of the two following:
 
 ```php
-require_once 'rexpro-php/rexpro/Connection.php';
-use \rexpro\Connection;
+require_once 'rexpro-php/src/Connection.php';
+use \brightzone\rexpro\Connection;
  
 $db = new Connection;
 ```
@@ -70,10 +76,11 @@ $db = new Connection;
 Or
 
 ```php
-require_once 'rexpro-php/rexpro/Connection.php';
+require_once 'rexpro-php/src/Connection.php';
 
-$db = new \rexpro\Connection;
+$db = new \brightzone\rexpro\Connection;
 ```
+
 Examples
 ========
 
@@ -97,7 +104,7 @@ Example 2 (with bindings):
 
 ```php
 $db = new Connection;
-$db->open('localhost:8184','tinkergraph',null,null);
+$db->open('localhost:8184','tinkergraph','username','password');
 
 $db->script = 'g.v(CUSTO_BINDING)';
 $db->bindValue('CUSTO_BINDING',2);

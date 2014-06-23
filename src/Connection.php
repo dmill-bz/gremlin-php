@@ -1,6 +1,6 @@
 <?php
 
-namespace rexpro;
+namespace brightzone\rexpro;
 
 require_once 'Exceptions.php';
 require_once 'Helper.php';
@@ -10,7 +10,8 @@ require_once 'Messages.php';
  * RexPro PHP client Connection class
  * 
  * Example of use:
- * 
+ *
+ * ~~~
  * $connection = new Connection;
  * $connection->open('localhost:8184','tinkergraph'); //can return FALSE on error
  * $connection->script = 'g.V';
@@ -20,8 +21,9 @@ require_once 'Messages.php';
  * {
  * 		$errorCode = $connection->error->code;
  * 		$errorDescription = $connection->error->description;
- * 		//etc..
+ * 		//etc.
  * }
+ * ~~~
  * 
  * @category DB
  * @package  Rexpro

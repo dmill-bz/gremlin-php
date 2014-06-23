@@ -1,7 +1,7 @@
 {
     "name": "brightzone/rexpro-php",
     "description": "rexpro client for php",
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Brightzone",
@@ -10,6 +10,10 @@
     ],
     "keywords": ["rexpro-php", "rexpro"],
     "require": {
-        "ext-msgpack": "*"
+        "ext-msgpack": "*",
+        "yiisoft/yii2-apidoc": "*"
+    },
+    "autoload": {
+        "classmap": ["src/"]
     }
 }
