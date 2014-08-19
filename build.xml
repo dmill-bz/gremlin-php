@@ -82,7 +82,7 @@
    <arg path="${basedir}" />
    <arg value="xml" />
    <arg value="${basedir}/build/phpmd.xml" />
-   <arg value="--ignore" />
+   <arg value="--exclude" />
    <arg value="${basedir}/vendor" />
    <arg value="--reportfile" />
    <arg value="${basedir}/build/logs/pmd.xml" />
