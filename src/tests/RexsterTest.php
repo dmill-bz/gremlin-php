@@ -408,7 +408,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testSeveralRunningTransactionStart()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
+		$db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
 		$db->transactionStart();
 		$result = $db->transactionStart();
 		$this->assertFalse($result, 'Failed to return false with an other started transaction');
@@ -422,7 +422,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testTransactionStopWithNoTransaction()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
+		$db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
 		$result = $db->transactionStop();
 		$this->assertFalse($result, 'Failed to return false with no transaction started');
 	}
