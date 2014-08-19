@@ -17,6 +17,7 @@ cd msgpack-php
 phpize
 ./configure && make && make install
 ```
+Warning this is not latest version anymore and will be broken
 
 Install MsgPack from PEAR:
 
