@@ -21,8 +21,9 @@ phpize
 Install MsgPack from PEAR:
 
 ```bash
-pecl channel-discover php-msgpack.googlecode.com/svn/pecl
-pecl install msgpack/msgpack-beta
+sudo pecl install msgpack-beta
+sudo sh -c 'echo "extension=msgpack.so" > /etc/php5/mods-available/msgpack.ini'
+sudo php5enmod msgpack
 ```
 
 ### PHP Rexster Client
