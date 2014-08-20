@@ -11,7 +11,7 @@
     "keywords": ["rexpro-php", "rexpro"],
     "require": {
         "ext-msgpack": "*",
-        "yiisoft/yii2-apidoc": "*"
+        "yiisoft/yii2-apidoc": "2.0.0-beta"
     },
     "autoload": {
         "classmap": ["src/"]

@@ -4,61 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d6c225172d2871079d0ccd63ab784cdf",
+    "hash": "cbb9f691fad8c4b0f7055ffe66abe9f5",
     "packages": [
         {
-            "name": "cebe/js-search",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/cebe/js-search.git",
-                "reference": "c85c42dcc951637728aa30c3cb823088d10a3fd2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/cebe/js-search/zipball/c85c42dcc951637728aa30c3cb823088d10a3fd2",
-                "reference": "c85c42dcc951637728aa30c3cb823088d10a3fd2",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "bin": [
-                "bin/jsindex"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "cebe\\jssearch\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Carsten Brandt",
-                    "email": "mail@cebe.cc",
-                    "homepage": "http://cebe.cc/",
-                    "role": "Core framework development"
-                }
-            ],
-            "description": "A client side search engine for use on static pages.",
-            "time": "2014-04-26 12:41:54"
-        },
-        {
             "name": "cebe/markdown",
-            "version": "dev-master",
+            "version": "0.9.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cebe/markdown.git",
-                "reference": "c43bb28428c7160504ea7d6cc586418a5351c9fd"
+                "reference": "6a3c3737e9c1f4670f39a771f77b536126788ad2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cebe/markdown/zipball/c43bb28428c7160504ea7d6cc586418a5351c9fd",
-                "reference": "c43bb28428c7160504ea7d6cc586418a5351c9fd",
+                "url": "https://api.github.com/repos/cebe/markdown/zipball/6a3c3737e9c1f4670f39a771f77b536126788ad2",
+                "reference": "6a3c3737e9c1f4670f39a771f77b536126788ad2",
                 "shasum": ""
             },
             "require": {
@@ -66,8 +25,6 @@
                 "php": ">=5.4.0"
             },
             "require-dev": {
-                "cebe/indent": "*",
-                "facebook/xhprof": "*@dev",
                 "phpunit/phpunit": "3.7.*"
             },
             "bin": [
@@ -76,7 +33,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.0.x-dev",
+                    "dev-0.9.x-dev": "0.9.x-dev"
                 }
             },
             "autoload": {
@@ -105,80 +63,20 @@
                 "markdown",
                 "markdown-extra"
             ],
-            "time": "2014-07-19 11:19:09"
-        },
-        {
-            "name": "cebe/markdown-latex",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/cebe/markdown-latex.git",
-                "reference": "a757a35402738c9edb8fa131c33fb94459ffe074"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/cebe/markdown-latex/zipball/a757a35402738c9edb8fa131c33fb94459ffe074",
-                "reference": "a757a35402738c9edb8fa131c33fb94459ffe074",
-                "shasum": ""
-            },
-            "require": {
-                "cebe/markdown": "~1.0.0",
-                "mikevanriel/text-to-latex": "~1.0.0",
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
-            "bin": [
-                "bin/markdown-latex"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "cebe\\markdown\\latex\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Carsten Brandt",
-                    "email": "mail@cebe.cc",
-                    "homepage": "http://cebe.cc/",
-                    "role": "Core framework development"
-                }
-            ],
-            "description": "A super fast highly extensible markdown parser for PHP that converts markdown files into latex",
-            "homepage": "https://github.com/cebe/markdown-latex#readme",
-            "keywords": [
-                "extensible",
-                "fast",
-                "gfm",
-                "latex",
-                "markdown",
-                "markdown-extra"
-            ],
-            "time": "2014-06-18 21:17:08"
+            "time": "2014-03-05 16:30:51"
         },
         {
             "name": "ezyang/htmlpurifier",
-            "version": "v4.5.0",
+            "version": "v4.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ezyang/htmlpurifier.git",
-                "reference": "d516e2f8de435ea78cc6152abc425d3ff2c4d289"
+                "reference": "6f389f0f25b90d0b495308efcfa073981177f0fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/d516e2f8de435ea78cc6152abc425d3ff2c4d289",
-                "reference": "d516e2f8de435ea78cc6152abc425d3ff2c4d289",
+                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/6f389f0f25b90d0b495308efcfa073981177f0fd",
+                "reference": "6f389f0f25b90d0b495308efcfa073981177f0fd",
                 "shasum": ""
             },
             "require": {
@@ -210,97 +108,7 @@
             "keywords": [
                 "html"
             ],
-            "time": "2013-02-18 00:04:08"
-        },
-        {
-            "name": "michelf/php-markdown",
-            "version": "1.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/michelf/php-markdown.git",
-                "reference": "fcdd3e0781ae40c2b9847874e0755ff4f5559688"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/michelf/php-markdown/zipball/fcdd3e0781ae40c2b9847874e0755ff4f5559688",
-                "reference": "fcdd3e0781ae40c2b9847874e0755ff4f5559688",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-lib": "1.3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Michelf": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Michel Fortin",
-                    "email": "michel.fortin@michelf.ca",
-                    "homepage": "http://michelf.ca/",
-                    "role": "Developer"
-                },
-                {
-                    "name": "John Gruber",
-                    "homepage": "http://daringfireball.net/"
-                }
-            ],
-            "description": "PHP Markdown",
-            "homepage": "http://michelf.ca/projects/php-markdown/",
-            "keywords": [
-                "markdown"
-            ],
-            "time": "2013-04-11 18:53:11"
-        },
-        {
-            "name": "mikevanriel/text-to-latex",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mvriel/TextToLatex.git",
-                "reference": "e654076192d73b829ac549041ac58ab08b7a2436"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mvriel/TextToLatex/zipball/e654076192d73b829ac549041ac58ab08b7a2436",
-                "reference": "e654076192d73b829ac549041ac58ab08b7a2436",
-                "shasum": ""
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~3.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "MikeVanRiel": [
-                        "src/",
-                        "tests/unit/"
-                    ]
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mike van Riel",
-                    "email": "me@mikevanriel.com"
-                }
-            ],
-            "description": "A converter class that converts normal ASCII text to valid LaTeX",
-            "time": "2013-12-20 21:34:24"
+            "time": "2013-11-30 08:25:19"
         },
         {
             "name": "nikic/php-parser",
@@ -450,40 +258,6 @@
             "time": "2014-08-09 10:27:07"
         },
         {
-            "name": "phpspec/php-diff",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpspec/php-diff.git",
-                "reference": "30e103d19519fe678ae64a60d77884ef3d71b28a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/php-diff/zipball/30e103d19519fe678ae64a60d77884ef3d71b28a",
-                "reference": "30e103d19519fe678ae64a60d77884ef3d71b28a",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Diff": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Chris Boulton",
-                    "homepage": "http://github.com/chrisboulton",
-                    "role": "Original developer"
-                }
-            ],
-            "description": "A comprehensive library for generating differences between two hashable objects (strings or arrays).",
-            "time": "2013-11-01 13:02:21"
-        },
-        {
             "name": "psr/log",
             "version": "dev-master",
             "source": {
@@ -579,16 +353,16 @@
         },
         {
             "name": "yiisoft/jquery",
-            "version": "1.10.2",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/jquery.git",
-                "reference": "52b005d9ffb9b1900d05f76960798402b8b40f91"
+                "reference": "bc09bbbc8b40cf89812036188b6f94ae7627c73c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/jquery/zipball/52b005d9ffb9b1900d05f76960798402b8b40f91",
-                "reference": "52b005d9ffb9b1900d05f76960798402b8b40f91",
+                "url": "https://api.github.com/repos/yiisoft/jquery/zipball/bc09bbbc8b40cf89812036188b6f94ae7627c73c",
+                "reference": "bc09bbbc8b40cf89812036188b6f94ae7627c73c",
                 "shasum": ""
             },
             "type": "library",
@@ -598,35 +372,64 @@
             ],
             "description": "jQuery JavaScript Library",
             "homepage": "http://jquery.com",
-            "time": "2013-11-06 00:14:38"
+            "time": "2014-05-07 05:00:09"
         },
         {
-            "name": "yiisoft/yii2",
-            "version": "2.0.0-alpha",
+            "name": "yiisoft/jquery-pjax",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/yiisoft/yii2-framework.git",
-                "reference": "88d1914243a463c32c28fbb46a7b370985219ce3"
+                "url": "https://github.com/yiisoft/jquery-pjax.git",
+                "reference": "520f8c12b5a417e21d2cd0df499fa2a4e4e9a9d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/88d1914243a463c32c28fbb46a7b370985219ce3",
-                "reference": "88d1914243a463c32c28fbb46a7b370985219ce3",
+                "url": "https://api.github.com/repos/yiisoft/jquery-pjax/zipball/520f8c12b5a417e21d2cd0df499fa2a4e4e9a9d6",
+                "reference": "520f8c12b5a417e21d2cd0df499fa2a4e4e9a9d6",
                 "shasum": ""
             },
             "require": {
-                "ext-mbstring": "*",
-                "ezyang/htmlpurifier": "4.5.*",
-                "lib-pcre": "*",
-                "michelf/php-markdown": "1.3.*",
-                "php": ">=5.4.0",
-                "phpspec/php-diff": ">=1.0.2",
-                "yiisoft/jquery": "1.10.*",
-                "yiisoft/yii2-composer": "*"
+                "yiisoft/jquery": ">=1.8"
             },
             "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "pushState + ajax = pjax, a forked maintainted by the Yii Framework core developers",
+            "homepage": "https://github.com/yiisoft/jquery-pjax#readme",
+            "time": "2014-03-20 17:20:33"
+        },
+        {
+            "name": "yiisoft/yii2",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-framework.git",
+                "reference": "a9ef2f56a074081fe057c157494be88cc1308e9c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/a9ef2f56a074081fe057c157494be88cc1308e9c",
+                "reference": "a9ef2f56a074081fe057c157494be88cc1308e9c",
+                "shasum": ""
+            },
+            "require": {
+                "cebe/markdown": "0.9.*",
+                "ext-mbstring": "*",
+                "ezyang/htmlpurifier": "4.6.*",
+                "lib-pcre": "*",
+                "php": ">=5.4.0",
+                "yiisoft/jquery": "~2.0 | ~1.10",
+                "yiisoft/jquery-pjax": "*",
+                "yiisoft/yii2-composer": "*"
+            },
+            "bin": [
+                "yii"
+            ],
+            "type": "library",
             "autoload": {
-                "psr-0": {
+                "psr-4": {
                     "yii\\": ""
                 }
             },
@@ -674,28 +477,25 @@
             "homepage": "http://www.yiiframework.com/",
             "keywords": [
                 "framework",
-                "yii"
+                "yii2"
             ],
-            "time": "2013-12-01 18:34:43"
+            "time": "2014-08-19 14:35:58"
         },
         {
             "name": "yiisoft/yii2-apidoc",
-            "version": "dev-master",
+            "version": "2.0.0-beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii2-apidoc.git",
-                "reference": "fd93c8da7577e4258ad482477ff6234f05562efb"
+                "reference": "bb8cc0543f3d624d4e3d5985a72453dcebe67070"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-apidoc/zipball/fd93c8da7577e4258ad482477ff6234f05562efb",
-                "reference": "fd93c8da7577e4258ad482477ff6234f05562efb",
+                "url": "https://api.github.com/repos/yiisoft/yii2-apidoc/zipball/bb8cc0543f3d624d4e3d5985a72453dcebe67070",
+                "reference": "bb8cc0543f3d624d4e3d5985a72453dcebe67070",
                 "shasum": ""
             },
             "require": {
-                "cebe/js-search": "*",
-                "cebe/markdown": "dev-master as 0.9.0",
-                "cebe/markdown-latex": "*",
                 "nikic/php-parser": "0.9.*",
                 "phpdocumentor/reflection": ">=1.0.3",
                 "phpdocumentor/reflection-docblock": ">2.0.1",
@@ -718,7 +518,9 @@
             "authors": [
                 {
                     "name": "Carsten Brandt",
-                    "email": "mail@cebe.cc"
+                    "email": "mail@cebe.cc",
+                    "homepage": "http://cebe.cc/",
+                    "role": "Core framework development"
                 }
             ],
             "description": "API Documentation generator for the Yii framework 2.0",
@@ -729,7 +531,7 @@
                 "phpdoc",
                 "yii2"
             ],
-            "time": "2014-08-17 14:55:24"
+            "time": "2014-04-13 21:58:59"
         },
         {
             "name": "yiisoft/yii2-bootstrap",
