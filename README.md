@@ -4,10 +4,9 @@ This is a rexpro client for PHP. It's main purpose was for it to be integrated i
 Installation
 ============
 
-### Requirements
+### MsgPack (optional)
 
-
-First you'll need to install the required dependencies. Which is to say : [MsgPack](http://msgpack.org/) .
+rexpro-php does not require MsgPack anymore as it can also serialize using json. If you wish you can still use it though: [MsgPack](http://msgpack.org/) .
 
 Install MsgPack from git:
 
@@ -17,7 +16,7 @@ cd msgpack-php
 phpize
 ./configure && make && make install
 ```
-Warning this is not latest version anymore and will be broken
+Warning this is not the latest version anymore and will not work!!! Leaving this here for the information
 
 Install MsgPack from PEAR:
 
@@ -29,20 +28,16 @@ sudo php5enmod msgpack
 
 ### PHP Rexster Client
 
-##### For Rexster 2.4
+##### For Rexster 2.4+
 
-Prefered method is composer:
+```bash
+git clone https://github.com/PommeVerte/rexpro-php.git
+```
 
-```json
-"require": {
-		"brightzone/rexpro-php": "dev-master"
-	},
-"repositories": [
-        {
-            "type": "vcs",
-            "url":  "ssh://git@adm.brightzone.fr:7999/rex/rexpro-php.git"
-        }
-    ]
+##### For Rexster 2.3
+
+```bash
+git clone https://github.com/PommeVerte/rexpro-php.git -b 2.3
 ```
 
 
@@ -81,6 +76,20 @@ Or
 require_once 'rexpro-php/src/Connection.php';
 
 $db = new \brightzone\rexpro\Connection;
+```
+
+Serializer
+==========
+rexpro-php will use the pecl msgpack extention by default. But if it isn't installed on the system it will automatically revert to using JSON.
+
+If you wish to force a specific serializer type you may do so like this:
+
+```php
+$db = new Connection;
+echo $db->getSerializer() // will echo 0 for MSGPACK
+$db->setSerializer(Messages::SERIALIZER_JSON);
+echo $db->getSerializer() // will echo 1 for JSON
+// do something with $db Connection Object.
 ```
 
 Examples
@@ -128,6 +137,23 @@ $b->close();
 ```
 
 Example 4 (transaction):
+
+```php
+$db = new Connection;
+$db->open('localhost:8184','neo4jsample',null,null);
+  	
+$db->transactionStart();
+
+$db->script = 'g.addVertex([name:"michael"])';
+$result = $db->runScript();
+$db->script = 'g.addVertex([name:"john"])';
+$result = $db->runScript();
+
+$db->transactionStop(true);//accept commit of changes. set to false if you wish to cancel changes
+$db->close();
+```
+
+Example 5 (Change ):
 
 ```php
 $db = new Connection;

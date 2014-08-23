@@ -49,7 +49,21 @@ class Messages
 	 * @var string Most recently built binary message
 	 */
 	public $msgPack;
+	
+	/**
+	 * @var string Most recently built binary message
+	 */
+	private $_serializerType;
 
+	/**
+	 * Overriding construct to populate _serializerType
+	 *
+	 */
+	public function __construct($serializerType)
+	{
+		$this->_serializerType = $serializerType;
+	}
+	
 	/**
 	 * Create and set request UUID
 	 * 
@@ -61,7 +75,7 @@ class Messages
 	}
 	
 	/**
-	 * Serializes the meta with messagePack
+	 * Serializes the meta either msgpack or JSON
 	 * 
 	 * @param array &$message Meta with request information
 	 * 
@@ -72,8 +86,39 @@ class Messages
 	 */
 	protected function serializeMessage(&$message)
 	{
-		$message = msgpack_pack($message);
+		if($this->_serializerType == self::SERIALIZER_MSGPACK)
+		{
+			$message = msgpack_pack($message);
+		}
+		else
+		{
+			$message = json_encode($message,JSON_UNESCAPED_UNICODE);
+		}
+
 		return mb_strlen($message, 'ISO-8859-1');
+	}
+
+	/**
+	 * Unserializes the meta either msgpack or JSON
+	 * 
+	 * @param String &$message message to decode.
+	 * 
+	 * @link http://msgpack.org/
+	 * @link https://github.com/msgpack/msgpack-php
+	 * 
+	 * @return array decoded message
+	 */
+	protected function unserializeMessage($message)
+	{
+		if($this->_serializerType == self::SERIALIZER_MSGPACK)
+		{
+			$mssg = msgpack_unpack($message);
+		}
+		else
+		{
+			$mssg = json_decode($message, TRUE, JSON_UNESCAPED_UNICODE);
+		}
+		return $mssg;
 	}
 	
 	/**
@@ -90,11 +135,13 @@ class Messages
 	public function buildSessionMessage($sessionUuid, $username, $password, $meta, $protocolVersion=0)
 	{
 		$this->createUuid();
-					
+		
 		//build message array
 		$message = array(
-				Helper::uuidToBin($sessionUuid),
-				Helper::uuidToBin($this->requestUuid),
+				$this->_serializerType === Messages::SERIALIZER_MSGPACK ?
+							Helper::uuidToBin($sessionUuid) : $sessionUuid,
+				$this->_serializerType === Messages::SERIALIZER_MSGPACK ?
+							Helper::uuidToBin($this->requestUuid) : $this->requestUuid,
 				array_merge(array('killSession'=>FALSE), $meta),//let caller overwrite (session close for instance)
 				$username,
 				$password
@@ -106,7 +153,7 @@ class Messages
 		//Now we need to build headers
 		$msg = pack('C*',
 					$protocolVersion,
-					self::SERIALIZER_MSGPACK,
+					$this->_serializerType,
 					0, //reserved byte
 					0, //reserved byte
 					0, //reserved byte
@@ -115,6 +162,7 @@ class Messages
 		
 		//append message and return
 		$this->msgPack = $msg.$message;
+		//echo $this->msgPack;
 		return $this->msgPack;
 	}	
 	
@@ -136,8 +184,10 @@ class Messages
 		
 		//build message array
 		$message = array(
-				Helper::uuidToBin($sessionUuid),
-				Helper::uuidToBin($this->requestUuid),
+				$this->_serializerType === Messages::SERIALIZER_MSGPACK ?
+							Helper::uuidToBin($sessionUuid) : $sessionUuid,
+				$this->_serializerType === Messages::SERIALIZER_MSGPACK ?
+							Helper::uuidToBin($this->requestUuid) : $this->requestUuid,
 				array_merge(array('inSession'=>TRUE),
 							$meta
 							),//overwrite user value
@@ -152,7 +202,7 @@ class Messages
 		//Now we need to build headers
 		$msg = pack('C*',
 					$protocolVersion,
-					self::SERIALIZER_MSGPACK,
+					$this->_serializerType,
 					0, //reserved byte
 					0, //reserved byte
 					0, //reserved byte
@@ -181,13 +231,16 @@ class Messages
 		
 		$mssgLength = implode('', array_slice($resp, 7, 4));
 		$mssgLength = Helper::convertIntFrom32Bit($mssgLength);
-		
-		$mssg = msgpack_unpack(implode('', array_slice($resp, 11, count($resp))));
 
+		$mssg = $this->unserializeMessage(implode('', array_slice($resp, 11, count($resp))));
+	
 		//lets just make UUIDs readable incase we need to debug 
-		$mssg[0] = Helper::binToUuid($mssg[0]);
-		$mssg[1] = Helper::binToUuid($mssg[1]);
-
+		if($this->_serializerType === self::SERIALIZER_MSGPACK)
+		{
+			$mssg[0] = Helper::binToUuid($mssg[0]);
+			$mssg[1] = Helper::binToUuid($mssg[1]);
+		}
+		
 		return array($proVersion, $serializerType, $rqstType, $mssgLength,$mssg);
 	}
 }

@@ -18,72 +18,8 @@ use \brightzone\rexpro\Helper;
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki
  */
-class RexsterTest extends \PHPUnit_Framework_TestCase
-{
-	/**
-	 * Testing UUID
-	 * 
-	 * @return void
-	 */
-	public function testCreateUuid()
-	{
-		$uuid1 = Helper::createUuid();
-		$this->assertTRUE(mb_strlen($uuid1, 'ISO-8859-1') == 36, 'The generated UUID is not the correct length ');
-		$this->assertTRUE(count(str_split($uuid1, 1)) == 36, 'The generated UUID is not the correct length');
-		
-		$uuid = Helper::uuidToBin($uuid1);
-		$this->assertTRUE(mb_strlen($uuid, 'ISO-8859-1') == 16, 'The conversion to bin of the UUID is not the correct length (16 bytes)');
-		$this->assertTRUE(count(str_split($uuid, 1)) == 16, 'The conversion to bin of the UUID is not the correct length (16 bytes)');
-		//test that the bin format is correct for rexPro
-		$this->assertEquals(bin2hex($uuid), str_replace('-', '', trim($uuid1)), 'The conversion to bin of the UUID is incorrect');
-		
-		$uuid = Helper::binToUuid($uuid);
-		$this->assertTRUE(mb_strlen($uuid, 'ISO-8859-1') == 36, 'The conversion of bin UUID to UUID is not the correct length');
-		$this->assertTRUE(count(str_split($uuid, 1)) == 36, 'The conversion of bin UUID to UUID is not the correct length');
-		$this->assertEquals($uuid, $uuid1, 'UUID before and after convertion do not match');
-	}
-	
-	/**
-	 * Testing binary conversion TO
-	 * 
-	 * @return void
-	 */
-	public function testConvertIntTo32Bit()
-	{
-		$converted = Helper::convertIntTo32Bit(84);
-		$this->assertEquals(mb_strlen($converted, 'ISO-8859-1'), 4, 'The converted int is not the correct byte length (4 bytes)'); //should be 32 bits / 4 bytes
-		$this->assertEquals(bin2hex($converted), '00000054', 'The converted int is incorrect');
-		
-		$converted = Helper::convertIntTo32Bit(9999);
-		$this->assertEquals(mb_strlen($converted, 'ISO-8859-1'), 4, 'The converted int is not the correct byte length (4 bytes)'); //should be 32 bits / 4 bytes
-		$this->assertEquals(bin2hex($converted), '0000270f', 'The converted int is incorrect');
-		
-		$converted = Helper::convertIntTo32Bit(10000000000);
-		$this->assertEquals(mb_strlen($converted, 'ISO-8859-1'), 4, 'The converted int is not the correct byte length (4 bytes)'); //should be 32 bits / 4 bytes
-		$this->assertNotEquals(bin2hex($converted), '2540BE400', 'The converted int is incorrect. ints above 4 bytes should have the extra bytes truncated'); // hex for 10000000000
-		//the extra 3 bits should be taken off the begining of binary data. This test checks this
-		$this->assertEquals(bin2hex($converted), '540be400', 'The converted int is incorrect. ints above 4 bytes should have the extra bytes truncated');
-		
-		
-	}
-	
-	/**
-	 * Testing binary conversion FROM
-	 * 
-	 * @return void
-	 */
-	public function testConvertIntFrom32Bit()
-	{
-		$converted = Helper::convertIntFrom32Bit(Helper::convertIntTo32Bit(84));
-		$this->assertEquals($converted, 84, 'The conversion of 32bit int to int is incorrect');
-
-		$converted = Helper::convertIntFrom32Bit(Helper::convertIntTo32Bit(9999));
-		$this->assertEquals($converted, 9999, 'The conversion of 32bit int to int is incorrect');
-
-		$converted = Helper::convertIntFrom32Bit(Helper::convertIntTo32Bit(10000000000));
-		$this->assertEquals($converted, 1410065408, 'The conversion of 32bit int to int is incorrect. Bit truncating issue'); //bit truncating check
-	}
-	
+class RexsterJSONTest extends \PHPUnit_Framework_TestCase
+{	
 	/**
 	 * Testing Connection
 	 * 
@@ -92,17 +28,21 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testConnectSuccess()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$result = $db->open('localhost', 'tinkergraph', 'test', 'ghJK5-hG');
-		
+		//print_r($result);
+		//print_r($db);
 		$this->assertNotEquals($result, FALSE, 'Failed to connect with no params');
 		$this->assertTRUE($db->response[2] == 2, 'Result for session connection (without params) is not a session start response packet');//check it's a session start server packet
 		
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$result = $db->open('localhost', 'tinkergraph', 'test', 'ghJK5-hG');
 		$this->assertNotEquals($result, FALSE, 'Failed to connect with "localhost"');
 		$this->assertTRUE($db->response[2] == 2, 'Result for session connection (with localhost) is not a session start response packet');//check it's a session start server packet
 		
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$result = $db->open('localhost', 'graph', 'test', 'ghJK5-hG');
 		$this->assertNotEquals($result, FALSE, 'Failed to connect with localhost and titan graph');
 		$this->assertTRUE($db->response[2] == 2, 'Result for session connection (with localhost and titan graph) is not a session start response packet');//check it's a session start server packet
@@ -116,6 +56,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testConnectErrors()
 	{	
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$db->timeout = 0.5;
 		$result = $db->open('unknownhost');
 		$this->assertEquals($result, FALSE, 'Connecting to an unknown host does not throw an error');
@@ -126,6 +67,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertFALSE(NULL === $db->error->description, 'Error object does not contain an error description for unknown host');
 		
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$db->timeout = 0.5;
 		$result = $db->open('localhost:8787');
 		$this->assertEquals($result, FALSE, 'Connecting to the wrong port for localhost does not throw an error');
@@ -135,6 +77,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertFALSE(NULL === $db->error->description, 'Error object does not contain an error description for unknown port');
 		
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$result = $db->open('localhost', 'doesnt exist', 'test', 'ghJK5-hG');
 		$this->assertEquals($result, FALSE, 'Loading a non-existing graph doesn\'t throw error');
 		
@@ -143,6 +86,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$this->assertFALSE(NULL === $db->error->description, 'Error object does not contain an error description for unknown graph');
 		
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$result = $db->open('localhost', 'doesnt exist', 'test', 'g-hG');
 		$this->assertEquals($result, FALSE, 'Loading a non-existing user doesn\'t throw error');
 		
@@ -160,6 +104,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	{
 		//do all connection checks
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$db->open('localhost', 'tinkergraph', 'test', 'ghJK5-hG');
 
 		//check disconnection
@@ -178,6 +123,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunScript()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$message = $db->open('localhost:8184', 'tinkergraph', 'test', 'ghJK5-hG');
 		
 		$db->script = '5+5';
@@ -206,6 +152,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunScriptWithBindings()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$message = $db->open('localhost:8184', 'tinkergraph', 'test', 'ghJK5-hG');
 		$this->assertNotEquals($message, FALSE);
 		
@@ -230,6 +177,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunScriptWithoutIsolation()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$message = $db->open('localhost:8184', 'tinkergraph', 'test', 'ghJK5-hG');
 		$this->assertNotEquals($message, FALSE);
 		
@@ -266,6 +214,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunSessionlessScript()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$message = $db->open('localhost:8184', 'tinkergraph', 'test', 'ghJK5-hG');
 		
 		$db->script = 'g.v(2).map()';
@@ -288,6 +237,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testTransactions()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$message = $db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
 		$this->assertNotEquals($message, FALSE);
 
@@ -322,33 +272,6 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * Testing Unknown error type
-	 * 
-	 * @return void
-	 */
-	public function testUnknownErrorType()
-	{
-		$unpacked = Array
-		(
-			1,
-			0,
-			0,
-			44,
-			Array
-				(
-					'721afec3-c9c9-407f-8beb-7cfee17dde7d',
-					'91bfab5-8069-4a83-a52e-55fae4dc4f72',
-					array('flag'=>10),
-					"Custom error message",
-				),
-		);
-		$error = Exceptions::checkError($unpacked);
-		$this->AssertTrue($error instanceof Exceptions, 'testUnknownErrorType doesn\'t return Exceptions object');
-		$this->AssertTrue($error->code == 10, 'testUnknownErrorType doesn\'t return the correct error code');
-		$this->AssertTrue($error->description == 'Unknown error type. > Custom error message', 'testUnknownErrorType doesn\'t return the correct error description');
-	}
-
-	/**
 	 * Testing getResponse() without making a previous 
 	 * socket connection with open()
 	 * 
@@ -357,6 +280,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testGetResponseWithoutConnection()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$result = $db->getResponse();
 		$this->assertFalse($result, 'Failed to return false with no established connection');
 	}
@@ -369,7 +293,8 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testSendMessageWithoutConnection()
 	{
 		$db = new Connection;
-		$msg = new Messages(0);
+		$db->setSerializer(Messages::SERIALIZER_JSON);
+		$msg = new Messages(1);
 		$result = $db->send($msg);
 		$this->assertFalse($result, 'Failed to return false with no established connection');
 	}
@@ -383,6 +308,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunScriptWithoutConnection()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$result = $db->runScript();
 		$this->assertFalse($result, 'Failed to return false with no established connection');
 	}
@@ -395,6 +321,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testRunScriptWithWrongParameters()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$db->open('localhost:8184', '', '', '', '');
 		$result = $db->runScript();
 		$this->assertFalse($result, 'Failed to return false with a connection failed');
@@ -408,6 +335,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testSeveralRunningTransactionStart()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
 		$db->transactionStart();
 		$result = $db->transactionStart();
@@ -422,6 +350,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testTransactionStopWithNoTransaction()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
 		$result = $db->transactionStop();
 		$this->assertFalse($result, 'Failed to return false with no transaction started');
@@ -435,6 +364,7 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 	public function testConnectCloseFailingMessage()
 	{
 		$db = new Connection;
+		$db->setSerializer(Messages::SERIALIZER_JSON);
 		$db->open('localhost', 'tinkergraph', 'test', 'ghJK5-hG');
 		$db->sessionUuid = '';
 		$result = $db->close();

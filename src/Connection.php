@@ -106,10 +106,33 @@ class Connection
 	private $_socket;
 	
 	/**
+	 * @var resource rexpro socket connection
+	 */
+	private $_serializerType;
+	
+	/**
 	 * @var Exceptions contains error information 
 	 * @see Exceptions
 	 */
 	public $error;
+
+
+	/**
+	 * Overloading constructor to set the proper default serializer
+	 *
+	 * @return void
+	 */
+	public function __construct()
+	{
+		if (extension_loaded('msgpack'))
+		{
+			$this->_serializerType = Messages::SERIALIZER_MSGPACK;
+		}
+		else
+		{
+			$this->_serializerType = Messages::SERIALIZER_JSON;
+		}
+	}
 	
 	/**
 	 * Connects to socket and starts a session on RexPro
@@ -139,7 +162,7 @@ class Connection
 			}
 				
 			//lets make opening session message:
-			$msg = new Messages;
+			$msg = new Messages($this->_serializerType);
 			$msg->buildSessionMessage(	Helper::createUuid(),
 										$this->username,
 										$this->password,
@@ -208,7 +231,7 @@ class Connection
 		$msgPack = $header.$messageLength.$body;
 	
 		//now that we have the binary package lets parse it
-		$message = new Messages;
+		$message = new Messages($this->_serializerType);
 		$unpacked = $message->parse($msgPack);
 		//lets check if this is an error message from the server
 		$error = Exceptions::checkError($unpacked);
@@ -259,7 +282,7 @@ class Connection
 	public function runScript($inSession=TRUE, $isolated=TRUE)
 	{	
 		//lets make a script message:
-		$msg = new Messages;
+		$msg = new Messages($this->_serializerType);
 		
 		$meta = array(	'inSession'=>$inSession,
 						'transaction'=>$this->_inTransaction?FALSE:TRUE,
@@ -308,7 +331,7 @@ class Connection
 		{
 			$this->error = NULL;
 			//lets make opening session message:
-			$msg = new Messages;
+			$msg = new Messages($this->_serializerType);
 			$msg->buildSessionMessage(	$this->sessionUuid,
 										$this->username,
 										$this->password,
@@ -410,5 +433,31 @@ class Connection
 	public function __destroy()
 	{
 		$this->close();
+	}
+
+	/**
+	 * Setter for serializer. Allows us to run checks
+	 *
+	 * @param int $value the serializer to use, either SERIALIZER_JSON or SERIALIZER_MSGPACK
+	 * 
+	 * @return void
+	 */
+	public function setSerializer($value)
+	{
+		if($value !== Messages::SERIALIZER_JSON && $value !== Messages::SERIALIZER_MSGPACK)
+		{
+			throw new \Exception('Serializer type unsupported');
+		}
+		$this->_serializerType = $value;
+	}
+
+	/**
+	 * Getter for serializer.
+	 * 
+	 * @return void
+	 */
+	public function getSerializer()
+	{
+		return $this->_serializerType;
 	}
 }
