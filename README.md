@@ -162,4 +162,4 @@ If your test rexster server uses credentials for loging in you will need to run 
 DBUSER=<username> DBPASS=<password> phpunit src/tests/
 ```
 
-Using env variables allows us to pass these arguments to a CI environment if needed
+Using env variables allows us to pass these arguments to a CI environment if needed.

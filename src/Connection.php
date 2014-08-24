@@ -2,9 +2,7 @@
 
 namespace brightzone\rexpro;
 
-require_once 'Exceptions.php';
-require_once 'Helper.php';
-require_once 'Messages.php';
+require_once('vendor/autoload.php');
 
 /**
  * RexPro PHP client Connection class

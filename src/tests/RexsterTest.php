@@ -1,8 +1,7 @@
 <?php
 namespace brightzone\rexpro\tests;
 
-require_once __DIR__.'/../Connection.php';
-require_once __DIR__.'/RexsterTestCase.php';
+require_once('vendor/autoload.php');
 
 use \brightzone\rexpro\Connection;
 use \brightzone\rexpro\Messages;
