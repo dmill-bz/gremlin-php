@@ -115,7 +115,7 @@
    <arg value="--exclude"/>
    <arg value="vendor"/>
    <arg value="--exclude"/>
-   <arg value="src/test"/>
+   <arg value="src/tests"/>
    <arg path="${basedir}" />
   </exec>
  </target>

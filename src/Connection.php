@@ -458,6 +458,16 @@ class Connection
 	 */
 	public function getSerializer()
 	{
-		return $this->_serializerType;
+		switch($this->_serializerType)
+		{
+			case Messages::SERIALIZER_JSON :
+				$serializer = 'JSON';
+				break;
+
+			default :
+				$serializer = 'MSGPACK';
+		}
+		
+		return $serializer;
 	}
 }

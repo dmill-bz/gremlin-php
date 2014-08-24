@@ -86,9 +86,9 @@ If you wish to force a specific serializer type you may do so like this:
 
 ```php
 $db = new Connection;
-echo $db->getSerializer(); // will echo 0 for MSGPACK
+echo $db->getSerializer(); // will echo 'MSGPACK'
 $db->setSerializer(Messages::SERIALIZER_JSON);
-echo $db->getSerializer(); // will echo 1 for JSON
+echo $db->getSerializer(); // will echo 'JSON'
 // do something with $db Connection Object.
 ```
 

@@ -440,4 +440,17 @@ class RexsterTest extends \PHPUnit_Framework_TestCase
 		$result = $db->close();
 		$this->assertFalse($result, 'Failed to return false with no transaction started');
 	}
+
+	/**
+	 * Testing getSerializer
+	 * 
+	 * @return void
+	 */
+	public function testgetSerializer()
+	{
+		$db = new Connection;
+		$this->assertEquals($db->getSerializer(), 'MSGPACK', 'Failed to return correct serializer value');
+		$db->setSerializer(Messages::SERIALIZER_JSON);
+		$this->assertEquals($db->getSerializer(), 'JSON', 'Failed to return correct serializer value');
+	}
 }
