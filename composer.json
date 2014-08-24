@@ -9,7 +9,7 @@
         }
     ],
     "keywords": ["rexpro-php", "rexpro"],
-    "require": {
+    "require-dev": {
         "yiisoft/yii2-apidoc": "2.0.0-beta"
     },
     "autoload": {

@@ -114,6 +114,8 @@
    <arg value="${basedir}/build/logs/pmd-cpd.xml" />
    <arg value="--exclude"/>
    <arg value="vendor"/>
+   <arg value="--exclude"/>
+   <arg value="src/test"/>
    <arg path="${basedir}" />
   </exec>
  </target>
