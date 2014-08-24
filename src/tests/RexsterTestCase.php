@@ -33,5 +33,5 @@ class RexsterTestCase extends \PHPUnit_Framework_TestCase
 		$this->username = getenv('DBUSER') ? getenv('DBUSER') : NULL;
 		$this->password = getenv('DBPASS') ? getenv('DBPASS') : NULL;
 		parent::setUp();
-	}	
+	}
 }
