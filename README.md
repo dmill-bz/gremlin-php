@@ -86,9 +86,9 @@ If you wish to force a specific serializer type you may do so like this:
 
 ```php
 $db = new Connection;
-echo $db->getSerializer() // will echo 0 for MSGPACK
+echo $db->getSerializer(); // will echo 0 for MSGPACK
 $db->setSerializer(Messages::SERIALIZER_JSON);
-echo $db->getSerializer() // will echo 1 for JSON
+echo $db->getSerializer(); // will echo 1 for JSON
 // do something with $db Connection Object.
 ```
 
@@ -137,23 +137,6 @@ $b->close();
 ```
 
 Example 4 (transaction):
-
-```php
-$db = new Connection;
-$db->open('localhost:8184','neo4jsample',null,null);
-  	
-$db->transactionStart();
-
-$db->script = 'g.addVertex([name:"michael"])';
-$result = $db->runScript();
-$db->script = 'g.addVertex([name:"john"])';
-$result = $db->runScript();
-
-$db->transactionStop(true);//accept commit of changes. set to false if you wish to cancel changes
-$db->close();
-```
-
-Example 5 (Change ):
 
 ```php
 $db = new Connection;

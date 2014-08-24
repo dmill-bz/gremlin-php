@@ -91,6 +91,8 @@ class Messages
 	{
 		if($this->_serializerType == self::SERIALIZER_MSGPACK)
 		{
+			$message[0] = Helper::uuidToBin($message[0]);
+			$message[1] = Helper::uuidToBin($message[1]);
 			$message = msgpack_pack($message);
 		}
 		else
@@ -116,6 +118,9 @@ class Messages
 		if($this->_serializerType == self::SERIALIZER_MSGPACK)
 		{
 			$mssg = msgpack_unpack($message);
+			//lets just make UUIDs readable incase we need to debug 
+			$mssg[0] = Helper::binToUuid($mssg[0]);
+			$mssg[1] = Helper::binToUuid($mssg[1]);
 		}
 		else
 		{
@@ -141,10 +146,8 @@ class Messages
 		
 		//build message array
 		$message = array(
-				$this->_serializerType === self::SERIALIZER_MSGPACK ?
-							Helper::uuidToBin($sessionUuid) : $sessionUuid,
-				$this->_serializerType === self::SERIALIZER_MSGPACK ?
-							Helper::uuidToBin($this->requestUuid) : $this->requestUuid,
+				$sessionUuid,
+				$this->requestUuid,
 				array_merge(array('killSession'=>FALSE), $meta),//let caller overwrite (session close for instance)
 				$username,
 				$password
@@ -187,17 +190,13 @@ class Messages
 		
 		//build message array
 		$message = array(
-				$this->_serializerType === self::SERIALIZER_MSGPACK ?
-							Helper::uuidToBin($sessionUuid) : $sessionUuid,
-				$this->_serializerType === self::SERIALIZER_MSGPACK ?
-							Helper::uuidToBin($this->requestUuid) : $this->requestUuid,
-				array_merge(array('inSession'=>TRUE),
-							$meta
-							),//overwrite user value
+				$sessionUuid,
+				$this->requestUuid,
+				array_merge(array('inSession'=>TRUE), $meta),//overwrite user value
 				'groovy',
 				$script,
 				($bindings === NULL? new \stdClass : $bindings)		
-		);
+				);
 		
 		//lets pack the message
 		$messageLength = $this->serializeMessage($message);
@@ -236,13 +235,6 @@ class Messages
 		$mssgLength = Helper::convertIntFrom32Bit($mssgLength);
 
 		$mssg = $this->unserializeMessage(implode('', array_slice($resp, 11, count($resp))));
-	
-		//lets just make UUIDs readable incase we need to debug 
-		if($this->_serializerType === self::SERIALIZER_MSGPACK)
-		{
-			$mssg[0] = Helper::binToUuid($mssg[0]);
-			$mssg[1] = Helper::binToUuid($mssg[1]);
-		}
 		
 		return array($proVersion, $serializerType, $rqstType, $mssgLength,$mssg);
 	}
