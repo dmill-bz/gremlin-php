@@ -16,12 +16,12 @@ class RexsterTestCase extends \PHPUnit_Framework_TestCase
 	/**
 	 * @var mixed the database username to use with tests, if any
 	 */
-	protected $username = NULL;
+	protected $username;
 	
 	/**
 	 * @var mixed the database password to use with tests, if any
 	 */
-	protected $password = NULL;
+	protected $password;
 
 	/**
 	 * Overriding setup to catch database arguments if set.
@@ -30,20 +30,8 @@ class RexsterTestCase extends \PHPUnit_Framework_TestCase
 	 */
 	protected function setUp()
 	{
-		global $argv, $argc;
-		
-		foreach($argv as $key => $argument)
-		{
-			if($argument == "--db-user")
-			{
-				$this->username = $argv[$key+1];
-			}
-			if($argument == "--db-password")
-			{
-				$this->password = $argv[$key+1];
-			}
-
-		}
+		$this->username = getenv('DBUSER') ? getenv('DBUSER') : NULL;
+		$this->password = getenv('DBPASS') ? getenv('DBPASS') : NULL;
 		parent::setUp();
 	}	
 }

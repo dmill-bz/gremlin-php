@@ -159,5 +159,7 @@ Unit testing
 If your test rexster server uses credentials for loging in you will need to run the following to set up proper credentials for tests:
 
 ```bash
-phpunit src/tests/* --db-user <username> --db-password <password>
+DBUSER=<username> DBPASS=<password> phpunit src/tests/
 ```
+
+Using env variables allows us to pass these arguments to a CI environment if needed
