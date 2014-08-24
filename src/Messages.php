@@ -58,7 +58,7 @@ class Messages
 	/**
 	 * Overriding construct to populate _serializer
 	 *
-	 * @param int $serializerType the id of the serializer to use. Either self::SERIALIZER_MSGPACK or self::SERIALIZER_JSON
+	 * @param int $serializer serializer object to use for packing and unpacking of messages
 	 * 
 	 * @return void
 	 */

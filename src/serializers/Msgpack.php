@@ -46,7 +46,7 @@ class Msgpack implements SerializerInterface
 	/**
 	 * Unserializes the data
 	 * 
-	 * @param array &$data data to be unserialized
+	 * @param array $data data to be unserialized
 	 * 
 	 * @return array unserialized message
 	 */

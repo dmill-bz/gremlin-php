@@ -13,7 +13,7 @@ namespace brightzone\rexpro\serializers;
  * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
 interface SerializerInterface
-{	
+{
 	/**
 	 * Serializes the data
 	 * 
@@ -26,7 +26,7 @@ interface SerializerInterface
 	/**
 	 * Unserializes the data
 	 * 
-	 * @param array &$data data to be unserialized
+	 * @param array $data data to be unserialized
 	 * 
 	 * @return array unserialized message
 	 */
@@ -46,6 +46,4 @@ interface SerializerInterface
 	 * @return string name of serializer
 	 */
 	public function getValue();
-
-	
 }
