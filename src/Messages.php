@@ -53,18 +53,18 @@ class Messages
 	/**
 	 * @var string Most recently built binary message
 	 */
-	private $_serializerType;
+	private $_serializer;
 
 	/**
-	 * Overriding construct to populate _serializerType
+	 * Overriding construct to populate _serializer
 	 *
 	 * @param int $serializerType the id of the serializer to use. Either self::SERIALIZER_MSGPACK or self::SERIALIZER_JSON
 	 * 
 	 * @return void
 	 */
-	public function __construct($serializerType)
+	public function __construct($serializer)
 	{
-		$this->_serializerType = $serializerType;
+		$this->_serializer = $serializer;
 	}
 	
 	/**
@@ -154,12 +154,12 @@ class Messages
 		);
 		
 		//lets pack the message
-		$messageLength = $this->serializeMessage($message);
+		$messageLength = $this->_serializer->serialize($message);
 		
 		//Now we need to build headers
 		$msg = pack('C*',
 					$protocolVersion,
-					$this->_serializerType,
+					$this->_serializer->getValue(),
 					0, //reserved byte
 					0, //reserved byte
 					0, //reserved byte
@@ -199,12 +199,12 @@ class Messages
 				);
 		
 		//lets pack the message
-		$messageLength = $this->serializeMessage($message);
+		$messageLength = $this->_serializer->serialize($message);
 		
 		//Now we need to build headers
 		$msg = pack('C*',
 					$protocolVersion,
-					$this->_serializerType,
+					$this->_serializer->getValue(),
 					0, //reserved byte
 					0, //reserved byte
 					0, //reserved byte
@@ -234,7 +234,7 @@ class Messages
 		$mssgLength = implode('', array_slice($resp, 7, 4));
 		$mssgLength = Helper::convertIntFrom32Bit($mssgLength);
 
-		$mssg = $this->unserializeMessage(implode('', array_slice($resp, 11, count($resp))));
+		$mssg = $this->_serializer->unserialize(implode('', array_slice($resp, 11, count($resp))));
 		
 		return array($proVersion, $serializerType, $rqstType, $mssgLength,$mssg);
 	}

@@ -4,6 +4,13 @@ namespace brightzone\rexpro;
 
 require_once('vendor/autoload.php');
 
+use \brightzone\rexpro\Connection;
+use \brightzone\rexpro\Messages;
+use \brightzone\rexpro\Exceptions;
+use \brightzone\rexpro\Helper;
+use \brightzone\rexpro\serializers\Msgpack;
+use \brightzone\rexpro\serializers\Json;
+
 /**
  * RexPro PHP client Connection class
  * 
@@ -106,7 +113,7 @@ class Connection
 	/**
 	 * @var resource rexpro socket connection
 	 */
-	private $_serializerType;
+	private $_serializer;
 	
 	/**
 	 * @var Exceptions contains error information 
@@ -124,11 +131,11 @@ class Connection
 	{
 		if (extension_loaded('msgpack'))
 		{
-			$this->_serializerType = Messages::SERIALIZER_MSGPACK;
+			$this->_serializer = new Msgpack;
 		}
 		else
 		{
-			$this->_serializerType = Messages::SERIALIZER_JSON;
+			$this->_serializer = new Json;
 		}
 	}
 	
@@ -160,7 +167,7 @@ class Connection
 			}
 				
 			//lets make opening session message:
-			$msg = new Messages($this->_serializerType);
+			$msg = new Messages($this->_serializer);
 			$msg->buildSessionMessage(	Helper::createUuid(),
 										$this->username,
 										$this->password,
@@ -229,7 +236,7 @@ class Connection
 		$msgPack = $header.$messageLength.$body;
 	
 		//now that we have the binary package lets parse it
-		$message = new Messages($this->_serializerType);
+		$message = new Messages($this->_serializer);
 		$unpacked = $message->parse($msgPack);
 		//lets check if this is an error message from the server
 		$error = Exceptions::checkError($unpacked);
@@ -280,7 +287,7 @@ class Connection
 	public function runScript($inSession=TRUE, $isolated=TRUE)
 	{	
 		//lets make a script message:
-		$msg = new Messages($this->_serializerType);
+		$msg = new Messages($this->_serializer);
 		
 		$meta = array(	'inSession'=>$inSession,
 						'transaction'=>$this->_inTransaction?FALSE:TRUE,
@@ -329,7 +336,7 @@ class Connection
 		{
 			$this->error = NULL;
 			//lets make opening session message:
-			$msg = new Messages($this->_serializerType);
+			$msg = new Messages($this->_serializer);
 			$msg->buildSessionMessage(	$this->sessionUuid,
 										$this->username,
 										$this->password,
@@ -442,11 +449,18 @@ class Connection
 	 */
 	public function setSerializer($value)
 	{
-		if($value !== Messages::SERIALIZER_JSON && $value !== Messages::SERIALIZER_MSGPACK)
+		if($value === Messages::SERIALIZER_JSON || strtolower($value) === 'json')
+		{
+			$this->_serializer = new Json;
+		}
+		elseif($value === Messages::SERIALIZER_MSGPACK || strtolower($value) === 'msgpack')
+		{
+			$this->_serializer = new Msgpack;
+		}
+		else
 		{
 			throw new \Exception('Serializer type unsupported');
 		}
-		$this->_serializerType = $value;
 	}
 
 	/**
@@ -456,16 +470,6 @@ class Connection
 	 */
 	public function getSerializer()
 	{
-		switch($this->_serializerType)
-		{
-			case Messages::SERIALIZER_JSON :
-				$serializer = 'JSON';
-				break;
-
-			default :
-				$serializer = 'MSGPACK';
-		}
-		
-		return $serializer;
+		return $this->_serializer->getName();
 	}
 }
