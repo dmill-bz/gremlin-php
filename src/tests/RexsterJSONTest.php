@@ -2,6 +2,7 @@
 namespace brightzone\rexpro\tests;
 
 require_once __DIR__.'/../Connection.php';
+require_once __DIR__.'/RexsterTestCase.php';
 
 use \brightzone\rexpro\Connection;
 use \brightzone\rexpro\Messages;
@@ -18,7 +19,7 @@ use \brightzone\rexpro\Helper;
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki
  */
-class RexsterJSONTest extends \PHPUnit_Framework_TestCase
+class RexsterJSONTest extends RexsterTestCase
 {
 	/**
 	 * Testing Connection
@@ -29,7 +30,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$result = $db->open('localhost', 'tinkergraph', 'test', 'ghJK5-hG');
+		$result = $db->open('localhost', 'tinkergraph', $this->username, $this->password);
 		//print_r($result);
 		//print_r($db);
 		$this->assertNotEquals($result, FALSE, 'Failed to connect with no params');
@@ -37,13 +38,13 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 		
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$result = $db->open('localhost', 'tinkergraph', 'test', 'ghJK5-hG');
+		$result = $db->open('localhost', 'tinkergraph', $this->username, $this->password);
 		$this->assertNotEquals($result, FALSE, 'Failed to connect with "localhost"');
 		$this->assertTRUE($db->response[2] == 2, 'Result for session connection (with localhost) is not a session start response packet');//check it's a session start server packet
 		
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$result = $db->open('localhost', 'graph', 'test', 'ghJK5-hG');
+		$result = $db->open('localhost', 'graph', $this->username, $this->password);
 		$this->assertNotEquals($result, FALSE, 'Failed to connect with localhost and titan graph');
 		$this->assertTRUE($db->response[2] == 2, 'Result for session connection (with localhost and titan graph) is not a session start response packet');//check it's a session start server packet
 	}
@@ -78,7 +79,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 		
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$result = $db->open('localhost', 'doesnt exist', 'test', 'ghJK5-hG');
+		$result = $db->open('localhost', 'doesnt exist', $this->username, $this->password);
 		$this->assertEquals($result, FALSE, 'Loading a non-existing graph doesn\'t throw error');
 		
 		$this->assertTRUE($db->error instanceof Exceptions, 'Error object is not an Exceptions Object for unknown graph');
@@ -87,7 +88,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 		
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$result = $db->open('localhost', 'doesnt exist', 'test', 'g-hG');
+		$result = $db->open('localhost', 'doesnt exist', $this->username, $this->password);
 		$this->assertEquals($result, FALSE, 'Loading a non-existing user doesn\'t throw error');
 		
 		$this->assertTRUE($db->error instanceof Exceptions, 'Error object is not an Exceptions Object for unknown user');
@@ -105,7 +106,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 		//do all connection checks
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$db->open('localhost', 'tinkergraph', 'test', 'ghJK5-hG');
+		$db->open('localhost', 'tinkergraph', $this->username, $this->password);
 
 		//check disconnection
 		$response = $db->close();
@@ -124,7 +125,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$message = $db->open('localhost:8184', 'tinkergraph', 'test', 'ghJK5-hG');
+		$message = $db->open('localhost:8184', 'tinkergraph', $this->username, $this->password);
 		
 		$db->script = '5+5';
 		$result = $db->runScript();
@@ -153,7 +154,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$message = $db->open('localhost:8184', 'tinkergraph', 'test', 'ghJK5-hG');
+		$message = $db->open('localhost:8184', 'tinkergraph', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 		
 		$db->script = 'g.v(CUSTO_BINDING)';
@@ -178,7 +179,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$message = $db->open('localhost:8184', 'tinkergraph', 'test', 'ghJK5-hG');
+		$message = $db->open('localhost:8184', 'tinkergraph', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 		
 		$db->script = 'g.v(CUSTO_BINDING)';
@@ -215,7 +216,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$message = $db->open('localhost:8184', 'tinkergraph', 'test', 'ghJK5-hG');
+		$message = $db->open('localhost:8184', 'tinkergraph', $this->username, $this->password);
 		
 		$db->script = 'g.v(2).map()';
 		$db->graph = 'tinkergraph';
@@ -238,7 +239,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$message = $db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
+		$message = $db->open('localhost:8184', 'graph', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 
 		$db->script = 'g.V';
@@ -336,7 +337,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
+		$db->open('localhost:8184', 'graph', $this->username, $this->password);
 		$db->transactionStart();
 		$result = $db->transactionStart();
 		$this->assertFalse($result, 'Failed to return false with an other started transaction');
@@ -351,7 +352,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$db->open('localhost:8184', 'graph', 'test', 'ghJK5-hG');
+		$db->open('localhost:8184', 'graph', $this->username, $this->password);
 		$result = $db->transactionStop();
 		$this->assertFalse($result, 'Failed to return false with no transaction started');
 	}
@@ -365,7 +366,7 @@ class RexsterJSONTest extends \PHPUnit_Framework_TestCase
 	{
 		$db = new Connection;
 		$db->setSerializer(Messages::SERIALIZER_JSON);
-		$db->open('localhost', 'tinkergraph', 'test', 'ghJK5-hG');
+		$db->open('localhost', 'tinkergraph', $this->username, $this->password);
 		$db->sessionUuid = '';
 		$result = $db->close();
 		$this->assertFalse($result, 'Failed to return false with no transaction started');

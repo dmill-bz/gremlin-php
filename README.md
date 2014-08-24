@@ -152,3 +152,12 @@ $result = $db->runScript();
 $db->transactionStop(true);//accept commit of changes. set to false if you wish to cancel changes
 $db->close();
 ```
+
+Unit testing
+============
+
+If your test rexster server uses credentials for loging in you will need to run the following to set up proper credentials for tests:
+
+```bash
+phpunit src/tests/* --db-user <username> --db-password <password>
+```
