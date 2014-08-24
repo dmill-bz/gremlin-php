@@ -19,7 +19,7 @@ use \brightzone\rexpro\Helper;
  * @link     https://github.com/tinkerpop/rexster/wiki
  */
 class RexsterJSONTest extends \PHPUnit_Framework_TestCase
-{	
+{
 	/**
 	 * Testing Connection
 	 * 

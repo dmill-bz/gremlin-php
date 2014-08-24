@@ -58,6 +58,9 @@ class Messages
 	/**
 	 * Overriding construct to populate _serializerType
 	 *
+	 * @param int $serializerType the id of the serializer to use. Either self::SERIALIZER_MSGPACK or self::SERIALIZER_JSON
+	 * 
+	 * @return void
 	 */
 	public function __construct($serializerType)
 	{
@@ -92,7 +95,7 @@ class Messages
 		}
 		else
 		{
-			$message = json_encode($message,JSON_UNESCAPED_UNICODE);
+			$message = json_encode($message, JSON_UNESCAPED_UNICODE);
 		}
 
 		return mb_strlen($message, 'ISO-8859-1');
@@ -101,7 +104,7 @@ class Messages
 	/**
 	 * Unserializes the meta either msgpack or JSON
 	 * 
-	 * @param String &$message message to decode.
+	 * @param String $message message to decode.
 	 * 
 	 * @link http://msgpack.org/
 	 * @link https://github.com/msgpack/msgpack-php
@@ -138,9 +141,9 @@ class Messages
 		
 		//build message array
 		$message = array(
-				$this->_serializerType === Messages::SERIALIZER_MSGPACK ?
+				$this->_serializerType === self::SERIALIZER_MSGPACK ?
 							Helper::uuidToBin($sessionUuid) : $sessionUuid,
-				$this->_serializerType === Messages::SERIALIZER_MSGPACK ?
+				$this->_serializerType === self::SERIALIZER_MSGPACK ?
 							Helper::uuidToBin($this->requestUuid) : $this->requestUuid,
 				array_merge(array('killSession'=>FALSE), $meta),//let caller overwrite (session close for instance)
 				$username,
@@ -184,9 +187,9 @@ class Messages
 		
 		//build message array
 		$message = array(
-				$this->_serializerType === Messages::SERIALIZER_MSGPACK ?
+				$this->_serializerType === self::SERIALIZER_MSGPACK ?
 							Helper::uuidToBin($sessionUuid) : $sessionUuid,
-				$this->_serializerType === Messages::SERIALIZER_MSGPACK ?
+				$this->_serializerType === self::SERIALIZER_MSGPACK ?
 							Helper::uuidToBin($this->requestUuid) : $this->requestUuid,
 				array_merge(array('inSession'=>TRUE),
 							$meta
