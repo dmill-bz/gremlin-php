@@ -320,7 +320,52 @@ class RexsterTest extends RexsterTestCase
 		$elementCount2 = count($db->runScript());
 		$this->AssertEquals($elementCount + 1, $elementCount2, 'Transaction submition didn\'t work');
 	}
+	
+	/**
+	 * Testing transactions accross multiple script launches
+	 * 
+	 * @return void
+	 */
+	public function testTransactionsMultiRun()
+	{
+		$db = new Connection;
+		$message = $db->open('localhost:8184', 'graph', $this->username, $this->password);
+		$this->assertNotEquals($message, FALSE);
 
+		$db->script = 'g.V';
+		$elementCount = count($db->runScript());
+		
+		$db->transactionStart();
+
+		$db->script = 'g.addVertex([name:"michael"])';
+		$result = $db->runScript();
+		$db->script = 'g.addVertex([name:"michael"])';
+		$result = $db->runScript();
+		$this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
+		$this->assertTRUE($db->response[2] == 5, 'Script response message in transaction mode is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		
+		$db->transactionStop(FALSE);
+		
+		$db->script = 'g.V';
+		$elementCount2 = count($db->runScript());
+		$this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
+		
+		$db->transactionStart();
+
+		$db->script = 'g.addVertex([name:"michael"])';
+		$result = $db->runScript();
+		$db->script = 'g.addVertex([name:"michael"])';
+		$result = $db->runScript();
+		$this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
+		$this->assertTRUE($db->response[2] == 5, 'Script response message in transaction mode is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+		
+		$db->transactionStop(TRUE);
+		
+		$db->script = 'g.V';
+		$elementCount2 = count($db->runScript());
+		$this->AssertEquals($elementCount + 2, $elementCount2, 'Transaction submition didn\'t work');
+	}
+	
 	/**
 	 * Testing Unknown error type
 	 * 
