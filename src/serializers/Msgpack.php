@@ -25,7 +25,7 @@ class Msgpack implements SerializerInterface
 	/**
 	 * @var int Value of this serializer. Will be deprecated in TP3
 	 */
-	public static $value = Messages::SERIALIZER_MSGPACK;
+	public static $mimeType = 'application/msgpack';
 	
 	/**
 	 * Serializes the data
@@ -76,8 +76,8 @@ class Msgpack implements SerializerInterface
 	 * 
 	 * @return string name of serializer
 	 */
-	public function getValue()
+	public function getMimeType()
 	{
-		return self::$value;
+		return self::$mimeType;
 	}
 }

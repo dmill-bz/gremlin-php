@@ -58,33 +58,11 @@ class Exceptions
 	 */
 	public static function checkError($unpacked)
 	{
-		if($unpacked[2]==0)
+		if($unpacked['code'] !== 299 && $unpacked['code'] !== 200)
 		{
-			$errorArray = array(
-				self::INVALID_MESSAGE_ERROR		=> "The message sent to the RexPro Server was malformed.",
-				self::INVALID_SESSION_ERROR		=> "A session was requested that has either expired or no longer exists.",
-				self::SCRIPT_FAILURE_ERROR		=> "A script failed to execute (likely cause is syntax error).",
-				self::AUTH_FAILURE_ERROR		=> "Invalid username/password if authentication is turned on.",
-				self::GRAPH_CONFIG_ERROR		=> "A graph requested via 'graphName' meta attribute did not exist",
-				self::CHANNEL_CONFIG_ERROR		=> "The channel requested did not exist or the channel was changed after being established on the session. ",
-				self::RESULT_SERIALIZATION_ERROR => "The result or an item in the bindings could not be serialized properly.",
-				self::UNKNOWN_ERROR				=> "Unknown error returned by server.",
-			);
-			
-			if(isset($errorArray[$unpacked[4][2]['flag']]))
-			{
-				$err = $errorArray[$unpacked[4][2]['flag']];
-			}
-			else
-			{
-				$err = "Unknown error type.";
-			}
-			
-			return new self($unpacked[4][2]['flag'],$err.' > '.$unpacked[4][3]);
+			$error = new static($unpacked['code'],$unpacked['result']);
+			return $error;
 		}
-		else
-		{
-			return FALSE;
-		}
+		return FALSE;
 	}
 }

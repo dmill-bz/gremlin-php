@@ -78,101 +78,6 @@ class Messages
 	}
 	
 	/**
-	 * Serializes the meta either msgpack or JSON
-	 * 
-	 * @param array &$message Meta with request information
-	 * 
-	 * @link http://msgpack.org/
-	 * @link https://github.com/msgpack/msgpack-php
-	 * 
-	 * @return int length of generated string
-	 */
-	protected function serializeMessage(&$message)
-	{
-		if($this->_serializerType == self::SERIALIZER_MSGPACK)
-		{
-			$message[0] = Helper::uuidToBin($message[0]);
-			$message[1] = Helper::uuidToBin($message[1]);
-			$message = msgpack_pack($message);
-		}
-		else
-		{
-			$message = json_encode($message, JSON_UNESCAPED_UNICODE);
-		}
-
-		return mb_strlen($message, 'ISO-8859-1');
-	}
-
-	/**
-	 * Unserializes the meta either msgpack or JSON
-	 * 
-	 * @param String $message message to decode.
-	 * 
-	 * @link http://msgpack.org/
-	 * @link https://github.com/msgpack/msgpack-php
-	 * 
-	 * @return array decoded message
-	 */
-	protected function unserializeMessage($message)
-	{
-		if($this->_serializerType == self::SERIALIZER_MSGPACK)
-		{
-			$mssg = msgpack_unpack($message);
-			//lets just make UUIDs readable incase we need to debug 
-			$mssg[0] = Helper::binToUuid($mssg[0]);
-			$mssg[1] = Helper::binToUuid($mssg[1]);
-		}
-		else
-		{
-			$mssg = json_decode($message, TRUE, JSON_UNESCAPED_UNICODE);
-		}
-		return $mssg;
-	}
-	
-	/**
-	 * Constructs full binary message (including outter envelope) For use in Session creation
-	 * 
-	 * @param string $sessionUuid     session ID. This is not necessary at this stage but still included
-	 * @param string $username        Username to use for connection to rexpro server
-	 * @param string $password        Password to use for connection to rexpro server
-	 * @param array  $meta            Metadata to add to request message
-	 * @param int    $protocolVersion Protocol to use, only current option is 0
-	 * 
-	 * @return string Returns binary data to be written to socket
-	 */
-	public function buildSessionMessage($sessionUuid, $username, $password, $meta, $protocolVersion=0)
-	{
-		$this->createUuid();
-		
-		//build message array
-		$message = array(
-				$sessionUuid,
-				$this->requestUuid,
-				array_merge(array('killSession'=>FALSE), $meta),//let caller overwrite (session close for instance)
-				$username,
-				$password
-		);
-		
-		//lets pack the message
-		$messageLength = $this->_serializer->serialize($message);
-		
-		//Now we need to build headers
-		$msg = pack('C*',
-					$protocolVersion,
-					$this->_serializer->getValue(),
-					0, //reserved byte
-					0, //reserved byte
-					0, //reserved byte
-					0, //reserved byte
-					self::SESSION_REQUEST).Helper::convertIntTo32Bit($messageLength);
-		
-		//append message and return
-		$this->msgPack = $msg.$message;
-		//echo $this->msgPack;
-		return $this->msgPack;
-	}	
-	
-	/**
 	 * Constructs full binary message (including outter envelope) For use in script execution
 	 * 
 	 * @param string $sessionUuid     session ID. This is not necessary at this stage but still included
@@ -183,59 +88,41 @@ class Messages
 	 * 
 	 * @return string Returns binary data to be written to socket
 	 */
-	public function buildScriptMessage($sessionUuid, $script, $bindings, $meta, $protocolVersion=0)
+	public function buildScriptMessage($sessionUuid, $op, $processor, $args)
 	{
 		//lets start by packing message
 		$this->createUuid();
 		
 		//build message array
 		$message = array(
-				$sessionUuid,
-				$this->requestUuid,
-				array_merge(array('inSession'=>TRUE), $meta),//overwrite user value
-				'groovy',
-				$script,
-				($bindings === NULL? new \stdClass : $bindings)		
+				'requestId' => $this->requestUuid,
+				'processor' => $processor,
+				'op' => $op,
+				'args' => $args
 				);
-		
-		//lets pack the message
-		$messageLength = $this->_serializer->serialize($message);
-		
-		//Now we need to build headers
-		$msg = pack('C*',
-					$protocolVersion,
-					$this->_serializer->getValue(),
-					0, //reserved byte
-					0, //reserved byte
-					0, //reserved byte
-					0, //reserved byte
-					self::SCRIPT_REQUEST).Helper::convertIntTo32Bit($messageLength);
-		
-		//append message and return
-		$this->msgPack = $msg.$message;
-		return $this->msgPack;	
+		//serialize message
+		$this->_serializer->serialize($message);
+		$mimeType = $this->_serializer->getMimeType();
+
+		$this->message =  pack('C',16).$mimeType.$message;
+		return $this->message;	
 	}	
 	
 	/**
 	 * Parses full message (including outter envelope)
 	 * 
-	 * @param string $bin binary Data from server packet
+	 * @param string $payload payload from the server response
 	 * 
 	 * @return array Array containing all results
 	 */
-	public function parse($bin)
+	public function parse($payload, $isBinary)
 	{
-		$resp = str_split($bin, 1);
-		
-		$proVersion = Helper::convertIntFrom32Bit($resp[0]); //cheating by using this function on non-32bit
-		$serializerType = Helper::convertIntFrom32Bit($resp[1]); //cheating by using this function on non-32bit
-		$rqstType = Helper::convertIntFrom32Bit($resp[6]); //cheating by using this function on non-32bit
-		
-		$mssgLength = implode('', array_slice($resp, 7, 4));
-		$mssgLength = Helper::convertIntFrom32Bit($mssgLength);
-
-		$mssg = $this->_serializer->unserialize(implode('', array_slice($resp, 11, count($resp))));
-		
-		return array($proVersion, $serializerType, $rqstType, $mssgLength,$mssg);
+		if($isBinary)
+		{
+			//do nothing for now. Assume same as we sent with.
+			list($mimeLength) = unpack('C',$payload[0]);
+			$payload = substr($payload, 0, $mimeLength + 1);
+		}
+		return $this->_serializer->unserialize($payload);
 	}
 }

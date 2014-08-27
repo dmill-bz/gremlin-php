@@ -113,5 +113,36 @@ class Helper
 		return hexdec(bin2hex($bin));
 	}
 
-
+	/**
+	 * Creates a random String based on given params
+	 * 
+	 * @param int  $length     length of the string to generate
+	 * @param bool $addSpaces  whether or not to include spaces in string
+	 * @param bool $addNumbers whether or not to include numbers in string
+	 * 
+	 * @return string random generated string
+	 */
+	public static function generateRandomString($length = 10, $addSpaces = true, $addNumbers = true)
+	{  
+		$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"§$%&/()=[]{}';
+		$useChars = array();
+		// select some random chars:    
+		for($i = 0; $i < $length; $i++)
+		{
+			$useChars[] = $characters[mt_rand(0, strlen($characters)-1)];
+		}
+		// add spaces and numbers:
+		if($addSpaces === true)
+		{
+			array_push($useChars, ' ', ' ', ' ', ' ', ' ', ' ');
+		}
+		if($addNumbers === true)
+		{
+			array_push($useChars, rand(0,9), rand(0,9), rand(0,9));
+		}
+		shuffle($useChars);
+		$randomString = trim(implode('', $useChars));
+		$randomString = substr($randomString, 0, $length);
+		return $randomString;
+	}
 }

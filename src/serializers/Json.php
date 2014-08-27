@@ -24,7 +24,7 @@ class Json implements SerializerInterface
 	/**
 	 * @var int Value of this serializer. Will be deprecated in TP3
 	 */
-	public static $value = Messages::SERIALIZER_JSON;
+	public static $mimeType = 'application/json';
 	
 	/**
 	 * Serializes the data
@@ -70,8 +70,8 @@ class Json implements SerializerInterface
 	 * 
 	 * @return string name of serializer
 	 */
-	public function getValue()
+	public function getMimeType()
 	{
-		return self::$value;
+		return self::$mimeType;
 	}
 }

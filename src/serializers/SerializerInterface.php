@@ -45,5 +45,5 @@ interface SerializerInterface
 	 * 
 	 * @return string name of serializer
 	 */
-	public function getValue();
+	public function getMimeType();
 }

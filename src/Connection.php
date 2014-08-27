@@ -58,16 +58,6 @@ class Connection
 	public $password;
 	
 	/**
-	 * @var string the graph in use.
-	 */
-	public $graph;
-	
-	/**
-	 * @var string the name of the graph object to use. defaults to 'g' for establishing DB connection.
-	 */
-	public $graphObject;
-	
-	/**
 	 * @var string The session ID for this connection. 
 	 * Session ID allows us to access variable bindings made in previous requests. It is binary data
 	 */
@@ -101,11 +91,6 @@ class Connection
 	public $response;
 	
 	/**
-	 * @var int Protocol version to use. Currently only 0 should be used
-	 */
-	public $protocolVersion = 1;
-	
-	/**
 	 * @var resource rexpro socket connection
 	 */
 	private $_socket;
@@ -129,14 +114,7 @@ class Connection
 	 */
 	public function __construct()
 	{
-		if (extension_loaded('msgpack'))
-		{
-			$this->_serializer = new Msgpack;
-		}
-		else
-		{
-			$this->_serializer = new Json;
-		}
+		$this->_serializer = new Json;
 	}
 	
 	/**
@@ -150,46 +128,40 @@ class Connection
 	 * 
 	 * @return bool TRUE on success FALSE on error
 	 */
-	public function open($host='localhost:8184', $graph='tinkergraph', $username=NULL, $password=NULL, $graphObject='g')
+	public function open($host='localhost:8182', $username = NULL, $password = NULL, $origin = NULL)
 	{
 		if($this->_socket === NULL)
 		{
 			$this->error = NULL;
-			$this->host = $host;
-			$this->graph = $graph;
-			$this->graphObject = $graphObject;
 			$this->username = $username;
 			$this->password = $password;
-
+			$this->host = strpos($host, ':')===FALSE ? $host.':8182': $host;
+			
 			if(!$this->connectSocket())
 			{
 				return FALSE;
 			}
-				
-			//lets make opening session message:
-			$msg = new Messages($this->_serializer);
-			$msg->buildSessionMessage(	Helper::createUuid(),
-										$this->username,
-										$this->password,
-										array('graphName'=>$this->graph,'graphObjName'=>$this->graphObject),
-										$this->protocolVersion);
-			
-			if(!$this->send($msg))
+
+			$key = base64_encode(Helper::generateRandomString(16, false, true));				
+			$header = "GET /gremlin HTTP/1.1\r\n";
+			$header.= "Upgrade: websocket\r\n";
+			$header.= "Connection: Upgrade\r\n";
+			$header.= "Sec-WebSocket-Key: " . $key . "\r\n";
+			$header.= "Host: ".$this->host."\r\n";
+			if($origin !== NULL)
 			{
-				return FALSE;
+				$header.= "Sec-WebSocket-Origin: http://".$this->host."\r\n";
 			}
-			
-			//lets get the response
-			$response = $this->getResponse();
-			if($response === FALSE)
-			{
-				return FALSE;
-			}
-			
-			$this->response = $response;
-			$this->sessionUuid = $this->response[4][0];
-			
-			return TRUE;
+			$header.= "Sec-WebSocket-Version: 13\r\n\r\n";
+
+			@fwrite($this->_socket, $header); 
+			$response = @fread($this->_socket, 1500);		
+
+			preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches);
+			$keyAccept = trim($matches[1]);
+			$expectedResonse = base64_encode(pack('H*', sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
+
+			return ($keyAccept === $expectedResonse) ? TRUE : FALSE;
 		}
 	}
 	
@@ -202,7 +174,7 @@ class Connection
 	 */
 	public function send($msg)
 	{	
-		$write = @fwrite($this->_socket, $msg->msgPack);
+		$write = @fwrite($this->_socket, $this->webSocketPack($msg->message));
 		if($write === FALSE)
 		{
 			$this->error = new Exceptions(0, 'Could not write to socket');
@@ -217,36 +189,95 @@ class Connection
 	 * @return mixed unpacked message if TRUE, FALSE on error
 	 */
 	public function getResponse()
-	{	
-		$header = @stream_get_contents($this->_socket, 7);
-		$messageLength = @stream_get_contents($this->_socket, 4);
-		$body = @stream_get_contents($this->_socket, (int)hexdec(bin2hex($messageLength)));
-	
-		if($header === FALSE || $messageLength === FALSE || $body === FALSE )
+	{
+		$fullData = [];
+		do
 		{
-			$this->error = new Exceptions(0, 'Could not stream contents');
-			return FALSE;
-		} 
-		if(empty($header) || empty($messageLength) || empty($body) )
-		{
-			$this->error = new Exceptions(0, 'Empty reply. Most likely the result of an irregular request. (Check custom Meta, or lack of in the case of a non-isolated query)');
-			return FALSE;
-		} 
-		
-		$msgPack = $header.$messageLength.$body;
-	
-		//now that we have the binary package lets parse it
-		$message = new Messages($this->_serializer);
-		$unpacked = $message->parse($msgPack);
-		//lets check if this is an error message from the server
-		$error = Exceptions::checkError($unpacked);
-		if( $error === FALSE)
-		{
-			return $unpacked;
-		}
-		$this->error = $error;
-		return FALSE;
+			$data = $head = @stream_get_contents($this->_socket, 1);
+			$head = unpack('C*', $head);
 
+			$isBinary = ($head & 15)==2;
+			
+			$data .= $maskAndLength = @stream_get_contents($this->_socket, 1);
+			list($maskAndLength) = array_values(unpack('C', $maskAndLength));
+
+			//set first bit to 0
+			$length =  $maskAndLength & 127;
+
+			$maskSet = FALSE;
+			if($maskAndLength & 128)
+			{
+				$maskSet = TRUE;
+			}
+			
+			if($length == 126 )
+			{
+				$data .= $payloadLength = @stream_get_contents($this->_socket, 2);
+				list($payloadLength) = array_values(unpack('n', $payloadLength)); // S for 16 bit int
+			}
+			elseif($length == 127 )
+			{
+				$data .= $payloadLength = @stream_get_contents($this->_socket, 8);
+				//lets save it as two 32 bit integers and reatach using bitwise operators
+				//we do this as pack doesn't support 64 bit packing/unpacking.
+				list($higher, $lower) = array_values(unpack('N2',$payloadLength));
+				$payloadLength = $higher << 32 | $lower;
+			}
+			else
+			{
+				$payloadLength = $length;
+			}
+
+			//get mask
+			if($maskSet)
+			{
+				$data .= $mask = @stream_get_contents($this->_socket, 4);
+			}
+
+			//get payload
+			$data .= $payload = @stream_get_contents($this->_socket, $payloadLength);
+
+			if($maskSet)
+			{
+				//unmask payload
+				$payload = $this->unmask($payload, $mask);
+			}
+			
+			if($head === FALSE || $payload === FALSE || $maskAndLength === FALSE
+			|| $payloadLength === FALSE || ($maskSet === TRUE && $mask === FALSE) 
+			)
+			{
+				$this->error = new Exceptions(0, 'Could not stream contents');
+				return FALSE;
+			} 
+			if(empty($head) || empty($payload) || empty($maskAndLength)
+			|| empty($payloadLength) || ($maskSet === TRUE && empty($mask) ))
+			{
+				$this->error = new Exceptions(0, 'Empty reply. Most likely the result of an irregular request. (Check custom Meta, or lack of in the case of a non-isolated query)');
+				return FALSE;
+			} 
+
+			//now that we have the payload lets parse it
+			$message = new Messages($this->_serializer);
+
+			$unpacked = $message->parse($payload,$isBinary);
+
+			//TODO ERROR HANDLING
+			$error = Exceptions::checkError($unpacked);
+			if( $error !== FALSE)
+			{
+				$this->_error = $error;
+				return FALSE;
+			}
+
+			if($unpacked['type'] !== 0) // will have to change with server upgrade.
+			{
+				$fullData = array_merge($fullData, $unpacked['result']);
+			}
+		}
+		while($unpacked['code'] !== 299);
+		
+		return $fullData;
 	}
 	
 	/**
@@ -255,12 +286,7 @@ class Connection
 	 * @return bool TRUE on success FALSE on error
 	 */
 	protected function connectSocket()
-	{
-		if (strpos($this->host, ':')===FALSE)
-		{
-				$this->host .= ':8184';
-		}
-		
+	{	
 		$this->_socket = @stream_socket_client(
 									'tcp://'.$this->host,
 									$errno, 
@@ -284,30 +310,37 @@ class Connection
 	 * 
 	 * @return mixed message on success FALSE on error.
 	 */
-	public function runScript($inSession=TRUE, $isolated=TRUE)
+	public function runScript($inSession = TRUE, $op = 'eval', $processor = 'session', $args = [])
 	{	
 		//lets make a script message:
 		$msg = new Messages($this->_serializer);
-		
-		$meta = array(	'inSession'=>$inSession,
-						'transaction'=>$this->_inTransaction?FALSE:TRUE,
-						'isolate'=>$inSession?$isolated:FALSE);
-		if($inSession===FALSE)
+
+		if($inSession && !isset($this->sessionUuid))
 		{
-			$meta = array_merge($meta, array(	'graphName'=>$this->graph,
-												'graphObjName'=>$this->graphObject?$this->graphObject:'g'));
+			$processor = 'session';
+			$this->sessionUuid = Helper::createUuid();
 		}
 		
-		$msg->buildScriptMessage(	($inSession?$this->sessionUuid:'00000000-0000-0000-0000-000000000000'),
-									$this->script,
-									$this->bindings,
-									$meta,
-									$this->protocolVersion);
+		$arguments = array(	'session'=>$inSession?$this->sessionUuid:'00000000-0000-0000-0000-000000000000',
+							'gremlin'=>$this->script,
+							'bindings'=>$this->bindings,
+							'language'=>"gremlin-groovy");
+
+		if(!empty($args))
+		{
+			$arguments = array_merge($arguments, $args);
+		}
+		
+		$msg->buildScriptMessage(	($inSession ? $this->sessionUuid : NULL),
+									$op,
+									$processor,
+									$arguments);
 		
 		//reset script information after building
 		$this->bindings = NULL;
 		$this->script = NULL;
-		
+		$this->response = NULL;
+		print_r($msg);
 		if(!$this->send($msg))
 		{
 			return FALSE;
@@ -321,7 +354,7 @@ class Connection
 		}
 		
 		$this->response = $response;
-		return $this->response[4][3];
+		return $this->response;
 	}
 	
 	/**
@@ -336,25 +369,12 @@ class Connection
 		{
 			$this->error = NULL;
 			//lets make opening session message:
-			$msg = new Messages($this->_serializer);
-			$msg->buildSessionMessage(	$this->sessionUuid,
-										$this->username,
-										$this->password,
-										array('killSession'=>TRUE),
-										$this->protocolVersion);
-			
-			if(!$this->send($msg))
+			$write = @fwrite($this->_socket, $this->webSocketPack("",'close'));
+			if($write === FALSE)
 			{
+				$this->error = new Exceptions(0, 'Could not write to socket');
 				return FALSE;
 			}
-			
-			//lets get the response
-			$response = $this->getResponse();
-			if($response === FALSE)
-			{
-				return FALSE;
-			}
-			$this->response = $response;
 			@stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR); //ignore error
 			$this->_socket = NULL;
 			$this->sessionUuid = NULL;
@@ -390,10 +410,12 @@ class Connection
 		if($this->_inTransaction)
 		{
 			$this->error = array(0,'already in transaction');
-			$this->script='g.stopTransaction(FAILURE)';
+			$this->script='g.tx().rollback()';
 			$this->runScript();
 			return FALSE;
 		}
+		//~ $this->script='g.tx().open()';
+		//~ $this->runScript();
 		$this->_inTransaction = TRUE;
 		return TRUE;
 	}
@@ -407,13 +429,21 @@ class Connection
 	 */
 	public function transactionStop($success = TRUE)
 	{
-		if(!$this->_inTransaction)
+		if(!$this->_inTransaction || !isset($this->sessionUuid))
 		{
 			$this->error = array(0,'No ongoing transaction');
 			return FALSE;
 		}
 		//send message to stop transaction
-		$this->script='g.stopTransaction('.($success?'SUCCESS':'FAILURE').')';
+		if($success)
+		{
+			$this->script='g.tx().commit()';
+		}
+		else
+		{
+			$this->script='g.tx().rollback()';
+		}
+		
 		$this->runScript();
 		
 		$this->_inTransaction = FALSE;
@@ -471,5 +501,114 @@ class Connection
 	public function getSerializer()
 	{
 		return $this->_serializer->getName();
+	}
+
+	private function webSocketPack($payload, $type = 'binary', $masked = TRUE)
+	{
+		$frameHead = array();
+		$frame = '';
+		$payloadLength = strlen($payload);
+		
+		switch($type)
+		{		
+			case 'text':
+				// first byte indicates FIN, Text-Frame (10000001):
+				$frameHead[0] = 129;				
+			break;			
+		
+			case 'binary':
+				// first byte indicates FIN, Text-Frame (10000001):
+				$frameHead[0] = 130;				
+			break;			
+		
+			case 'close':
+				// first byte indicates FIN, Close Frame(10001000):
+				$frameHead[0] = 136;
+			break;
+		
+			case 'ping':
+				// first byte indicates FIN, Ping frame (10001001):
+				$frameHead[0] = 137;
+			break;
+		
+			case 'pong':
+				// first byte indicates FIN, Pong frame (10001010):
+				$frameHead[0] = 138;
+			break;
+		}
+		
+		// set mask and payload length (using 1, 3 or 9 bytes) 
+		if($payloadLength > 65535)
+		{
+			$payloadLengthBin = str_split(sprintf('%064b', $payloadLength), 8);
+			$frameHead[1] = ($masked === true) ? 255 : 127;
+			for($i = 0; $i < 8; $i++)
+			{
+				$frameHead[$i+2] = bindec($payloadLengthBin[$i]);
+			}
+			// most significant bit MUST be 0 (close connection if frame too big)
+			if($frameHead[2] > 127)
+			{
+				$this->close();
+				return false;
+			}
+		}
+		elseif($payloadLength > 125)
+		{
+			$payloadLengthBin = str_split(sprintf('%016b', $payloadLength), 8);
+			$frameHead[1] = ($masked === true) ? 254 : 126;
+			$frameHead[2] = bindec($payloadLengthBin[0]);
+			$frameHead[3] = bindec($payloadLengthBin[1]);
+		}
+		else
+		{
+			$frameHead[1] = ($masked === true) ? $payloadLength + 128 : $payloadLength;
+		}
+
+		// convert frame-head to string:
+		foreach(array_keys($frameHead) as $i)
+		{
+			$frameHead[$i] = chr($frameHead[$i]);
+		}
+		if($masked === true)
+		{
+			// generate a random mask:
+			$mask = array();
+			for($i = 0; $i < 4; $i++)
+			{
+				$mask[$i] = chr(rand(0, 255));
+			}
+			
+			$frameHead = array_merge($frameHead, $mask);			
+		}						
+		$frame = implode('', $frameHead);
+
+		// append payload to frame:
+		$framePayload = array();	
+		for($i = 0; $i < $payloadLength; $i++)
+		{		
+			$frame .= ($masked === true) ? $payload[$i] ^ $mask[$i % 4] : $payload[$i];
+		}
+
+		return $frame;
+	}
+
+	private function webSocketUnpack($section, $data)
+	{
+
+
+	}
+
+	private function unmask($mask, $data)
+	{
+		$unmaskedPayload = '';
+		for($i = 0; $i < strlen($data); $i++)
+			{
+				if(isset($data[$i]))
+				{
+					$unmaskedPayload .= $data[$i] ^ $mask[$i % 4];
+				}
+			}
+			return $unmaskedPayload;
 	}
 }
