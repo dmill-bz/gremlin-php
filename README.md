@@ -1,61 +1,44 @@
-This is a rexpro client for PHP. It's main purpose was for it to be integrated into frameworks, and therefore it will fail silently and not throw any exceptions. See Error handling section 
+This is a Gremlin server client for PHP.
+
+Changes
+=======
+There are many changes but bellow are the most noticeable if you've used rexpro-php before
+* Client now throw errors that you will need to catch
+* Connection params have changes
+* Messages class has been revamped and is independant from Connection (see documentation on how to use this)
+* Unit testing will require some more configuration
+* Runs sessionless by default (rexpro-php 2.3 & 2.4+ ran with sessions as the default)
 
 
 Installation
 ============
 
-### MsgPack (optional)
+### PHP Gremlin-Server Client
 
-rexpro-php does not require MsgPack anymore as it can also serialize using json. If you wish you can still use it though: [MsgPack](http://msgpack.org/) .
+##### For Gremlin-Server 3.0.0-M1
 
-Install MsgPack from git:
+Prefered method is through composer. Add the following to your **composer.json** file:
 
-```bash
-git clone https://github.com/msgpack/msgpack-php.git
-cd msgpack-php
-phpize
-./configure && make && make install
-```
-Warning this is not the latest version anymore and will not work!!! Leaving this here for the information
-
-Install MsgPack from PEAR:
-
-```bash
-sudo pecl install msgpack-beta
-sudo sh -c 'echo "extension=msgpack.so" > /etc/php5/mods-available/msgpack.ini'
-sudo php5enmod msgpack
+```json
+{
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/PommeVerte/rexpro-php.git"
+        }
+    ],
+    "require": {
+        "brightzone/rexpro": "3.0"
+    }
+}
 ```
 
-### PHP Rexster Client
-
-##### For Rexster 2.4+
+If you just want to pull and use the library do:
 
 ```bash
-git clone https://github.com/PommeVerte/rexpro-php.git
-```
-
-##### For Rexster 2.3
-
-```bash
-git clone https://github.com/PommeVerte/rexpro-php.git -b 2.3
-```
-
-
-Error Handling
-==============
-
-The PHP Client does not throw Exceptions. It was built with the goal of being wrapped into a PHP framework and therefore fails silently (you can still get errors by checking method return values).
-
-For instance:
-
-```php
-if($db->open('localhost:8184','tinkergraph',null,null) === false)
-  throw new Exception($db->error->code . ' : ' . $db->error->description);
-$db->script = 'g.v(2)';
-$result = $db->runScript();
-if($result === false)
-   throw new Exception($db->error->code . ' : ' . $db->error->description);
-//do something with result
+git clone https://github.com/PommeVerte/rexpro-php.git -b 3.0
+cd rexpro-php
+composer install --no-dev # required to set autoload files
 ```
 
 Namespace
@@ -64,7 +47,7 @@ Namespace
 The Connection class exists within the `rexpro` namespace. This means that you have to do either of the two following:
 
 ```php
-require_once 'rexpro-php/src/Connection.php';
+require_once('vendor/autoload.php');
 use \brightzone\rexpro\Connection;
  
 $db = new Connection;
@@ -73,23 +56,9 @@ $db = new Connection;
 Or
 
 ```php
-require_once 'rexpro-php/src/Connection.php';
+require_once('vendor/autoload.php');
 
 $db = new \brightzone\rexpro\Connection;
-```
-
-Serializer
-==========
-rexpro-php will use the pecl msgpack extention by default. But if it isn't installed on the system it will automatically revert to using JSON.
-
-If you wish to force a specific serializer type you may do so like this:
-
-```php
-$db = new Connection;
-echo $db->getSerializer(); // will echo 'MSGPACK'
-$db->setSerializer(Messages::SERIALIZER_JSON);
-echo $db->getSerializer(); // will echo 'JSON'
-// do something with $db Connection Object.
 ```
 
 Examples
@@ -99,67 +68,116 @@ You can find more information by reading the API in the wiki.
 
 Here are a few basic usages.
 
-Example 1:
+Example 1 :
 
 ```php
 $db = new Connection;
 //you can set $db->timeout = 0.5; if you wish
-$db->open('localhost:8184','tinkergraph',null,null);
-$db->script = 'g.v(2)';
-$result = $db->runScript();
+$db->open('localhost', 'g');
+
+$result = $db->send('g.v(2)');
 //do something with result
 $db->close();
 ```
 
-Example 2 (with bindings):
-
+Example 1 bis (Writing the same with message object) :
 ```php
 $db = new Connection;
-$db->open('localhost:8184','tinkergraph','username','password');
+//you can set $db->timeout = 0.5; if you wish
+$db->open('localhost', 'g');
 
-$db->script = 'g.v(CUSTO_BINDING)';
-$db->bindValue('CUSTO_BINDING',2);
-$result = $db->runScript();
+$db->message->gremlin = 'g.v(2)';
+$result = $db->send(); //automatically fetches the message
 //do something with result
 $db->close();
 ```
 
-Example 3 (sessionless):
+
+Example 2 (with bindings) :
 
 ```php
 $db = new Connection;
-$db->open('localhost:8184');
-$db->script = 'g.v(2).map()';
-$db->graph = 'tinkergraph'; //need to provide graph
-$result = $db->runScript(false);
+$db->open('localhost:8182', 'g');
+
+$db->message->bindValue('CUSTO_BINDING', 2);
+$result = $db->send('g.v(CUSTO_BINDING)'); //mix between Example 1 and 1B
 //do something with result
-$b->close();
+$db->close();
 ```
 
-Example 4 (transaction):
+Example 3 (with session) :
 
 ```php
 $db = new Connection;
-$db->open('localhost:8184','neo4jsample',null,null);
+$db->open('localhost:8182');
+$db->send('cal = 5+5', 'session');
+$result = $db->send('cal', 'session'); // result = [10]
+//do something with result
+$db->close();
+```
+
+Example 4 (transaction) :
+
+```php
+$db = new Connection;
+$db->open('localhost:8182','n');
   	
 $db->transactionStart();
 
-$db->script = 'g.addVertex([name:"michael"])';
-$result = $db->runScript();
-$db->script = 'g.addVertex([name:"john"])';
-$result = $db->runScript();
+$db->send('n.addVertex("name","michael")');
+$db->send('n.addVertex("name","john")');
 
-$db->transactionStop(true);//accept commit of changes. set to false if you wish to cancel changes
+$db->transactionStop(FALSE); //rollback changes. Set to true to commit.
 $db->close();
 ```
+Note that "n" above refers to a graph that supports transactions. And that transactions start a session automatically.
+Also, as of today g.addVertex() on Neo4j graphs is buggy.
+
+Example 5 (Using message object) :
+
+```php
+$message = new Messages;
+$message->gremlin = 'g.V';
+$message->op = 'eval';
+$message->processor = '';
+$message->setArguments([
+				'language' => 'gremlin-groovy',
+				// .... etc
+]);
+$message->registerSerializer('\brightzone\rexpro\serializers\Json');
+
+$db = new Connection;
+$db->open();
+$result = $db->send($message);
+//do something with result
+$db->close();
+```
+Of course you can affect the current db message in the same manner through $db->message.
+
+Adding Serializers
+==================
+
+This library comes with a Json and an unused legacy Msgpack serializer. Any other serializer that implements SerializerImplementation can be added dynamically with:
+
+```php
+$db = new Connection;
+$serializer = $db->message->getSerializer() ; // returns an instance of the default JSON serializer
+echo $serializer->getName(); // JSON
+echo $serializer->getMimeType(); // JSON
+
+$db->message->registerSerializer('namespace\to\my\CustomSerializer', TRUE); // sets this as default
+$serializer = $db->message->getSerializer(); // returns an instance the CustomSerializer serializer (default)
+$serializer = $db->message->getSerializer('application/json'); // returns an instance the JSON serializer
+```
+You can add many serializers in this fashion. When gremlin-server responds to your requests, gremlin-client-php will be capable of using the appropriate one to unserialize the message.
 
 Unit testing
 ============
 
-If your test rexster server uses credentials for loging in you will need to run the following to set up proper credentials for tests:
+To have the unit tests pass you will have to run your gremlin-server with the following configuration file : src/tests/gremlin-server-neo4j.yaml
+
+This requires that you have the neo4j jar. You can get it by doing:
 
 ```bash
-DBUSER=<username> DBPASS=<password> phpunit src/tests/
+bin/gremlin-server.sh -i com.tinkerpop neo4j-gremlin 3.0.0.M1
 ```
-
-Using env variables allows us to pass these arguments to a CI environment if needed.

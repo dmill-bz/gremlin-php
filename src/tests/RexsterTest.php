@@ -92,52 +92,41 @@ class RexsterTest extends RexsterTestCase
 	public function testConnectSuccess()
 	{
 		$db = new Connection;
-		$result = $db->open('localhost', $this->username, $this->password);
-		
-		$this->assertNotEquals($result, FALSE, 'Failed to connect with no params');
+		$result = $db->open('localhost', 'g', $this->username, $this->password);
 		
 		$db = new Connection;
-		$result = $db->open('localhost', $this->username, $this->password);
-		$this->assertNotEquals($result, FALSE, 'Failed to connect with "localhost"');
+		$result = $db->open('localhost', 'g', $this->username, $this->password);
 		
 		$db = new Connection;
-		$result = $db->open('localhost', $this->username, $this->password);
-		$this->assertNotEquals($result, FALSE, 'Failed to connect with localhost and titan graph');
+		$result = $db->open('localhost', 'g', $this->username, $this->password);
 	}
 	
 	/**
-	 * Testing connection errors
+	 * Testing unknown host connection errors
+	 *
+	 * @expectedException Exception
 	 * 
 	 * @return void
 	 */
-	public function testConnectErrors()
+	public function testConnectErrorsUknownHost()
 	{	
 		$db = new Connection;
 		$db->timeout = 0.5;
 		$result = $db->open('unknownhost');
-		$this->assertEquals($result, FALSE, 'Connecting to an unknown host does not throw an error');
-		
-		$this->assertNotEquals($db->error, NULL, 'Error object was not properly populated for unknown host');
-		$this->assertTRUE($db->error instanceof Exceptions, 'Error object is not an Exceptions Object for unknown host');
-		$this->assertFALSE(NULL === $db->error->code, 'Error object does not contain an error code for unknown host');
-		$this->assertFALSE(NULL === $db->error->description, 'Error object does not contain an error description for unknown host');
-		
+	}
+
+	/**
+	 * Testing wrong port connection errors
+	 *
+	 * @expectedException Exception
+	 * 
+	 * @return void
+	 */
+	public function testConnectErrorsWrongPort()
+	{	
 		$db = new Connection;
 		$db->timeout = 0.5;
 		$result = $db->open('localhost:8787');
-		$this->assertEquals($result, FALSE, 'Connecting to the wrong port for localhost does not throw an error');
-		
-		$this->assertTRUE($db->error instanceof Exceptions, 'Error object is not an Exceptions Object for unknown port');
-		$this->assertFALSE(NULL === $db->error->code, 'Error object does not contain an error code for unknown port');
-		$this->assertFALSE(NULL === $db->error->description, 'Error object does not contain an error description for unknown port');
-		
-		//~ $db = new Connection;
-		//~ $result = $db->open('localhost', 'doesnt exist', $this->username, $this->password);
-		//~ $this->assertEquals($result, FALSE, 'Loading a non-existing user doesn\'t throw error');
-		//~ 
-		//~ $this->assertTRUE($db->error instanceof Exceptions, 'Error object is not an Exceptions Object for unknown user');
-		//~ $this->assertFALSE(NULL === $db->error->code, 'Error object does not contain an error code for unknown user');
-		//~ $this->assertFALSE(NULL === $db->error->description, 'Error object does not contain an error description for unknown user');
 	}
 	
 	/**
@@ -149,13 +138,10 @@ class RexsterTest extends RexsterTestCase
 	{
 		//do all connection checks
 		$db = new Connection;
-		$db->open('localhost', $this->username, $this->password);
+		$db->open('localhost', 'g', $this->username, $this->password);
 
 		//check disconnection
 		$response = $db->close();
-		
-		$this->assertNotEquals($response, FALSE, 'Closing connection on empty param connect creates an Error');
-		$this->assertFALSE($db->isConnected(), 'Despite not throwing errors, Socket connection is not established');
 	}	
 	
 	/**
@@ -166,54 +152,45 @@ class RexsterTest extends RexsterTestCase
 	public function testRunScriptNoSession()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
+		$this->assertNotEquals($message,FALSE, 'Failed to connect to db');
 		
-		$db->script = '5+5';
-		$result = $db->runScript(FALSE);
+		$result = $db->send('5+5');
+		$this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)');
 
-		$this->assertNotEquals($result, FALSE, 'Script request throws an error');
-		$this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
-		
-		$db->script = 'g.V';
-		$result = $db->runScript(FALSE);
-		
-		$this->assertNotEquals($result, FALSE, 'Script request throws an error');
-		$this->assertEquals(count($result), 6, 'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
-		
+		$result = $db->send('g.V');
+		$this->assertEquals(count($result), 6, 'Script response message is not the right type. (Maybe it\'s an error)');
+
 		//check disconnection
 		$message = $db->close();
-
-		$this->assertNotEquals($message, FALSE, 'Closing connection on script creates an Error');
 		$this->assertFALSE($db->isConnected(), 'Despite not throwing errors, Socket connection is not established');
 	}
 
 		
 	/**
 	 * Testing Script run against DB
+	 * Sessions and transactions are linked ATM
 	 * 
 	 * @return void
 	 */
 	public function testRunScriptSession()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', $this->username, $this->password);
-		
-		$db->script = '5+5';
-		$result = $db->runScript();
+		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
 
-		$this->assertNotEquals($result, FALSE, 'Script request throws an error');
+		$this->assertNotEquals($message,FALSE, 'Failed to connect to db');
+		
+		$result = $db->send('5+5','session', 'eval');
+
 		$this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
-		$db->script = 'g.V';
-		$result = $db->runScript();
-		
-		$this->assertNotEquals($result, FALSE, 'Script request throws an error');
+		$result = $db->send('g.V', 'session', 'eval');
 		$this->assertEquals(count($result), 6, 'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
 		//check disconnection
 		$message = $db->close();
-		$this->assertNotEquals($message, FALSE, 'Closing connection on script creates an Error');
 		$this->assertFALSE($db->isConnected(), 'Despite not throwing errors, Socket connection is not established');
+		$this->assertFALSE($db->inTransaction(), 'Despite closing, transaction not closed');
 	}
 
 	/**
@@ -224,12 +201,12 @@ class RexsterTest extends RexsterTestCase
 	public function testRunScriptWithBindings()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 		
-		$db->script = 'g.v(CUSTO_BINDING)';
-		$db->bindValue('CUSTO_BINDING', 2);
-		$result = $db->runScript();
+		$db->message->gremlin = 'g.v(CUSTO_BINDING)';
+		$db->message->bindValue('CUSTO_BINDING', 2);
+		$result = $db->send();
 
 		$this->assertNotEquals($result, FALSE, 'Running a script with bindings produced an error');
 		
@@ -237,227 +214,245 @@ class RexsterTest extends RexsterTestCase
 		$message = $db->close();
 		$this->assertNotEquals($message, FALSE, 'Disconnecting from a session where bindings were used created an error');
 	}
+
+	/**
+	 * Testing Script run with bindings
+	 * 
+	 * @return void
+	 */
+	public function testRunScriptWithVarsInSession()
+	{
+		$db = new Connection;
+		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
+		$this->assertNotEquals($message, FALSE);
+		
+		$db->message->gremlin = 'cal = 5+5';
+		$db->message->processor = 'session';
+		$db->message->setArguments(['session'=>$db->getSession()]);
+		$result = $db->send(NULL);
+
+		$this->assertNotEquals($result, FALSE, 'Running a script with bindings produced an error');
+
+		$db->message->gremlin = 'cal = 5+5';
+		$result = $db->send(NULL,'session', 'eval');
+		$this->assertEquals($result, [10], 'Running a script with bindings produced an error');
+		
+	
+		//check disconnection
+		$message = $db->close();
+		$this->assertNotEquals($message, FALSE, 'Disconnecting from a session where bindings were used created an error');
+	}
+
+	/**
+	 * Testing Script run with bindings
+	 * 
+	 * @return void
+	 */
+	public function testRunScriptWithBindingsInSession()
+	{
+		$db = new Connection;
+		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
+		$this->assertNotEquals($message, FALSE);
+		
+		$db->message->gremlin = 'g.v(CUSTO_BIND)';
+		$db->message->bindValue('CUSTO_BIND',2);
+		$result = $db->send(NULL, 'session', 'eval');
+
+		$this->assertNotEquals($result, [], 'Running a script with bindings produced an error');
+
+		$db->message->gremlin = 'g.v(CUSTO_BIND)';
+		$result = $db->send(NULL, 'session', 'eval');
+		$this->assertNotEquals($result, [], 'Running a script with bindings produced an error');
+		
+	
+		//check disconnection
+		$message = $db->close();
+		$this->assertNotEquals($message, FALSE, 'Disconnecting from a session where bindings were used created an error');
+	}
 	
 	/**
 	 * Testing transactions
+	 *
 	 * 
 	 * @return void
 	 */
 	public function testTransactions()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'n', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
+		
+		$db->message->gremlin = 'n.V.count()';
+		$result = $db->send();
 
-		$db->script = 'n.V';
-		$result = $db->runScript();
-		print_r($db);
 		$this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
-		$elementCount = count($result);
+		$elementCount = $result[0];
 		
 		$db->transactionStart();
-
-		$db->script = 'n.addVertex()';
-		$result = $db->runScript();
-
+		
+		$db->message->gremlin = 'n.addVertex();5'; // TODO CHANGE BACK WHEN FIXED
+		$result = $db->send();
+		
 		$db->transactionStop(FALSE);
 		
-		$db->script = 'n.V';
-		$result = $db->runScript();
-		$elementCount2 = count($result);
+		$db->message->gremlin = 'n.V.count()';
+		$result = $db->send();
+		$elementCount2 = $result[0];
 
 		$this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
 		$this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
 		
-		//~ $db->transactionStart();
-//~ 
-		//~ $db->script = 'n.addVertex([name:"michael"])';
-		//~ $result = $db->runScript();
-		//~ $this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
-		//~ $this->assertTRUE($db->response[2] == 5, 'Script response message in transaction mode is not the right type. (Maybe it\'s an error)');//check it's a session script reply
-		//~ 
-		//~ $db->transactionStop(TRUE);
-		//~ 
-		//~ $db->script = 'g.V';
-		//~ $elementCount2 = count($db->runScript());
-		//~ $this->AssertEquals($elementCount + 1, $elementCount2, 'Transaction submition didn\'t work');
+		$db->transactionStart();
+		$result = $db->send('n.addVertex("name","michael");5'); // TODO CHANGE BACK WHEN FIXED
+		
+		$db->transactionStop(TRUE);
+		
+		$elementCount2 = $db->send('n.V.count()');
+		$this->AssertEquals($elementCount + 1, $elementCount2[0], 'Transaction submition didn\'t work');
 	}
 	
-	//~ /**
-	 //~ * Testing transactions accross multiple script launches
-	 //~ * 
-	 //~ * @return void
-	 //~ */
-	//~ public function testTransactionsMultiRun()
-	//~ {
-		//~ $db = new Connection;
-		//~ $message = $db->open('localhost:8184', 'graph', $this->username, $this->password);
-		//~ $this->assertNotEquals($message, FALSE);
-//~ 
-		//~ $db->script = 'g.V';
-		//~ $elementCount = count($db->runScript());
-		//~ 
-		//~ $db->transactionStart();
-//~ 
-		//~ $db->script = 'g.addVertex([name:"michael"])';
-		//~ $result = $db->runScript();
-		//~ $db->script = 'g.addVertex([name:"michael"])';
-		//~ $result = $db->runScript();
-		//~ $this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
-		//~ $this->assertTRUE($db->response[2] == 5, 'Script response message in transaction mode is not the right type. (Maybe it\'s an error)');//check it's a session script reply
-		//~ 
-		//~ $db->transactionStop(FALSE);
-		//~ 
-		//~ $db->script = 'g.V';
-		//~ $elementCount2 = count($db->runScript());
-		//~ $this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
-		//~ 
-		//~ $db->transactionStart();
-//~ 
-		//~ $db->script = 'g.addVertex([name:"michael"])';
-		//~ $result = $db->runScript();
-		//~ $db->script = 'g.addVertex([name:"michael"])';
-		//~ $result = $db->runScript();
-		//~ $this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
-		//~ $this->assertTRUE($db->response[2] == 5, 'Script response message in transaction mode is not the right type. (Maybe it\'s an error)');//check it's a session script reply
-		//~ 
-		//~ $db->transactionStop(TRUE);
-		//~ 
-		//~ $db->script = 'g.V';
-		//~ $elementCount2 = count($db->runScript());
-		//~ $this->AssertEquals($elementCount + 2, $elementCount2, 'Transaction submition didn\'t work');
-	//~ }
-	//~ 
-	//~ /**
-	 //~ * Testing Unknown error type
-	 //~ * 
-	 //~ * @return void
-	 //~ */
-	//~ public function testUnknownErrorType()
-	//~ {
-		//~ $unpacked = Array
-		//~ (
-			//~ 1,
-			//~ 0,
-			//~ 0,
-			//~ 44,
-			//~ Array
-				//~ (
-					//~ '721afec3-c9c9-407f-8beb-7cfee17dde7d',
-					//~ '91bfab5-8069-4a83-a52e-55fae4dc4f72',
-					//~ array('flag'=>10),
-					//~ "Custom error message",
-				//~ ),
-		//~ );
-		//~ $error = Exceptions::checkError($unpacked);
-		//~ $this->AssertTrue($error instanceof Exceptions, 'testUnknownErrorType doesn\'t return Exceptions object');
-		//~ $this->AssertTrue($error->code == 10, 'testUnknownErrorType doesn\'t return the correct error code');
-		//~ $this->AssertTrue($error->description == 'Unknown error type. > Custom error message', 'testUnknownErrorType doesn\'t return the correct error description');
-	//~ }
-//~ 
-	//~ /**
-	 //~ * Testing getResponse() without making a previous 
-	 //~ * socket connection with open()
-	 //~ * 
-	 //~ * @return void
-	 //~ */
-	//~ public function testGetResponseWithoutConnection()
-	//~ {
-		//~ $db = new Connection;
-		//~ $result = $db->getResponse();
-		//~ $this->assertFalse($result, 'Failed to return false with no established connection');
-	//~ }
-//~ 
-	//~ /**
-	 //~ * Testing sendMessage without previous connection
-	 //~ * 
-	 //~ * @return void
-	 //~ */
-	//~ public function testSendMessageWithoutConnection()
-	//~ {
-		//~ $db = new Connection;
-		//~ $msg = new Messages(0);
-		//~ $result = $db->send($msg);
-		//~ $this->assertFalse($result, 'Failed to return false with no established connection');
-	//~ }
-//~ 
-	//~ /**
-	 //~ * Testing runScript() without making a previous 
-	 //~ * socket connection with open()
-	 //~ * 
-	 //~ * @return void
-	 //~ */
-	//~ public function testRunScriptWithoutConnection()
-	//~ {
-		//~ $db = new Connection;
-		//~ $result = $db->runScript();
-		//~ $this->assertFalse($result, 'Failed to return false with no established connection');
-	//~ }
-//~ 
-	//~ /**
-	 //~ * Testing runScript() with wrong message parameters sent
-	 //~ * 
-	 //~ * @return void
-	 //~ */
-	//~ public function testRunScriptWithWrongParameters()
-	//~ {
-		//~ $db = new Connection;
-		//~ $db->open('localhost:8184', '', '', '', '');
-		//~ $result = $db->runScript();
-		//~ $this->assertFalse($result, 'Failed to return false with a connection failed');
-	//~ }
-//~ 
-	//~ /**
-	 //~ * Testing transactionStart() with an other running transaction
-	 //~ * 
-	 //~ * @return void
-	 //~ */
-	//~ public function testSeveralRunningTransactionStart()
-	//~ {
-		//~ $db = new Connection;
-		//~ $db->open('localhost:8184', 'graph', $this->username, $this->password);
-		//~ $db->transactionStart();
-		//~ $result = $db->transactionStart();
-		//~ $this->assertFalse($result, 'Failed to return false with an other started transaction');
-	//~ }
-//~ 
-	//~ /**
-	 //~ * Testing transactionStop() with no running transaction
-	 //~ * 
-	 //~ * @return void
-	 //~ */
-	//~ public function testTransactionStopWithNoTransaction()
-	//~ {
-		//~ $db = new Connection;
-		//~ $db->open('localhost:8184', 'graph', $this->username, $this->password);
-		//~ $result = $db->transactionStop();
-		//~ $this->assertFalse($result, 'Failed to return false with no transaction started');
-	//~ }
-//~ 
-	//~ /**
-	 //~ * Testing failing message connection close()
-	 //~ * 
-	 //~ * @return void
-	 //~ */
-	//~ public function testConnectCloseFailingMessage()
-	//~ {
-		//~ $db = new Connection;
-		//~ $db->open('localhost', 'tinkergraph', $this->username, $this->password);
-		//~ $db->sessionUuid = '';
-		//~ $result = $db->close();
-		//~ $this->assertFalse($result, 'Failed to return false with no transaction started');
-	//~ }
-//~ 
-	//~ /**
-	 //~ * Testing getSerializer
-	 //~ * 
-	 //~ * @return void
-	 //~ */
-	//~ public function testgetSerializer()
-	//~ {
-		//~ $db = new Connection;
-		//~ $this->assertEquals($db->getSerializer(), 'MSGPACK', 'Failed to return correct serializer value');
-		//~ $db->setSerializer(Messages::SERIALIZER_JSON);
-		//~ $this->assertEquals($db->getSerializer(), 'JSON', 'Failed to return correct serializer value');
-	//~ }
+	/**
+	 * Testing transactions accross multiple script launches
+	 * 
+	 * @return void
+	 */
+	public function testTransactionsMultiRun()
+	{
+		$db = new Connection;
+		$message = $db->open('localhost:8182', 'n', $this->username, $this->password);
+		$this->assertNotEquals($message, FALSE);
+
+		$result = $db->send('n.V.count()');
+		$elementCount = $result[0];
+		
+		$db->transactionStart();
+
+		$result = $db->send('n.addVertex("name","michael");5'); // TODO CHANGE BACK WHEN FIXED
+		$result = $db->send('n.addVertex("name","michael");5'); // TODO CHANGE BACK WHEN FIXED
+		
+		$db->transactionStop(FALSE);
+		
+		$db->message->gremlin = 'n.V.count()';
+		$result = $db->send();
+		$elementCount2 = $result[0];
+		$this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
+		
+		$db->transactionStart();
+
+		$result = $db->send('n.addVertex("name","michael");5'); // TODO CHANGE BACK WHEN FIXED
+		$result = $db->send('n.addVertex("name","michael");5'); // TODO CHANGE BACK WHEN FIXED
+
+		$db->transactionStop(TRUE);
+		
+		$db->message->gremlin = 'n.V.count()';
+		$result = $db->send();
+		$elementCount2 = $result[0];
+		$this->AssertEquals($elementCount + 2, $elementCount2, 'Transaction submition didn\'t work');
+	}
+
+	/**
+	 * Testing Transaction without graphObj
+	 *
+	 * @expectedException Exception
+	 * 
+	 * @return void
+	 */
+	public function testTransactionWithNoGraphObj()
+	{
+		$db = new Connection;
+		$db->open('localhost:8182', '', '', '', '');
+		$db->transactionStart();
+	}
+
+
+	/**
+	 * Testing sendMessage without previous connection
+	 * 
+	 * @expectedException Exception
+	 * 
+	 * @return void
+	 */
+	public function testSendMessageWithoutConnection()
+	{
+		$db = new Connection;
+		$msg = new Messages();
+		$result = $db->send($msg);
+	}
+
+	/**
+	 * Testing runScript() without making a previous 
+	 * socket connection with open()
+	 * 
+	 * @expectedException Exception
+	 * 
+	 * @return void
+	 */
+	public function testRunScriptWithoutConnection()
+	{
+		$db = new Connection;
+		$result = $db->send();
+	}
+
+
+
+	/**
+	 * Testing transactionStart() with an other running transaction
+	 * 
+	 * @expectedException Exception
+	 * 
+	 * @return void
+	 */
+	public function testSeveralRunningTransactionStart()
+	{
+		$db = new Connection;
+		$db->open('localhost:8182', 'n', $this->username, $this->password);
+		$db->transactionStart();
+		$db->transactionStart();
+	}
+
+	/**
+	 * Testing transactionStop() with no running transaction
+	 * 
+	 * @expectedException Exception
+	 * 
+	 * @return void
+	 */
+	public function testTransactionStopWithNoTransaction()
+	{
+		$db = new Connection;
+		$db->open('localhost:8182', 'n', $this->username, $this->password);
+		$result = $db->transactionStop();
+	}
+
+	/**
+	 * Testing getSerializer
+	 * 
+	 * @return void
+	 */
+	public function testgetSerializer()
+	{
+		$db = new Connection;
+		$serializer = $db->message->getSerializer() ;
+
+		$this->assertTRUE($serializer instanceof \brightzone\rexpro\serializers\Json,'Initial serializer set failed');
+		$db->message->registerSerializer('brightzone\rexpro\serializers\Msgpack');
+		$this->assertTRUE($db->message->getSerializer() instanceof \brightzone\rexpro\serializers\MsgPack,'Failed to change serializer');
+	}
+
+	
+	/**
+	 * Testing getSerializer
+	 * 
+	 * @expectedException Exception
+	 * 
+	 * @return void
+	 */
+	public function testgetSerializerNotExist()
+	{
+		$db = new Connection;
+		$serializer = $db->message->getSerializer() ;
+
+		$this->assertTRUE($serializer instanceof \brightzone\rexpro\serializers\Json,'Initial serializer set failed');
+		$db->message->registerSerializer('brightzone\rexpro\serializers\Something');
+	}
 }

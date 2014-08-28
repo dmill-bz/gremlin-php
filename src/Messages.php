@@ -2,58 +2,49 @@
 
 namespace brightzone\rexpro;
 
+use \Exception;
+
 /**
- * RexPro PHP client Messages class
+ * Gremlin-server PHP Driver client Messages class
  * Builds and parses binary messages for communication with RexPro
+ * Use example:
+ *
+ * ~~~
+ * $message = new Messages;
+ * $message->gremlin = 'g.V';
+ * $message->op = 'eval';
+ * $message->processor = '';
+ * $message->setArguments(['language'=>'gremlin-groovy']);
+ * $message->registerSerializer('\brightzone\rexpro\serializers\Json');
+ * // etc ...
+ * $db = new Connection;
+ * $db->open();
+ * $db->send($message);
+ * ~~~
  * 
  * @category DB
- * @package  Rexpro
+ * @package  gremlin-driver-php
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
 class Messages
-{
+{	
 	/**
-	 * Serializer types
+	 * @var array basic message configuration
+	 *  ie: op,processor,requestId, etc..
 	 */
-	const SERIALIZER_MSGPACK = 0;
-	const SERIALIZER_JSON = 1;
-	
-	
+	public $configuration = [];
+
 	/**
-	 * Message types
+	 * @var array args of the message
 	 */
-	const ERROR = 0;
-	const SESSION_REQUEST = 1;
-	const SESSION_RESPONSE = 2;
-	const SCRIPT_REQUEST = 3;
-	const CONSOLE_SCRIPT_RESPONSE = 4;
-	const SCRIPT_RESPONSE_MESSAGE = 5;
-	const GRAPHSON_SCRIPT_RESPONSE = 6;
+	public $args = [];
 	
 	/**
-	 * Error types
+	 * @var array list of serializers loaded for this instance
 	 */
-	const CHANNEL_CONSOLE = 1;
-	const CHANNEL_MSGPACK = 2;
-	const CHANNEL_GRAPHSON = 3;
-	
-	/**
-	 * @var string 16 byte request identifier
-	 * Has no particular use at the moment but could be used in non-blocking mode
-	 */
-	public $requestUuid;
-	
-	/**
-	 * @var string Most recently built binary message
-	 */
-	public $msgPack;
-	
-	/**
-	 * @var string Most recently built binary message
-	 */
-	private $_serializer;
+	private $_serializers = [];
 
 	/**
 	 * Overriding construct to populate _serializer
@@ -62,11 +53,103 @@ class Messages
 	 * 
 	 * @return void
 	 */
-	public function __construct($serializer)
+	public function __construct()
 	{
-		$this->_serializer = $serializer;
+		//set default values for message
+		$this->setDefaults();
 	}
-	
+
+	/**
+	 * Sets default values to this message
+	 * The values are :
+	 *  - gremlin   : ''
+	 *  - op        : 'eval'
+	 *  - processor : ''
+	 *
+	 * @return void
+	 */
+	private function setDefaults()
+	{
+		$this->gremlin = '';
+		$this->op = 'eval';
+		$this->processor = '';
+	}
+
+	/**
+	 * magic setter to populate $this->configuration + gremlin arg
+	 *
+	 * @param string $name  name of the variable you want to set
+	 * @param string $value value of the variable you want to set
+	 *
+	 * @return void
+	 */
+	public function __set($name,$value)
+	{
+		if($name == 'gremlin')
+		{
+			$this->args['gremlin'] = $value;
+		}
+		else
+		{
+			$this->configuration[$name] = $value;
+		}
+	}
+
+	/**
+	 * magic getter to fetch $this->configuration + gremlin arg
+	 *
+	 * @param string $name name of the variable you want to get
+	 *
+	 * @return string
+	 */
+	public function __get($name)
+	{
+		if($name == 'gremlin' && isset($this->args['gremlin']))
+		{
+			return $this->args['gremlin'];
+		}
+		else
+		{
+			if(isset($this->configuration[$name]))
+			{
+				return $this->configuration[$name];
+			}
+		}
+	}
+
+	/**
+	 * magic isset to return proper setting of $this->configuration + gremlin arg
+	 *
+	 * @param string $name name of the variable you want to check
+	 *
+	 * @return string
+	 */
+	public function __isset($name)
+	{
+		if($name == 'gremlin')
+		{
+			return isset($this->args['gremlin']);
+		}
+		else
+		{
+			return isset($this->configuration[$name]);
+		}
+		return FALSE;
+	}
+
+	/**
+	 * Setter method for arguments
+	 * This will replace existing entries.
+	 *
+	 * @param array $array collection of arguments
+	 *
+	 * @return void
+	 */
+	public function setArguments($array)
+	{
+		$this->args = array_merge($this->args, $array);
+	}
+
 	/**
 	 * Create and set request UUID
 	 * 
@@ -78,17 +161,11 @@ class Messages
 	}
 	
 	/**
-	 * Constructs full binary message (including outter envelope) For use in script execution
+	 * Constructs full binary message for use in script execution
 	 * 
-	 * @param string $sessionUuid     session ID. This is not necessary at this stage but still included
-	 * @param string $script          Gremlin (groovy flavored) script to run
-	 * @param array  $bindings        Associated bindings
-	 * @param array  $meta            Metadata to add to request message
-	 * @param int    $protocolVersion Protocol to use, only current option is 0
-	 * 
-	 * @return string Returns binary data to be written to socket
+	 * @return string Returns binary data to be packed and sent to socket
 	 */
-	public function buildScriptMessage($sessionUuid, $op, $processor, $args)
+	public function buildMessage()
 	{
 		//lets start by packing message
 		$this->createUuid();
@@ -96,22 +173,27 @@ class Messages
 		//build message array
 		$message = array(
 				'requestId' => $this->requestUuid,
-				'processor' => $processor,
-				'op' => $op,
-				'args' => $args
+				'processor' => $this->processor,
+				'op' => $this->op,
+				'args' => $this->args
 				);
 		//serialize message
-		$this->_serializer->serialize($message);
-		$mimeType = $this->_serializer->getMimeType();
+		if(!isset($this->_serializers['default']))
+		{
+			throw new Exception("No default serializer set", 500);
+		}
+		$this->_serializers['default']->serialize($message);
+		$mimeType = $this->_serializers['default']->getMimeType();
 
-		$this->message =  pack('C',16).$mimeType.$message;
-		return $this->message;	
+		$finalMessage =  pack('C',16).$mimeType.$message;
+		return $finalMessage;	
 	}	
 	
 	/**
 	 * Parses full message (including outter envelope)
 	 * 
-	 * @param string $payload payload from the server response
+	 * @param string $payload  payload from the server response
+	 * @param bool   $isBinary whether we should expect binary data (TRUE) or plein text (FALSE)
 	 * 
 	 * @return array Array containing all results
 	 */
@@ -119,10 +201,93 @@ class Messages
 	{
 		if($isBinary)
 		{
-			//do nothing for now. Assume same as we sent with.
 			list($mimeLength) = unpack('C',$payload[0]);
-			$payload = substr($payload, 0, $mimeLength + 1);
+			$mimeType = substr($payload, 1, $mimeLength + 1);
+			$serializer = $this->getSerializer($mimeType);
+			$payload = substr($payload, $mimeLength + 1, strlen($payload));
+
+			return $serializer->unserialize($payload);
 		}
-		return $this->_serializer->unserialize($payload);
+		return $this->_serializers['default']->unserialize($payload);
+	}
+
+	/**
+	 * Get the serializer object depending on a provided mimeType
+	 *
+	 * @param string $mimeType the mimeType of the serializer you want to retrieve
+	 *
+	 * @return SerializerInterface serializer object.
+	 */
+	public function getSerializer($mimeType = '')
+	{
+		if($mimeType == '')
+		{
+			return $this->_serializers['default'];
+		}
+		foreach($this->_serializers as $serializer)
+		{
+			if($serializer->getMimeType() == $mimeType)
+			{
+				return $serializer;
+			}
+		}
+		return FALSE;
+	}
+
+	/**
+	 * Register a new serializer to this object
+	 *
+	 * @param mixed $value   either a serializer object or a string of the class name (with namespace)
+	 * @param bool  $default whether or not to use this serializer as the default one
+	 *
+	 * @return void
+	 */
+	public function registerSerializer($value, $default = TRUE)
+	{
+		if(is_string($value) && class_exists($value))
+		{
+			$value = new $value();
+		}
+
+		if(in_array('brightzone\rexpro\serializers\SerializerInterface', class_implements($value)))
+		{
+			if($default)
+			{
+				$this->_serializers['default'] = $value;
+			}
+			else
+			{
+				$this->_serializers[] = $value;
+			}
+		}
+	}
+
+	/**
+	 * Binds a value to be used inside gremlin script
+	 * 
+	 * @param string $bind  The binding name
+	 * @param mixed  $value the value that the binding name refers to
+	 * 
+	 * @return void
+	 */
+	public function bindValue($bind,$value)
+	{
+		if(!isset($this->args['bindings']))
+		{
+			$this->args['bindings'] = [];
+		}
+		$this->args['bindings'][$bind]=$value;
+	}
+
+	/**
+	 * Clear this message and start anew
+	 *
+	 * @return void
+	 */
+	public function clear()
+	{
+		$this->configuration = [];
+		$this->args = [];
+		$this->setDefaults();
 	}
 }
