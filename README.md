@@ -3,11 +3,12 @@ This is a Gremlin server client for PHP.
 Changes
 =======
 There are many changes but bellow are the most noticeable if you've used rexpro-php before
-* Client now throw errors that you will need to catch
-* Connection params have changes
-* Messages class has been revamped and is independant from Connection (see documentation on how to use this)
-* Unit testing will require some more configuration
-* Runs sessionless by default (rexpro-php 2.3 & 2.4+ ran with sessions as the default)
+
+- Client now throw errors that you will need to catch
+- Connection params have changes
+- Messages class has been revamped and is independant from Connection (see documentation on how to use this)
+- Unit testing will require some more configuration
+- Runs sessionless by default (rexpro-php 2.3 & 2.4+ ran with sessions as the default)
 
 
 Installation
