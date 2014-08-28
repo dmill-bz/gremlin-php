@@ -164,7 +164,7 @@ This library comes with a Json and an unused legacy Msgpack serializer. Any othe
 $db = new Connection;
 $serializer = $db->message->getSerializer() ; // returns an instance of the default JSON serializer
 echo $serializer->getName(); // JSON
-echo $serializer->getMimeType(); // JSON
+echo $serializer->getMimeType(); // application/json
 
 $db->message->registerSerializer('namespace\to\my\CustomSerializer', TRUE); // sets this as default
 $serializer = $db->message->getSerializer(); // returns an instance the CustomSerializer serializer (default)
