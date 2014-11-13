@@ -133,7 +133,6 @@ $db->transactionStop(FALSE); //rollback changes. Set to true to commit.
 $db->close();
 ```
 Note that "n" above refers to a graph that supports transactions. And that transactions start a session automatically.
-Also, as of today g.addVertex() on Neo4j graphs is buggy.
 
 Example 5 (Using message object) :
 

@@ -96,8 +96,8 @@ class RexsterTestExamples extends RexsterTestCase
 		
 		$db->transactionStart();
 
-		$db->send('n.addVertex("name","michael");5');
-		$db->send('n.addVertex("name","john");5');
+		$db->send('n.addVertex("name","michael")');
+		$db->send('n.addVertex("name","john")');
 
 		$db->transactionStop(FALSE); //rollback changes. Set to true to commit.
 

@@ -290,7 +290,7 @@ class RexsterTest extends RexsterTestCase
 		
 		$db->transactionStart();
 		
-		$db->message->gremlin = 'n.addVertex();5'; // TODO CHANGE BACK WHEN FIXED
+		$db->message->gremlin = 'n.addVertex()';
 		$result = $db->send();
 		
 		$db->transactionStop(FALSE);
@@ -303,7 +303,7 @@ class RexsterTest extends RexsterTestCase
 		$this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
 		
 		$db->transactionStart();
-		$result = $db->send('n.addVertex("name","michael");5'); // TODO CHANGE BACK WHEN FIXED
+		$result = $db->send('n.addVertex("name","michael")');
 		
 		$db->transactionStop(TRUE);
 		
@@ -327,8 +327,8 @@ class RexsterTest extends RexsterTestCase
 		
 		$db->transactionStart();
 
-		$result = $db->send('n.addVertex("name","michael");5'); // TODO CHANGE BACK WHEN FIXED
-		$result = $db->send('n.addVertex("name","michael");5'); // TODO CHANGE BACK WHEN FIXED
+		$result = $db->send('n.addVertex("name","michael")');
+		$result = $db->send('n.addVertex("name","michael")');
 		
 		$db->transactionStop(FALSE);
 		
@@ -339,8 +339,8 @@ class RexsterTest extends RexsterTestCase
 		
 		$db->transactionStart();
 
-		$result = $db->send('n.addVertex("name","michael");5'); // TODO CHANGE BACK WHEN FIXED
-		$result = $db->send('n.addVertex("name","michael");5'); // TODO CHANGE BACK WHEN FIXED
+		$result = $db->send('n.addVertex("name","michael")');
+		$result = $db->send('n.addVertex("name","michael")');
 
 		$db->transactionStop(TRUE);
 		
