@@ -92,7 +92,7 @@ class RexsterTestExamples extends RexsterTestCase
 	{
 		$db = new Connection;
 		$db->open('localhost:8182','n');
-		$originalCount = $db->send('n.V.count()');
+		$originalCount = $db->send('n.V().count()');
 		
 		$db->transactionStart();
 
@@ -101,7 +101,7 @@ class RexsterTestExamples extends RexsterTestCase
 
 		$db->transactionStop(FALSE); //rollback changes. Set to true to commit.
 
-		$newCount = $db->send('n.V.count()');
+		$newCount = $db->send('n.V().count()');
 		$this->assertEquals($newCount, $originalCount, 'Rollback was not done for eample 4');
 		
 		$db->close();
@@ -116,7 +116,7 @@ class RexsterTestExamples extends RexsterTestCase
 	public function testExample5()
 	{
 		$message = new Messages;
-		$message->gremlin = 'g.V';
+		$message->gremlin = 'g.V()';
 		$message->op = 'eval';
 		$message->processor = '';
 		$message->setArguments([

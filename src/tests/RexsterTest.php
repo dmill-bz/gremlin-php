@@ -158,7 +158,7 @@ class RexsterTest extends RexsterTestCase
 		$result = $db->send('5+5');
 		$this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)');
 
-		$result = $db->send('g.V');
+		$result = $db->send('g.V()');
 		$this->assertEquals(count($result), 6, 'Script response message is not the right type. (Maybe it\'s an error)');
 
 		//check disconnection
@@ -184,7 +184,7 @@ class RexsterTest extends RexsterTestCase
 
 		$this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
-		$result = $db->send('g.V', 'session', 'eval');
+		$result = $db->send('g.V()', 'session', 'eval');
 		$this->assertEquals(count($result), 6, 'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
 		
 		//check disconnection
@@ -282,7 +282,7 @@ class RexsterTest extends RexsterTestCase
 		$message = $db->open('localhost:8182', 'n', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 		
-		$db->message->gremlin = 'n.V.count()';
+		$db->message->gremlin = 'n.V().count()';
 		$result = $db->send();
 
 		$this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
@@ -295,7 +295,7 @@ class RexsterTest extends RexsterTestCase
 		
 		$db->transactionStop(FALSE);
 		
-		$db->message->gremlin = 'n.V.count()';
+		$db->message->gremlin = 'n.V().count()';
 		$result = $db->send();
 		$elementCount2 = $result[0];
 
@@ -307,7 +307,7 @@ class RexsterTest extends RexsterTestCase
 		
 		$db->transactionStop(TRUE);
 		
-		$elementCount2 = $db->send('n.V.count()');
+		$elementCount2 = $db->send('n.V().count()');
 		$this->AssertEquals($elementCount + 1, $elementCount2[0], 'Transaction submition didn\'t work');
 	}
 	
@@ -322,7 +322,7 @@ class RexsterTest extends RexsterTestCase
 		$message = $db->open('localhost:8182', 'n', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 
-		$result = $db->send('n.V.count()');
+		$result = $db->send('n.V().count()');
 		$elementCount = $result[0];
 		
 		$db->transactionStart();
@@ -332,7 +332,7 @@ class RexsterTest extends RexsterTestCase
 		
 		$db->transactionStop(FALSE);
 		
-		$db->message->gremlin = 'n.V.count()';
+		$db->message->gremlin = 'n.V().count()';
 		$result = $db->send();
 		$elementCount2 = $result[0];
 		$this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
@@ -344,7 +344,7 @@ class RexsterTest extends RexsterTestCase
 
 		$db->transactionStop(TRUE);
 		
-		$db->message->gremlin = 'n.V.count()';
+		$db->message->gremlin = 'n.V().count()';
 		$result = $db->send();
 		$elementCount2 = $result[0];
 		$this->AssertEquals($elementCount + 2, $elementCount2, 'Transaction submition didn\'t work');

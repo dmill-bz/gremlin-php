@@ -1,4 +1,4 @@
-This is a Gremlin server client for PHP.
+This is a Gremlin server client for PHP. **Supported version : M5**
 
 Changes
 =======
@@ -9,6 +9,7 @@ There are many changes but bellow are the most noticeable if you've used rexpro-
 - Messages class has been revamped and is independant from Connection (see documentation on how to use this)
 - Unit testing will require some more configuration
 - Runs sessionless by default (rexpro-php 2.3 & 2.4+ ran with sessions as the default)
+- Gremlin code change g.V/E should now be written as g.V()/E()
 
 
 Installation
@@ -16,7 +17,7 @@ Installation
 
 ### PHP Gremlin-Server Client
 
-##### For Gremlin-Server 3.0.0-M1
+##### For Gremlin-Server 3.0.0-M5
 
 Prefered method is through composer. Add the following to your **composer.json** file:
 
@@ -138,7 +139,7 @@ Example 5 (Using message object) :
 
 ```php
 $message = new Messages;
-$message->gremlin = 'g.V';
+$message->gremlin = 'g.V()';
 $message->op = 'eval';
 $message->processor = '';
 $message->setArguments([
@@ -175,10 +176,18 @@ You can add many serializers in this fashion. When gremlin-server responds to yo
 Unit testing
 ============
 
-To have the unit tests pass you will have to run your gremlin-server with the following configuration file : src/tests/gremlin-server-neo4j.yaml
-
-This requires that you have the neo4j jar. You can get it by doing:
+For unit testing purposes you will be required to install the neo4j jar. You do this by doing :
 
 ```bash
-bin/gremlin-server.sh -i com.tinkerpop neo4j-gremlin 3.0.0.M1
+bin/gremlin-server.sh -i com.tinkerpop neo4j-gremlin 3.0.0.M5
 ```
+
+You will then need to run gremlin-server with the following configuration file : src/tests/gremlin-server-php.yaml
+
+Just copy this file to `<gremlin-server-root-dir>/conf/`
+And run the server using :
+
+```bash
+bin/gremlin-server.sh conf/gremlin-server-php.yaml
+```
+

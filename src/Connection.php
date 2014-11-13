@@ -279,17 +279,15 @@ class Connection
 				$this->error($e->getMessage(), $e->getCode());
 			}
 			//handle errors
-			if( $unpacked['code'] !== 200 && $unpacked['code'] !== 299)
+			//~ print_r($unpacked);
+			if( $unpacked['status']['code'] !== 200 && $unpacked['status']['code'] !== 299)
 			{
-				$this->error($unpacked['result'], $unpacked['code']);
+				$this->error($unpacked['status']['message']." > ".implode("\n",$unpacked['status']['attributes']), $unpacked['status']['code']);
 			}
-
-			if($unpacked['type'] !== 0) // will have to change with server upgrade.
-			{
-				$fullData = array_merge($fullData, $unpacked['result']);
-			}
+			if( $unpacked['status']['code'] == 200 )
+				$fullData = array_merge($fullData, $unpacked['result']['data']);
 		}
-		while($unpacked['code'] !== 299);
+		while($unpacked['status']['code'] !== 299);
 		
 		return $fullData;
 	}
