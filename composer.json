@@ -1,14 +1,14 @@
 {
-    "name": "brightzone/rexpro-php",
-    "description": "rexpro client for php",
-    "minimum-stability": "dev",
+    "name": "brightzone/gremlin-php",
+    "description": "gremlin-server client for php",
+    "minimum-stability": "stable",
     "authors": [
         {
             "name": "Brightzone",
             "email": "dylan.millikin@brightzone.fr"
         }
     ],
-    "keywords": ["rexpro-php", "rexpro"],
+    "keywords": ["rexpro-php", "rexpro", "gremlin", "gremlin-server", "driver"],
     "require-dev": {
         "yiisoft/yii2-apidoc": "2.0.0-beta"
     },

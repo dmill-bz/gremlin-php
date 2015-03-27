@@ -1,4 +1,4 @@
-This is a Gremlin server client for PHP. **Supported version : M5**
+This is a Gremlin server client for PHP. **Supported versions : M5 (tests fail but driver functional) to M7**
 
 Changes
 =======
@@ -17,7 +17,7 @@ Installation
 
 ### PHP Gremlin-Server Client
 
-##### For Gremlin-Server 3.0.0-M5
+##### For Gremlin-Server 3.0.0-M5+
 
 Prefered method is through composer. Add the following to your **composer.json** file:
 
@@ -26,11 +26,11 @@ Prefered method is through composer. Add the following to your **composer.json**
     "repositories": [
         {
             "type": "git",
-            "url": "https://github.com/PommeVerte/rexpro-php.git"
+            "url": "https://github.com/PommeVerte/gremlin-php.git"
         }
     ],
     "require": {
-        "brightzone/rexpro": "3.0"
+        "brightzone/gremlin-php": "master"
     }
 }
 ```
@@ -38,20 +38,20 @@ Prefered method is through composer. Add the following to your **composer.json**
 If you just want to pull and use the library do:
 
 ```bash
-git clone https://github.com/PommeVerte/rexpro-php.git -b 3.0
-cd rexpro-php
+git clone https://github.com/PommeVerte/gremlin-php.git
+cd gremlin-php
 composer install --no-dev # required to set autoload files
 ```
 
 Namespace
 =========
 
-The Connection class exists within the `rexpro` namespace. This means that you have to do either of the two following:
+The Connection class exists within the `rexpro` namespace. (history: rexpro used to be the old protocol used by the driver in Tinkerpop2). This means that you have to do either of the two following:
 
 ```php
 require_once('vendor/autoload.php');
 use \brightzone\rexpro\Connection;
- 
+
 $db = new Connection;
 ```
 
@@ -66,7 +66,7 @@ $db = new \brightzone\rexpro\Connection;
 Examples
 ========
 
-You can find more information by reading the API in the wiki. 
+You can find more information by reading the API in the wiki.
 
 Here are a few basic usages.
 
@@ -77,7 +77,7 @@ $db = new Connection;
 //you can set $db->timeout = 0.5; if you wish
 $db->open('localhost', 'g');
 
-$result = $db->send('g.v(2)');
+$result = $db->send('g.V(2)');
 //do something with result
 $db->close();
 ```
@@ -88,7 +88,7 @@ $db = new Connection;
 //you can set $db->timeout = 0.5; if you wish
 $db->open('localhost', 'g');
 
-$db->message->gremlin = 'g.v(2)';
+$db->message->gremlin = 'g.V(2)';
 $result = $db->send(); //automatically fetches the message
 //do something with result
 $db->close();
@@ -102,7 +102,7 @@ $db = new Connection;
 $db->open('localhost:8182', 'g');
 
 $db->message->bindValue('CUSTO_BINDING', 2);
-$result = $db->send('g.v(CUSTO_BINDING)'); //mix between Example 1 and 1B
+$result = $db->send('g.V(CUSTO_BINDING)'); //mix between Example 1 and 1B
 //do something with result
 $db->close();
 ```
@@ -123,7 +123,7 @@ Example 4 (transaction) :
 ```php
 $db = new Connection;
 $db->open('localhost:8182','n');
-  	
+
 $db->transactionStart();
 
 $db->send('n.addVertex("name","michael")');
@@ -178,7 +178,8 @@ Unit testing
 For unit testing purposes you will be required to install the neo4j jar. You do this by doing :
 
 ```bash
-bin/gremlin-server.sh -i com.tinkerpop neo4j-gremlin 3.0.0.M5
+bin/gremlin-server.sh -i com.tinkerpop neo4j-gremlin 3.0.0.M7
+# or choose the MX version that coincides with your gremlin-server. M5 for example
 ```
 
 You will then need to run gremlin-server with the following configuration file : src/tests/gremlin-server-php.yaml
