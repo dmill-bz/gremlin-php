@@ -13,7 +13,7 @@ use \brightzone\rexpro\Helper;
  * Unit testing of Rexpro-php documentation examples
  *
  * @category DB
- * @package  gremlin-client-php
+ * @package  gremlin-php-tests
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki

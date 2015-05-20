@@ -4,20 +4,16 @@ namespace brightzone\rexpro;
 
 require_once('vendor/autoload.php');
 
-use \brightzone\rexpro\Connection;
-use \brightzone\rexpro\Messages;
-use \brightzone\rexpro\Helper;
-use \brightzone\rexpro\serializers\Json;
-use \Exception;
+use brightzone\rexpro\serializers\Json;
 
 /**
  * Gremlin-server PHP Driver client Connection class
- * 
+ *
  * Example of basic use:
  *
  * ~~~
  * $connection = new Connection;
- * $connection->open('localhost:8182','g'); 
+ * $connection->open('localhost:8182','g');
  * $resultSet = $connection->send('g.V'); //returns array with results
  * ~~~
  *
@@ -29,11 +25,11 @@ use \Exception;
  * $connection->message->gremlin = 'g.V';
  * $connection->send();
  * ~~~
- * 
+ *
  * See Messages for more details
- * 
+ *
  * @category DB
- * @package  gremlin-driver-php
+ * @package  gremlin-php
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki
@@ -44,26 +40,26 @@ class Connection
 	 * @var string Contains the host information required to connect to the database.
 	 * format: server:port
 	 * If [port] is ommited 8182 will be assumed
-	 * 
+	 *
 	 * Example: localhost:8182
 	 */
 	public $host;
-	
+
 	/**
 	 * @var string the username for establishing DB connection. Defaults to NULL.
 	 */
 	public $username;
-	
+
 	/**
 	 * @var string the password for establishing DB connection. Defaults to NULL.
 	 */
 	public $password;
-	
+
 	/**
-	 * @var string the graphObject to use. 
+	 * @var string the graphObject to use.
 	 */
 	public $graphObj;
-	
+
 	/**
 	 * @var float timeout to use for connection to Rexster. If not set the timeout set in php.ini will be used: ini_get("default_socket_timeout")
 	 */
@@ -73,23 +69,23 @@ class Connection
 	 * @var Messages Message object
 	 */
 	public $message;
-	
+
 	/**
 	 * @var array Bindings for the gremlin script
 	 */
 	public $bindings;
-	
+
 	/**
 	 * @var bool tells us if we're inside a transaction
 	 */
 	private $_inTransaction = FALSE;
-		
+
 	/**
-	 * @var string The session ID for this connection. 
+	 * @var string The session ID for this connection.
 	 * Session ID allows us to access variable bindings made in previous requests. It is binary data
 	 */
 	private $_sessionUuid;
-	
+
 	/**
 	 * @var resource rexpro socket connection
 	 */
@@ -109,16 +105,16 @@ class Connection
 		//assign a default serializer to it
 		$this->message->registerSerializer(new Json, TRUE);
 	}
-	
+
 	/**
 	 * Connects to socket and starts a session with gremlin-server
-	 * 
+	 *
 	 * @param string $host        host and port seperated by ":"
 	 * @param string $graph       graph to load into session. defaults to tinkergraph
 	 * @param string $username    username for authentification
 	 * @param string $password    password to use for authentification
 	 * @param string $graphObject Graph object name. defaults to 'g'
-	 * 
+	 *
 	 * @return bool TRUE on success FALSE on error
 	 */
 	public function open($host='localhost:8182', $graphObj = 'g' , $username = NULL, $password = NULL, $config = [])
@@ -130,7 +126,7 @@ class Connection
 			$this->username = $username;
 			$this->password = $password;
 			$this->host = strpos($host, ':')===FALSE ? $host.':8182': $host;
-			
+
 			if(!$this->connectSocket())
 			{
 				return FALSE;
@@ -139,12 +135,12 @@ class Connection
 			return $this->makeHandshake();
 		}
 	}
-	
+
 	/**
 	 * Sends data over socket
-	 * 
+	 *
 	 * @param Messages $msg Object containing the message to send
-	 * 
+	 *
 	 * @return bool TRUE if success
 	 */
 	private function writeSocket($msg)
@@ -153,7 +149,7 @@ class Connection
 		$write = @fwrite($this->_socket, $msg);
 		if($write === FALSE)
 		{
-			$this->error(__METHOD__.': Could not write to socket', 500);
+			$this->error(__METHOD__.': Could not write to socket', 500, TRUE);
 		}
 		return TRUE;
 	}
@@ -169,7 +165,7 @@ class Connection
 	{
 		try
 		{
-			$key = base64_encode(Helper::generateRandomString(16, false, true));				
+			$key = base64_encode(Helper::generateRandomString(16, false, true));
 			$header = "GET /gremlin HTTP/1.1\r\n";
 			$header.= "Upgrade: websocket\r\n";
 			$header.= "Connection: Upgrade\r\n";
@@ -181,8 +177,8 @@ class Connection
 			}
 			$header.= "Sec-WebSocket-Version: 13\r\n\r\n";
 
-			@fwrite($this->_socket, $header); 
-			$response = @fread($this->_socket, 1500);		
+			@fwrite($this->_socket, $header);
+			$response = @fread($this->_socket, 1500);
 
 			preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches);
 			$keyAccept = trim($matches[1]);
@@ -190,14 +186,14 @@ class Connection
 		}
 		catch(Exception $e)
 		{
-			$this->error("Could not finalise handshake, Maybe the server was unreachable",500);
+			$this->error("Could not finalise handshake, Maybe the server was unreachable", 500, TRUE);
 		}
 		return ($keyAccept === $expectedResonse) ? TRUE : FALSE;
 	}
-	
+
 	/**
 	 * Recieves binary data over the socket and parses it
-	 * 
+	 *
 	 * @return array PHP native result from server
 	 */
 	protected function socketGetUnpack()
@@ -222,7 +218,7 @@ class Connection
 			{
 				$maskSet = TRUE;
 			}
-			
+
 			if($length == 126 )
 			{
 				$data .= $payloadLength = @stream_get_contents($this->_socket, 2);
@@ -258,16 +254,16 @@ class Connection
 
 			//ugly code but we can seperate the two errors this way
 			if($head === FALSE || $payload === FALSE || $maskAndLength === FALSE
-			|| $payloadLength === FALSE || ($maskSet === TRUE && $mask === FALSE) 
+			|| $payloadLength === FALSE || ($maskSet === TRUE && $mask === FALSE)
 			)
 			{
 				$this->error('Could not stream contents', 500);
-			} 
+			}
 			if(empty($head) || empty($payload) || empty($maskAndLength)
 			|| empty($payloadLength) || ($maskSet === TRUE && empty($mask) ))
 			{
 				$this->error('Empty reply. Most likely the result of an irregular request. (Check custom Meta, or lack of in the case of a non-isolated query)', 500);
-			} 
+			}
 
 			//now that we have the payload lets parse it
 			try
@@ -276,52 +272,51 @@ class Connection
 			}
 			catch(Exception $e)
 			{
-				$this->error($e->getMessage(), $e->getCode());
+				$this->error($e->getMessage(), $e->getCode(), TRUE);
 			}
 			//handle errors
-			//~ print_r($unpacked);
-			if( $unpacked['status']['code'] !== 200 && $unpacked['status']['code'] !== 299)
+			if( $unpacked['status']['code'] !== 200 && $unpacked['status']['code'] !== 206)
 			{
 				$this->error($unpacked['status']['message']." > ".implode("\n",$unpacked['status']['attributes']), $unpacked['status']['code']);
 			}
 			if( $unpacked['status']['code'] == 200 )
 				$fullData = array_merge($fullData, $unpacked['result']['data']);
 		}
-		while($unpacked['status']['code'] !== 299);
-		
+		while($unpacked['status']['code'] === 206);
+
 		return $fullData;
 	}
-	
+
 	/**
 	 * Opens socket
-	 * 
+	 *
 	 * @return bool TRUE on success
 	 */
 	private function connectSocket()
-	{	
+	{
 		$this->_socket = @stream_socket_client(
 									'tcp://'.$this->host,
-									$errno, 
+									$errno,
 									$errorMessage,
 									$this->timeout ? $this->timeout : ini_get("default_socket_timeout")
 									);
 		if(!$this->_socket)
 		{
-			$this->error($errorMessage, $errno);
-		}	
-			
+			$this->error($errorMessage, $errno, TRUE);
+		}
+
 		return TRUE;
 	}
-	
+
 	/**
-	 * Constructs and sends a Messages entity or gremlin script to the server. 
+	 * Constructs and sends a Messages entity or gremlin script to the server.
 	 *
-	 * 
-	 * @param mixed  $msg       (Messages|String|NULL) the message to send, NULL means use $this->message 
-	 * @param string $op        Operation to run against opProcessor. 
-	 * @param string $processor opProcessor to use. 
-	 * @param array  $args      Arguments to overwrite. 
-	 * 
+	 *
+	 * @param mixed  $msg       (Messages|String|NULL) the message to send, NULL means use $this->message
+	 * @param string $op        Operation to run against opProcessor.
+	 * @param string $processor opProcessor to use.
+	 * @param array  $args      Arguments to overwrite.
+	 *
 	 * @return array reply from server.
 	 */
 	public function send($msg = NULL, $processor = '',  $op = 'eval',  $args = [])
@@ -331,25 +326,25 @@ class Connection
 			if(!($msg instanceof Messages) || $msg === NULL)
 			{
 				//lets make a script message:
-				
+
 				$this->message->gremlin = $msg === NULL ? $this->message->gremlin : $msg;
 				$this->message->op = $op;
 				$this->message->processor = $processor;
-				
+
 				if($this->_inTransaction === TRUE || $processor == 'session')
 				{
 					$this->getSession();
 					$this->message->processor = $processor == '' ? 'session' : $processor;
 					$this->message->setArguments(['session'=>$this->_sessionUuid]);
 				}
-				
+
 				$this->message->setArguments($args);
 			}
 			else
 			{
 				$this->message = $msg;
 			}
-			
+
 			$this->writeSocket($this->message);
 
 			//lets get the response
@@ -362,14 +357,14 @@ class Connection
 		}
 		catch(Exception $e)
 		{
-			$this->error($e->getMessage(), $e->getCode());
+			$this->error($e->getMessage(), $e->getCode(), TRUE);
 		}
 	}
-	
+
 	/**
 	 * Close connection to server
 	 * This closes the current session on the server then closes the socket
-	 * 
+	 *
 	 * @return bool TRUE on success
 	 */
 	public function close()
@@ -386,22 +381,22 @@ class Connection
 			$write = @fwrite($this->_socket, $this->webSocketPack("",'close'));
 			if($write === FALSE)
 			{
-				$this->error('Could not write to socket', 500);
+				$this->error('Could not write to socket', 500, TRUE);
 			}
 			@stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR); //ignore error
 			$this->_socket = NULL;
 			$this->_sessionUuid = NULL;
-			
+
 			return TRUE;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Start a transaction.
 	 * Transaction start only makes sens if committing is set to manual on the server.
 	 * Manual is not the default setting so we will assume a session UUID must exists
-	 * 
+	 *
 	 * @return bool TRUE on success FALSE on failure
 	 */
 	public function transactionStart()
@@ -410,7 +405,7 @@ class Connection
 		{
 			$this->error("A graph object needs to be specified", 500);
 		}
-		
+
 		if($this->_inTransaction)
 		{
 			$this->message->gremlin = $this->graphObj.'.tx().rollback()';
@@ -426,12 +421,12 @@ class Connection
 		$this->_inTransaction = TRUE;
 		return TRUE;
 	}
-	
+
 	/**
 	 * End a transaction
-	 * 
+	 *
 	 * @param bool $success should the transaction commit or revert changes
-	 * 
+	 *
 	 * @return bool TRUE on success FALSE on failure.
 	 */
 	public function transactionStop($success = TRUE)
@@ -449,26 +444,26 @@ class Connection
 		{
 			$this->message->gremlin = $this->graphObj.'.tx().rollback()';
 		}
-		
+
 		$this->send();
-		
+
 		$this->_inTransaction = FALSE;
 		return TRUE;
 	}
-	
+
 	/**
 	 * Checks if the socket is currently open
-	 * 
+	 *
 	 * @return bool TRUE if it is open FALSE if not
 	 */
 	public function isConnected()
 	{
 		return $this->_socket !== NULL;
 	}
-	
+
 	/**
 	 * Make sure the session is closed on destruction of the object
-	 * 
+	 *
 	 * @return void
 	 */
 	public function __destroy()
@@ -491,36 +486,36 @@ class Connection
 		$frameHead = array();
 		$frame = '';
 		$payloadLength = strlen($payload);
-		
+
 		switch($type)
-		{		
+		{
 			case 'text':
 				// first byte indicates FIN, Text-Frame (10000001):
-				$frameHead[0] = 129;				
-			break;			
-		
+				$frameHead[0] = 129;
+			break;
+
 			case 'binary':
 				// first byte indicates FIN, Binary-Frame (10000010):
-				$frameHead[0] = 130;				
-			break;			
-		
+				$frameHead[0] = 130;
+			break;
+
 			case 'close':
 				// first byte indicates FIN, Close Frame(10001000):
 				$frameHead[0] = 136;
 			break;
-		
+
 			case 'ping':
 				// first byte indicates FIN, Ping frame (10001001):
 				$frameHead[0] = 137;
 			break;
-		
+
 			case 'pong':
 				// first byte indicates FIN, Pong frame (10001010):
 				$frameHead[0] = 138;
 			break;
 		}
-		
-		// set mask and payload length (using 1, 3 or 9 bytes) 
+
+		// set mask and payload length (using 1, 3 or 9 bytes)
 		if($payloadLength > 65535)
 		{
 			$payloadLengthBin = str_split(sprintf('%064b', $payloadLength), 8);
@@ -561,15 +556,15 @@ class Connection
 			{
 				$mask[$i] = chr(rand(0, 255));
 			}
-			
-			$frameHead = array_merge($frameHead, $mask);			
-		}						
+
+			$frameHead = array_merge($frameHead, $mask);
+		}
 		$frame = implode('', $frameHead);
 
 		// append payload to frame:
-		$framePayload = array();	
+		$framePayload = array();
 		for($i = 0; $i < $payloadLength; $i++)
-		{		
+		{
 			$frame .= ($masked === true) ? $payload[$i] ^ $mask[$i % 4] : $payload[$i];
 		}
 
@@ -604,14 +599,22 @@ class Connection
 	 *
 	 * @return void
 	 */
-	private function error($description, $code)
+	private function error($description, $code, $internal = FALSE)
 	{
 		//always rollback on error
 		if($this->_inTransaction === TRUE)
 		{
 			$this->transactionStop(FALSE);
 		}
-		throw new Exception($description, $code);
+
+		if($internal)
+		{
+			throw new InternalException($description, $code);
+		}
+		else
+		{
+			throw new ServerException($description, $code);
+		}
 	}
 
 	/**
@@ -634,7 +637,7 @@ class Connection
 		if(!isset($this->_sessionUuid))
 		{
 			$this->_sessionUuid = Helper::createUuid();
-		}	
+		}
 		return $this->_sessionUuid;
 	}
 }
