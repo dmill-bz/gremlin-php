@@ -2,8 +2,6 @@
 
 namespace brightzone\rexpro;
 
-use \Exception;
-
 /**
  * Gremlin-server PHP Driver client Messages class
  * Builds and parses binary messages for communication with RexPro
@@ -21,15 +19,15 @@ use \Exception;
  * $db->open();
  * $db->send($message);
  * ~~~
- * 
+ *
  * @category DB
- * @package  gremlin-driver-php
+ * @package  gremlin-php
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
 class Messages
-{	
+{
 	/**
 	 * @var array basic message configuration
 	 *  ie: op,processor,requestId, etc..
@@ -40,7 +38,7 @@ class Messages
 	 * @var array args of the message
 	 */
 	public $args = [];
-	
+
 	/**
 	 * @var array list of serializers loaded for this instance
 	 */
@@ -50,7 +48,7 @@ class Messages
 	 * Overriding construct to populate _serializer
 	 *
 	 * @param int $serializer serializer object to use for packing and unpacking of messages
-	 * 
+	 *
 	 * @return void
 	 */
 	public function __construct()
@@ -152,24 +150,24 @@ class Messages
 
 	/**
 	 * Create and set request UUID
-	 * 
+	 *
 	 * @return string the UUID
 	 */
 	public function createUuid()
 	{
 		return $this->requestUuid = Helper::createUuid();
 	}
-	
+
 	/**
 	 * Constructs full binary message for use in script execution
-	 * 
+	 *
 	 * @return string Returns binary data to be packed and sent to socket
 	 */
 	public function buildMessage()
 	{
 		//lets start by packing message
 		$this->createUuid();
-		
+
 		//build message array
 		$message = array(
 				'requestId' => $this->requestUuid,
@@ -180,21 +178,21 @@ class Messages
 		//serialize message
 		if(!isset($this->_serializers['default']))
 		{
-			throw new Exception("No default serializer set", 500);
+			throw new InternalException("No default serializer set", 500);
 		}
 		$this->_serializers['default']->serialize($message);
 		$mimeType = $this->_serializers['default']->getMimeType();
 
 		$finalMessage =  pack('C',16).$mimeType.$message;
-		return $finalMessage;	
-	}	
-	
+		return $finalMessage;
+	}
+
 	/**
 	 * Parses full message (including outter envelope)
-	 * 
+	 *
 	 * @param string $payload  payload from the server response
 	 * @param bool   $isBinary whether we should expect binary data (TRUE) or plein text (FALSE)
-	 * 
+	 *
 	 * @return array Array containing all results
 	 */
 	public function parse($payload, $isBinary)
@@ -264,10 +262,10 @@ class Messages
 
 	/**
 	 * Binds a value to be used inside gremlin script
-	 * 
+	 *
 	 * @param string $bind  The binding name
 	 * @param mixed  $value the value that the binding name refers to
-	 * 
+	 *
 	 * @return void
 	 */
 	public function bindValue($bind,$value)

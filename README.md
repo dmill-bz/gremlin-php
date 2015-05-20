@@ -1,4 +1,4 @@
-This is a Gremlin server client for PHP. **Supported versions : M5 (tests fail but driver functional) to M7**
+This is a Gremlin server client for PHP. **Supported versions : M9 (note that transactions can't be tested at this time)**
 
 Changes
 =======
@@ -174,13 +174,6 @@ You can add many serializers in this fashion. When gremlin-server responds to yo
 
 Unit testing
 ============
-
-For unit testing purposes you will be required to install the neo4j jar. You do this by doing :
-
-```bash
-bin/gremlin-server.sh -i com.tinkerpop neo4j-gremlin 3.0.0.M7
-# or choose the MX version that coincides with your gremlin-server. M5 for example
-```
 
 You will then need to run gremlin-server with the following configuration file : src/tests/gremlin-server-php.yaml
 

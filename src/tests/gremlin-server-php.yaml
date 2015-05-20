@@ -4,12 +4,13 @@ threadPoolWorker: 1
 gremlinPool: 8
 scriptEvaluationTimeout: 30000
 serializedResponseTimeout: 30000
-channelizer: com.tinkerpop.gremlin.server.channel.WebSocketChannelizer
+channelizer: org.apache.tinkerpop.gremlin.server.channel.WebSocketChannelizer
 graphs: {
-  g: conf/tinkergraph-empty.properties,
-  n: conf/neo4j-empty.properties}
+  graph: conf/tinkergraph-empty.properties
+#  n: conf/neo4j-empty.properties
+}
 plugins:
-  - tinkerpop.neo4j
+#  - tinkerpop.neo4j
   - tinkerpop.tinkergraph
 scriptEngines: {
   gremlin-groovy: {
@@ -17,18 +18,19 @@ scriptEngines: {
     staticImports: [java.lang.Math.PI],
     scripts: [scripts/generate-classic.groovy]}}
 serializers:
-  - { className: com.tinkerpop.gremlin.driver.ser.KryoMessageSerializerV1d0 }
-  - { className: com.tinkerpop.gremlin.driver.ser.KryoMessageSerializerV1d0, config: { serializeResultToString: true }}
-  - { className: com.tinkerpop.gremlin.driver.ser.JsonMessageSerializerGremlinV1d0 }
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0 }
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { serializeResultToString: true }}
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV1d0 }
 processors:
-  - { className: com.tinkerpop.gremlin.server.op.session.SessionOpProcessor, config: { sessionTimeout: 28800000 }}
+  - { className: org.apache.tinkerpop.gremlin.server.op.session.SessionOpProcessor, config: { sessionTimeout: 28800000 }}
 metrics: {
   consoleReporter: {enabled: true, interval: 180000},
   csvReporter: {enabled: true, interval: 180000, fileName: /tmp/gremlin-server-metrics.csv},
   jmxReporter: {enabled: true},
   slf4jReporter: {enabled: true, interval: 180000},
   gangliaReporter: {enabled: false, interval: 180000, addressingMode: MULTICAST},
-  graphiteReporter: {enabled: false, interval: 180000}}
+  graphiteReporter: {enabled: false, interval: 180000}
+}
 threadPoolBoss: 1
 maxInitialLineLength: 4096
 maxHeaderSize: 8192
