@@ -1,4 +1,4 @@
-This is a Gremlin server client for PHP. **Supported versions : M9 (note that transactions can't be tested at this time)**
+This is a Gremlin server client for PHP. **Supported versions : M9-RC3**
 
 Changes
 =======
@@ -75,18 +75,20 @@ Example 1 :
 ```php
 $db = new Connection;
 //you can set $db->timeout = 0.5; if you wish
-$db->open('localhost', 'g');
+$db->open('localhost', 'graph');
 
 $result = $db->send('g.V(2)');
 //do something with result
 $db->close();
 ```
 
+Note that "graph" is the name of the graph configured in gremlin-server (not the reference to the traversal which is `g = graph.traversal()`)
+
 Example 1 bis (Writing the same with message object) :
 ```php
 $db = new Connection;
 //you can set $db->timeout = 0.5; if you wish
-$db->open('localhost', 'g');
+$db->open('localhost', 'graph');
 
 $db->message->gremlin = 'g.V(2)';
 $result = $db->send(); //automatically fetches the message
@@ -99,7 +101,7 @@ Example 2 (with bindings) :
 
 ```php
 $db = new Connection;
-$db->open('localhost:8182', 'g');
+$db->open('localhost:8182', 'graph');
 
 $db->message->bindValue('CUSTO_BINDING', 2);
 $result = $db->send('g.V(CUSTO_BINDING)'); //mix between Example 1 and 1B
@@ -122,7 +124,7 @@ Example 4 (transaction) :
 
 ```php
 $db = new Connection;
-$db->open('localhost:8182','n');
+$db->open('localhost:8182','graphT');
 
 $db->transactionStart();
 
@@ -132,7 +134,7 @@ $db->send('n.addVertex("name","john")');
 $db->transactionStop(FALSE); //rollback changes. Set to true to commit.
 $db->close();
 ```
-Note that "n" above refers to a graph that supports transactions. And that transactions start a session automatically.
+Note that "graphT" above refers to a graph that supports transactions. And that transactions start a session automatically.
 
 Example 5 (Using message object) :
 
@@ -184,3 +186,4 @@ And run the server using :
 bin/gremlin-server.sh conf/gremlin-server-php.yaml
 ```
 
+Note that you will not be able to test Transactions without a titan09-SNAPSHOT installation and custom configuration. Start an issue if you need more information.

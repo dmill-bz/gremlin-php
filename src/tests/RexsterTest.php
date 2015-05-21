@@ -90,13 +90,13 @@ class RexsterTest extends RexsterTestCase
 	public function testConnectSuccess()
 	{
 		$db = new Connection;
-		$result = $db->open('localhost', 'g', $this->username, $this->password);
+		$result = $db->open('localhost', 'graph', $this->username, $this->password);
 
 		$db = new Connection;
-		$result = $db->open('localhost', 'g', $this->username, $this->password);
+		$result = $db->open('localhost', 'graph', $this->username, $this->password);
 
 		$db = new Connection;
-		$result = $db->open('localhost', 'g', $this->username, $this->password);
+		$result = $db->open('localhost', 'graph', $this->username, $this->password);
 	}
 
 	/**
@@ -136,7 +136,7 @@ class RexsterTest extends RexsterTestCase
 	{
 		//do all connection checks
 		$db = new Connection;
-		$db->open('localhost', 'g', $this->username, $this->password);
+		$db->open('localhost', 'graph', $this->username, $this->password);
 
 		//check disconnection
 		$response = $db->close();
@@ -150,14 +150,14 @@ class RexsterTest extends RexsterTestCase
 	public function testRunScriptNoSession()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
 		$this->assertNotEquals($message,FALSE, 'Failed to connect to db');
 
 		$result = $db->send('5+5');
-		$this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)');
+		$this->assertEquals(10, $result[0], 'Script response message is not the right type. (Maybe it\'s an error)');
 
 		$result = $db->send('g.V()');
-		$this->assertEquals(count($result), 6, 'Script response message is not the right type. (Maybe it\'s an error)');
+		$this->assertEquals(6, count($result), 'Script response message is not the right type. (Maybe it\'s an error)');
 
 		//check disconnection
 		$message = $db->close();
@@ -174,7 +174,7 @@ class RexsterTest extends RexsterTestCase
 	public function testRunScriptSession()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
 
 		$this->assertNotEquals($message,FALSE, 'Failed to connect to db');
 
@@ -199,7 +199,7 @@ class RexsterTest extends RexsterTestCase
 	public function testRunScriptWithBindings()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 
 		$db->message->gremlin = 'g.V(CUSTO_BINDING)';
@@ -221,7 +221,7 @@ class RexsterTest extends RexsterTestCase
 	public function testRunScriptWithVarsInSession()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 
 		$db->message->gremlin = 'cal = 5+5';
@@ -249,11 +249,11 @@ class RexsterTest extends RexsterTestCase
 	public function testRunScriptWithBindingsInSession()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 
 		$db->message->gremlin = 'g.V(CUSTO_BIND)';
-		$db->message->bindValue('CUSTO_BIND',2);
+		$db->message->bindValue('CUSTO_BIND', 2);
 		$result = $db->send(NULL, 'session', 'eval');
 
 		$this->assertNotEquals($result, [], 'Running a script with bindings produced an error');
@@ -338,7 +338,7 @@ class RexsterTest extends RexsterTestCase
 	public function testIncorrectGremlin()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
 		$this->assertNotEquals($message,FALSE, 'Failed to connect to db');
 
 		$result = $db->send('g.V().incorect()');
@@ -354,7 +354,7 @@ class RexsterTest extends RexsterTestCase
 	public function testEmptyResult()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', 'g', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
 		$this->assertNotEquals($message,FALSE, 'Failed to connect to db');
 
 		$result = $db->send('g.V().has("idontexists")');

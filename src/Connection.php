@@ -117,7 +117,7 @@ class Connection
 	 *
 	 * @return bool TRUE on success FALSE on error
 	 */
-	public function open($host='localhost:8182', $graphObj = 'g' , $username = NULL, $password = NULL, $config = [])
+	public function open($host='localhost:8182', $graphObj = 'graph' , $username = NULL, $password = NULL, $config = [])
 	{
 		if($this->_socket === NULL)
 		{
@@ -328,10 +328,10 @@ class Connection
 				//lets make a script message:
 
 				$this->message->gremlin = $msg === NULL ? $this->message->gremlin : $msg;
-				$this->message->op = $op;
-				$this->message->processor = $processor;
+				$this->message->op = $op === 'eval'? $this->message->op : $op;
+				$this->message->processor = $processor === '' ? $this->message->processor : $processor;
 
-				if($this->_inTransaction === TRUE || $processor == 'session')
+				if($this->_inTransaction === TRUE || $this->message->processor == 'session')
 				{
 					$this->getSession();
 					$this->message->processor = $processor == '' ? 'session' : $processor;
@@ -403,15 +403,17 @@ class Connection
 	{
 		if(!isset($this->graphObj) || (isset($this->graphObj) && $this->graphObj ==  ''))
 		{
-			$this->error("A graph object needs to be specified", 500);
+			$this->error("A graph object needs to be specified", 500, TRUE);
 		}
 
 		if($this->_inTransaction)
 		{
 			$this->message->gremlin = $this->graphObj.'.tx().rollback()';
-			$this->send($this->message);
-			$this->error(__METHOD__.': already in transaction, rolling changes back.', 500);
+			$this->send();
+			$this->_inTransaction = FALSE;
+			$this->error(__METHOD__.': already in transaction, rolling changes back.', 500, TRUE);
 		}
+
 		//if we aren't in transaction we need to start a session
 		$this->getSession();
 		$this->message->setArguments(['session'=>$this->_sessionUuid]);
@@ -433,7 +435,7 @@ class Connection
 	{
 		if(!$this->_inTransaction || !isset($this->_sessionUuid))
 		{
-			$this->error(__METHOD__.' : No ongoing transaction/session.', 500);
+			$this->error(__METHOD__.' : No ongoing transaction/session.', 500, TRUE);
 		}
 		//send message to stop transaction
 		if($success)
