@@ -29,7 +29,7 @@ class RexsterTransactionTest extends RexsterTestCase
 	public function testTransactions()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', 'n', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'graphT', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 
 		$db->message->gremlin = 'n.V().count()';
@@ -40,7 +40,7 @@ class RexsterTransactionTest extends RexsterTestCase
 
 		$db->transactionStart();
 
-		$db->message->gremlin = 'n.addVertex()';
+		$db->message->gremlin = 'n.addV()';
 		$result = $db->send();
 
 		$db->transactionStop(FALSE);
@@ -53,7 +53,7 @@ class RexsterTransactionTest extends RexsterTestCase
 		$this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
 
 		$db->transactionStart();
-		$result = $db->send('n.addVertex("name","michael")');
+		$result = $db->send('n.addV("name","michael")');
 
 		$db->transactionStop(TRUE);
 
@@ -69,7 +69,7 @@ class RexsterTransactionTest extends RexsterTestCase
 	public function testTransactionsMultiRun()
 	{
 		$db = new Connection;
-		$message = $db->open('localhost:8182', 'n', $this->username, $this->password);
+		$message = $db->open('localhost:8182', 'graphT', $this->username, $this->password);
 		$this->assertNotEquals($message, FALSE);
 
 		$result = $db->send('n.V().count()');
@@ -77,8 +77,8 @@ class RexsterTransactionTest extends RexsterTestCase
 
 		$db->transactionStart();
 
-		$result = $db->send('n.addVertex("name","michael")');
-		$result = $db->send('n.addVertex("name","michael")');
+		$result = $db->send('n.addV("name","michael")');
+		$result = $db->send('n.addV("name","michael")');
 
 		$db->transactionStop(FALSE);
 
@@ -89,8 +89,8 @@ class RexsterTransactionTest extends RexsterTestCase
 
 		$db->transactionStart();
 
-		$result = $db->send('n.addVertex("name","michael")');
-		$result = $db->send('n.addVertex("name","michael")');
+		$result = $db->send('n.addV("name","michael")');
+		$result = $db->send('n.addV("name","michael")');
 
 		$db->transactionStop(TRUE);
 
@@ -124,7 +124,7 @@ class RexsterTransactionTest extends RexsterTestCase
 	public function testSeveralRunningTransactionStart()
 	{
 		$db = new Connection;
-		$db->open('localhost:8182', 'n', $this->username, $this->password);
+		$db->open('localhost:8182', 'graphT', $this->username, $this->password);
 		$db->transactionStart();
 		$db->transactionStart();
 	}
@@ -139,7 +139,7 @@ class RexsterTransactionTest extends RexsterTestCase
 	public function testTransactionStopWithNoTransaction()
 	{
 		$db = new Connection;
-		$db->open('localhost:8182', 'n', $this->username, $this->password);
+		$db->open('localhost:8182', 'graphT', $this->username, $this->password);
 		$result = $db->transactionStop();
 	}
 }

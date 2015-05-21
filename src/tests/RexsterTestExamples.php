@@ -29,7 +29,7 @@ class RexsterTestExamples extends RexsterTestCase
 	{
 		$db = new Connection;
 		//you can set $db->timeout = 0.5; if you wish
-		$db->open('localhost', 'g');
+		$db->open('localhost', 'graph');
 		$result = $db->send('g.V(2)');
 		//do something with result
 		$db->close();
@@ -44,7 +44,7 @@ class RexsterTestExamples extends RexsterTestCase
 	{
 		$db = new Connection;
 		//you can set $db->timeout = 0.5; if you wish
-		$db->open('localhost', 'g');
+		$db->open('localhost', 'graph');
 		$db->message->gremlin = 'g.V(2)';
 		$result = $db->send(); //automatically fetches the message
 		//do something with result
@@ -59,7 +59,7 @@ class RexsterTestExamples extends RexsterTestCase
 	public function testExample2()
 	{
 		$db = new Connection;
-		$db->open('localhost:8182', 'g');
+		$db->open('localhost:8182', 'graph');
 
 		$db->message->bindValue('CUSTO_BINDING', 2);
 		$result = $db->send('g.V(CUSTO_BINDING)'); //mix between Example 1 and 1B
@@ -91,7 +91,7 @@ class RexsterTestExamples extends RexsterTestCase
 	public function testExample4()
 	{
 		$db = new Connection;
-		$db->open('localhost:8182','n');
+		$db->open('localhost:8182','graphT');
 		$originalCount = $db->send('n.V().count()');
 
 		$db->transactionStart();
