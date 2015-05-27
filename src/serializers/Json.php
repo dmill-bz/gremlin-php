@@ -49,7 +49,6 @@ class Json implements SerializerInterface
 	 */
 	public function unserialize($data)
 	{
-		echo $data;
 		$mssg = json_decode($data, TRUE, JSON_UNESCAPED_UNICODE);
 
 		return $mssg;

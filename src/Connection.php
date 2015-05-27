@@ -422,7 +422,6 @@ class Connection
 		$this->message->gremlin='if(!'.$this->graphObj.'.tx().isOpen()){'.$this->graphObj.'.tx().open()}';
 		$this->send();
 		$this->_inTransaction = TRUE;
-		var_dump($this->_inTransaction);
 		return TRUE;
 	}
 
@@ -435,10 +434,6 @@ class Connection
 	 */
 	public function transactionStop($success = TRUE)
 	{
-		echo "TRANS STOP";
-		var_dump($success);
-		var_dump($this->_inTransaction);
-		var_dump($this->_sessionUuid);
 		if(!$this->_inTransaction || !isset($this->_sessionUuid))
 		{
 			$this->error(__METHOD__.' : No ongoing transaction/session.', 500, TRUE);
@@ -454,7 +449,6 @@ class Connection
 		}
 
 		$this->send();
-echo "something after";
 		$this->_inTransaction = FALSE;
 		return TRUE;
 	}
