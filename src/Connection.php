@@ -350,8 +350,9 @@ class Connection
 			//lets get the response
 			$response = $this->socketGetUnpack();
 
-			//reset message
+			//reset message and remove binds
 			$this->message->clear();
+
 
 			return $response;
 		}
@@ -375,8 +376,8 @@ class Connection
 
 			if($this->_inTransaction === TRUE)
 			{
-				//commit changes;
-				$this->stopTransaction(TRUE);
+				//do not commit changes changes;
+				$this->stopTransaction(FALSE);
 			}
 			$write = @fwrite($this->_socket, $this->webSocketPack("",'close'));
 			if($write === FALSE)
@@ -448,7 +449,6 @@ class Connection
 		}
 
 		$this->send();
-
 		$this->_inTransaction = FALSE;
 		return TRUE;
 	}
@@ -603,12 +603,7 @@ class Connection
 	 */
 	private function error($description, $code, $internal = FALSE)
 	{
-		//always rollback on error
-		if($this->_inTransaction === TRUE)
-		{
-			$this->transactionStop(FALSE);
-		}
-
+		//Errors will rollback once the connection is destroyed. No need to rollback here.
 		if($internal)
 		{
 			throw new InternalException($description, $code);

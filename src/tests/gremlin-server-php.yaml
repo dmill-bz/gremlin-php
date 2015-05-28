@@ -7,7 +7,7 @@ serializedResponseTimeout: 30000
 channelizer: org.apache.tinkerpop.gremlin.server.channel.WebSocketChannelizer
 graphs: {
   graph: conf/tinkergraph-empty.properties
-#  n: conf/neo4j-empty.properties
+#  t: conf/neo4j-empty.properties
 }
 plugins:
 #  - tinkerpop.neo4j
