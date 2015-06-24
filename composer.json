@@ -2,6 +2,7 @@
     "name": "brightzone/gremlin-php",
     "description": "gremlin-server client for php",
     "minimum-stability": "stable",
+    "license": "Apache 2",
     "authors": [
         {
             "name": "Brightzone",

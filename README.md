@@ -171,3 +171,9 @@ You will then need to run gremlin-server in the following manner :
 ```bash
 bin/gremlin-server.sh conf/gremlin-server-php.yaml
 ```
+
+Then run the unit test via:
+
+```bash
+phpunit --colors --bootstrap src/tests/bootstrap.php src/tests/
+```
