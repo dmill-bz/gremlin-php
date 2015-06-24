@@ -8,12 +8,18 @@
             "email": "dylan.millikin@brightzone.fr"
         }
     ],
-    "keywords": ["rexpro-php", "rexpro", "gremlin", "gremlin-server", "driver"],
+    "keywords": [
+        "rexpro-php",
+        "rexpro",
+        "gremlin",
+        "gremlin-server",
+        "driver"
+    ],
     "require-dev": {
         "yiisoft/yii2-apidoc": "2.0.0-beta"
     },
     "autoload": {
-        "psr4": {
+        "psr-4": {
             "brightzone\\rexpro\\": "src/"
         }
     }
