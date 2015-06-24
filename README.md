@@ -18,11 +18,7 @@ php composer.phar require brightzone/gremlin-php "master"
 Or add:
 
 ```json
-
-    "require": {
-        "brightzone/gremlin-php": "master"
-    }
-}
+    "brightzone/gremlin-php": "master"
 ```
 
 to the `require` section of your `composer.json` file
@@ -175,5 +171,5 @@ bin/gremlin-server.sh conf/gremlin-server-php.yaml
 Then run the unit test via:
 
 ```bash
-phpunit --colors --bootstrap src/tests/bootstrap.php src/tests/
+phpunit --bootstrap src/tests/bootstrap.php src/tests/
 ```
