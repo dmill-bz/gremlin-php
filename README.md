@@ -1,16 +1,4 @@
-This is a Gremlin server client for PHP. **Supported versions : M9-RC3**
-
-Changes
-=======
-There are many changes but bellow are the most noticeable if you've used rexpro-php before
-
-- Client now throw errors that you will need to catch
-- Connection params have changes
-- Messages class has been revamped and is independant from Connection (see documentation on how to use this)
-- Unit testing will require some more configuration
-- Runs sessionless by default (rexpro-php 2.3 & 2.4+ ran with sessions as the default)
-- Gremlin code change g.V/E should now be written as g.V()/E()
-
+This is a Gremlin server client for PHP. **Supported versions : TP3-GA-RC1**
 
 Installation
 ============
@@ -19,31 +7,27 @@ Installation
 
 ##### For Gremlin-Server 3.0.0-M5+
 
-Prefered method is through composer. Add the following to your **composer.json** file:
+Prefered method is through composer.
+
+Either run :
+
+```bash
+php composer.phar require brightzone/gremlin-php "master"
+```
+
+Or add:
 
 ```json
-{
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/PommeVerte/gremlin-php.git"
-        }
-    ],
+
     "require": {
         "brightzone/gremlin-php": "master"
     }
 }
 ```
 
-If you just want to pull and use the library do:
+to the `require` section of your `composer.json` file
 
-```bash
-git clone https://github.com/PommeVerte/gremlin-php.git
-cd gremlin-php
-composer install --no-dev # required to set autoload files
-```
-
-Namespace
+Usage
 =========
 
 The Connection class exists within the `rexpro` namespace. (history: rexpro used to be the old protocol used by the driver in Tinkerpop2). This means that you have to do either of the two following:
@@ -53,14 +37,6 @@ require_once('vendor/autoload.php');
 use \brightzone\rexpro\Connection;
 
 $db = new Connection;
-```
-
-Or
-
-```php
-require_once('vendor/autoload.php');
-
-$db = new \brightzone\rexpro\Connection;
 ```
 
 Examples
@@ -177,13 +153,21 @@ You can add many serializers in this fashion. When gremlin-server responds to yo
 Unit testing
 ============
 
-You will then need to run gremlin-server with the following configuration file : src/tests/gremlin-server-php.yaml
+Neo4J is required for the full test suit. It is not bundled with gremlin-server by default so you will need to manually install it with:
 
-Just copy this file to `<gremlin-server-root-dir>/conf/`
-And run the server using :
+```bash
+bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.0.0-SNAPSHOT
+```
+Copy the following files :
+
+```bash
+cp <gremlin-php-root-dir>/src/tests/gremlin-server-php.yaml <gremlin-server-root-dir>/conf/
+cp <gremlin-php-root-dir>/src/tests/neo4j-empty.properties <gremlin-server-root-dir>/conf/
+cp <gremlin-php-root-dir>/src/tests/gremlin-php-script.groovy <gremlin-server-root-dir>/scripts/
+```
+
+You will then need to run gremlin-server in the following manner :
 
 ```bash
 bin/gremlin-server.sh conf/gremlin-server-php.yaml
 ```
-
-Note that you will not be able to test Transactions without a titan09-SNAPSHOT installation and custom configuration. Start an issue if you need more information.
