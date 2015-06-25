@@ -2,8 +2,6 @@
 
 namespace brightzone\rexpro;
 
-require_once('vendor/autoload.php');
-
 use brightzone\rexpro\serializers\Json;
 
 /**
