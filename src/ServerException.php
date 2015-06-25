@@ -32,9 +32,9 @@ class ServerException extends Exception
      *
      * @return void
      */
-    public function __construct($message, $code = 0, Exception $previous = null)
+    public function __construct($message, $code = 0, Exception $previous = NULL)
     {
-        $message = $this->getMessagePerCode($code).' : '. $message;
+        $message = $this->getMessagePerCode($code) . ' : ' . $message;
         parent::__construct($message, $code, $previous);
     }
 
@@ -57,6 +57,6 @@ class ServerException extends Exception
             self::SERVER_SERIALIZATION_ERROR => "The server was not capable of serializing an object that was returned from the script supplied on the request. Either transform the object into something Gremlin Server can process within the script or install mapper serialization classes to Gremlin Server.",
         ];
 
-        return isset($messages[$code])?$messages[$code]:'';
+        return isset($messages[$code]) ? $messages[$code] : '';
     }
 }
