@@ -85,7 +85,7 @@ class Messages
      *
      * @return void
      */
-    public function __set($name,$value)
+    public function __set($name, $value)
     {
         if($name == 'gremlin')
         {
@@ -186,7 +186,7 @@ class Messages
         $this->_serializers['default']->serialize($message);
         $mimeType = $this->_serializers['default']->getMimeType();
 
-        $finalMessage =  pack('C',16).$mimeType.$message;
+        $finalMessage = pack('C', 16) . $mimeType . $message;
         return $finalMessage;
     }
 
@@ -202,7 +202,7 @@ class Messages
     {
         if($isBinary)
         {
-            list($mimeLength) = unpack('C',$payload[0]);
+            list($mimeLength) = unpack('C', $payload[0]);
             $mimeType = substr($payload, 1, $mimeLength + 1);
             $serializer = $this->getSerializer($mimeType);
             $payload = substr($payload, $mimeLength + 1, strlen($payload));
@@ -271,13 +271,13 @@ class Messages
      *
      * @return void
      */
-    public function bindValue($bind,$value)
+    public function bindValue($bind, $value)
     {
         if(!isset($this->args['bindings']))
         {
             $this->args['bindings'] = [];
         }
-        $this->args['bindings'][$bind]=$value;
+        $this->args['bindings'][$bind] = $value;
     }
 
     /**

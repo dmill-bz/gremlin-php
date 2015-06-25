@@ -89,7 +89,7 @@ class RexsterTestExamples extends RexsterTestCase
     public function testExample4()
     {
         $db = new Connection;
-        $db->open('localhost:8182','graphT');
+        $db->open('localhost:8182', 'graphT');
         $originalCount = $db->send('n.V().count()');
 
         $db->transactionStart();
