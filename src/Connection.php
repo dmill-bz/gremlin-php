@@ -280,7 +280,9 @@ class Connection
                 $this->error($unpacked['status']['message'] . " > " . implode("\n", $unpacked['status']['attributes']), $unpacked['status']['code']);
             }
             if($unpacked['status']['code'] == 200)
-                $fullData = array_merge($fullData, $unpacked['result']['data']);
+            {
+                            $fullData = array_merge($fullData, $unpacked['result']['data']);
+            }
         }
         while($unpacked['status']['code'] === 206);
 
