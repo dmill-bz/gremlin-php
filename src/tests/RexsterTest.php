@@ -122,7 +122,7 @@ class RexsterTest extends RexsterTestCase
     {
         $db = new Connection;
         $db->timeout = 0.5;
-        $result = $db->open('localhost:8787');
+        $db->open('localhost:8787');
     }
 
     /**

@@ -372,8 +372,6 @@ class Connection
     {
         if($this->_socket !== NULL)
         {
-            $this->error = NULL;
-
             if($this->_inTransaction === TRUE)
             {
                 //do not commit changes changes;

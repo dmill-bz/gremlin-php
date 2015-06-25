@@ -70,7 +70,7 @@ class RexsterTransactionTest extends RexsterTestCase
         $message = $db->open('localhost:8182', 'graphT', $this->username, $this->password);
         $this->assertNotEquals($message, FALSE);
 
-        $db->send('t.V().count()');
+        $result = $db->send('t.V().count()');
         $elementCount = $result[0];
 
         $db->transactionStart();
