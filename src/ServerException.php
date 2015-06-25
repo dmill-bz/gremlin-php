@@ -26,9 +26,9 @@ class ServerException extends Exception
 	/**
 	 * Overriding construct to populate _serializer
 	 *
-	 * @param string    $message   The error message to throw
-	 * @param int       $code      The error code to throw
-	 * @param Exception $exception The previous exception if there is one that triggered this error
+	 * @param string    $message  The error message to throw
+	 * @param int       $code     The error code to throw
+	 * @param Exception $previous The previous exception if there is one that triggered this error
 	 *
 	 * @return void
 	 */
