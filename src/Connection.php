@@ -108,10 +108,10 @@ class Connection
 	 * Connects to socket and starts a session with gremlin-server
 	 *
 	 * @param string $host        host and port seperated by ":"
-	 * @param string $graph       graph to load into session. defaults to tinkergraph
+	 * @param string $graphObj    graph to load into session. defaults to graph
 	 * @param string $username    username for authentification
 	 * @param string $password    password to use for authentification
-	 * @param string $graphObject Graph object name. defaults to 'g'
+	 * @param array  $config      extra required configuration
 	 *
 	 * @return bool TRUE on success FALSE on error
 	 */

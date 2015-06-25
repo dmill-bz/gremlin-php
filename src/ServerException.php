@@ -23,12 +23,28 @@ class ServerException extends Exception
 	const SERVER_TIMEOUT = 598;
 	const SERVER_SERIALIZATION_ERROR = 599;
 
+	/**
+	 * Overriding construct to populate _serializer
+	 *
+	 * @param string    $message   The error message to throw
+	 * @param int       $code      The error code to throw
+	 * @param Exception $exception The previous exception if there is one that triggered this error
+	 *
+	 * @return void
+	 */
 	public function __construct($message, $code = 0, Exception $previous = null)
 	{
 		$message = $this->getMessagePerCode($code).' : '. $message;
 		parent::__construct($message, $code, $previous);
 	}
 
+	/**
+	 * Lets add more information to the error message thrown by using the Error Code
+	 *
+	 * @param int $code The error code we want to generate a message for.
+	 *
+	 * @return string The error message that corresponds to the error code
+	 */
 	private function getMessagePerCode($code)
 	{
 		$messages = [

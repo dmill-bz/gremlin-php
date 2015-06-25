@@ -5,8 +5,6 @@ Installation
 
 ### PHP Gremlin-Server Client
 
-##### For Gremlin-Server 3.0.0-M5+
-
 Prefered method is through composer.
 
 Either run :
@@ -145,6 +143,11 @@ $serializer = $db->message->getSerializer(); // returns an instance the CustomSe
 $serializer = $db->message->getSerializer('application/json'); // returns an instance the JSON serializer
 ```
 You can add many serializers in this fashion. When gremlin-server responds to your requests, gremlin-client-php will be capable of using the appropriate one to unserialize the message.
+
+API
+============
+
+You can find the api [here](http://pommeverte.github.io/gremlin-php/).
 
 Unit testing
 ============

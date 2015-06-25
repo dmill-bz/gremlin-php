@@ -47,8 +47,6 @@ class Messages
 	/**
 	 * Overriding construct to populate _serializer
 	 *
-	 * @param int $serializer serializer object to use for packing and unpacking of messages
-	 *
 	 * @return void
 	 */
 	public function __construct()
