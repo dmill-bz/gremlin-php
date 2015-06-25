@@ -16,7 +16,13 @@ use \Exception;
 class InternalException extends Exception
 {
 	/**
-	 * overriding
+	 * Overriding construct
+	 *
+	 * @param string    $message  The error message to throw
+	 * @param int       $code     The error code to throw
+	 * @param Exception $previous The previous exception if there is one that triggered this error
+	 *
+	 * @return void
 	 */
 	public function __construct($message, $code = 0, Exception $previous = null)
 	{

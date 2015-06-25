@@ -24,7 +24,7 @@ class ServerException extends Exception
 	const SERVER_SERIALIZATION_ERROR = 599;
 
 	/**
-	 * Overriding construct to populate _serializer
+	 * Overriding construct
 	 *
 	 * @param string    $message  The error message to throw
 	 * @param int       $code     The error code to throw
