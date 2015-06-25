@@ -3,6 +3,7 @@
 namespace brightzone\rexpro;
 
 use brightzone\rexpro\serializers\Json;
+use brightzone\rexpro\ServerException;
 
 /**
  * Gremlin-server PHP Driver client Connection class
@@ -142,10 +143,12 @@ class Connection
      */
     private function writeSocket($msg = NULL)
     {
-        if($msg == NULL)
+        if($msg === NULL)
         {
-            $msg = $this->webSocketPack($this->message->buildMessage());
+            $msg = $this->message;
         }
+
+        $msg = $this->webSocketPack($msg->buildMessage());
         $write = @fwrite($this->_socket, $msg);
         if($write === FALSE)
         {
@@ -347,7 +350,7 @@ class Connection
                 $this->message = $msg;
             }
 
-            $this->writeSocket($this->message);
+            $this->writeSocket();
 
             //lets get the response
             $response = $this->socketGetUnpack();
@@ -360,7 +363,11 @@ class Connection
         }
         catch(\Exception $e)
         {
-            $this->error($e->getMessage(), $e->getCode(), TRUE);
+            if(!($e instanceof ServerException))
+            {
+                $this->error($e->getMessage(), $e->getCode(), TRUE);
+            }
+            throw $e;
         }
     }
 
