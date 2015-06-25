@@ -24,9 +24,9 @@ class InternalException extends Exception
      *
      * @return void
      */
-    public function __construct($message, $code = 0, Exception $previous = null)
+    public function __construct($message, $code = 0, Exception $previous = NULL)
     {
-        $message = 'gremlin-php driver has thrown the following error : '. $message;
+        $message = 'gremlin-php driver has thrown the following error : ' . $message;
         parent::__construct($message, $code, $previous);
     }
 }

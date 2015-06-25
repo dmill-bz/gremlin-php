@@ -2,8 +2,8 @@
 namespace brightzone\rexpro\tests;
 
 use brightzone\rexpro\Connection;
-use brightzone\rexpro\Messages;
 use brightzone\rexpro\Helper;
+use brightzone\rexpro\Messages;
 
 /**
  * Unit testing of grmlin-php
@@ -149,7 +149,7 @@ class RexsterTest extends RexsterTestCase
     {
         $db = new Connection;
         $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
-        $this->assertNotEquals($message,FALSE, 'Failed to connect to db');
+        $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
         $result = $db->send('5+5');
         $this->assertEquals(10, $result[0], 'Script response message is not the right type. (Maybe it\'s an error)');
@@ -174,14 +174,14 @@ class RexsterTest extends RexsterTestCase
         $db = new Connection;
         $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
 
-        $this->assertNotEquals($message,FALSE, 'Failed to connect to db');
+        $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
-        $result = $db->send('5+5','session', 'eval');
+        $result = $db->send('5+5', 'session', 'eval');
 
-        $this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+        $this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)'); //check it's a session script reply
 
         $result = $db->send('g.V()', 'session', 'eval');
-        $this->assertEquals(count($result), 6, 'Script response message is not the right type. (Maybe it\'s an error)');//check it's a session script reply
+        $this->assertEquals(count($result), 6, 'Script response message is not the right type. (Maybe it\'s an error)'); //check it's a session script reply
 
         //check disconnection
         $db->close();
@@ -230,7 +230,7 @@ class RexsterTest extends RexsterTestCase
         $this->assertNotEquals($result, FALSE, 'Running a script with bindings produced an error');
 
         $db->message->gremlin = 'cal = 5+5';
-        $result = $db->send(NULL,'session', 'eval');
+        $result = $db->send(NULL, 'session', 'eval');
         $this->assertEquals($result, [10], 'Running a script with bindings produced an error');
 
 
@@ -302,11 +302,11 @@ class RexsterTest extends RexsterTestCase
     public function testgetSerializer()
     {
         $db = new Connection;
-        $serializer = $db->message->getSerializer() ;
+        $serializer = $db->message->getSerializer();
 
-        $this->assertTRUE($serializer instanceof \brightzone\rexpro\serializers\Json,'Initial serializer set failed');
+        $this->assertTRUE($serializer instanceof \brightzone\rexpro\serializers\Json, 'Initial serializer set failed');
         $db->message->registerSerializer('brightzone\rexpro\serializers\Msgpack');
-        $this->assertTRUE($db->message->getSerializer() instanceof \brightzone\rexpro\serializers\MsgPack,'Failed to change serializer');
+        $this->assertTRUE($db->message->getSerializer() instanceof \brightzone\rexpro\serializers\MsgPack, 'Failed to change serializer');
     }
 
 
@@ -320,9 +320,9 @@ class RexsterTest extends RexsterTestCase
     public function testgetSerializerNotExist()
     {
         $db = new Connection;
-        $serializer = $db->message->getSerializer() ;
+        $serializer = $db->message->getSerializer();
 
-        $this->assertTRUE($serializer instanceof \brightzone\rexpro\serializers\Json,'Initial serializer set failed');
+        $this->assertTRUE($serializer instanceof \brightzone\rexpro\serializers\Json, 'Initial serializer set failed');
         $db->message->registerSerializer('brightzone\rexpro\serializers\Something');
     }
 
@@ -337,7 +337,7 @@ class RexsterTest extends RexsterTestCase
     {
         $db = new Connection;
         $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
-        $this->assertNotEquals($message,FALSE, 'Failed to connect to db');
+        $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
         $db->send('g.V().incorect()');
     }
@@ -353,7 +353,7 @@ class RexsterTest extends RexsterTestCase
     {
         $db = new Connection;
         $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
-        $this->assertNotEquals($message,FALSE, 'Failed to connect to db');
+        $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
         $db->send('g.V().has("idontexists")');
     }
