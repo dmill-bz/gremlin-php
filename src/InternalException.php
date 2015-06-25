@@ -15,18 +15,18 @@ use \Exception;
  */
 class InternalException extends Exception
 {
-	/**
-	 * Overriding construct
-	 *
-	 * @param string    $message  The error message to throw
-	 * @param int       $code     The error code to throw
-	 * @param Exception $previous The previous exception if there is one that triggered this error
-	 *
-	 * @return void
-	 */
-	public function __construct($message, $code = 0, Exception $previous = null)
-	{
-		$message = 'gremlin-php driver has thrown the following error : '. $message;
-		parent::__construct($message, $code, $previous);
-	}
+    /**
+     * Overriding construct
+     *
+     * @param string    $message  The error message to throw
+     * @param int       $code     The error code to throw
+     * @param Exception $previous The previous exception if there is one that triggered this error
+     *
+     * @return void
+     */
+    public function __construct($message, $code = 0, Exception $previous = null)
+    {
+        $message = 'gremlin-php driver has thrown the following error : '. $message;
+        parent::__construct($message, $code, $previous);
+    }
 }

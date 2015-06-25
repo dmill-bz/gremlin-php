@@ -16,62 +16,62 @@ use \brightzone\rexpro\Messages;
  */
 class Json implements SerializerInterface
 {
-	/**
-	 * @var string the name of the serializer
-	 */
-	public static $name = 'JSON';
+    /**
+     * @var string the name of the serializer
+     */
+    public static $name = 'JSON';
 
-	/**
-	 * @var int Value of this serializer. Will be deprecated in TP3
-	 */
-	public static $mimeType = 'application/json';
+    /**
+     * @var int Value of this serializer. Will be deprecated in TP3
+     */
+    public static $mimeType = 'application/json';
 
-	/**
-	 * Serializes the data
-	 *
-	 * @param array &$data data to be serialized
-	 *
-	 * @return int length of generated string
-	 */
-	public function serialize(&$data)
-	{
-		$data = json_encode($data, JSON_UNESCAPED_UNICODE);
+    /**
+     * Serializes the data
+     *
+     * @param array &$data data to be serialized
+     *
+     * @return int length of generated string
+     */
+    public function serialize(&$data)
+    {
+        $data = json_encode($data, JSON_UNESCAPED_UNICODE);
 
-		return mb_strlen($data, 'ISO-8859-1');
-	}
+        return mb_strlen($data, 'ISO-8859-1');
+    }
 
-	/**
-	 * Unserializes the data
-	 *
-	 * @param array $data data to be unserialized
-	 *
-	 * @return array unserialized message
-	 */
-	public function unserialize($data)
-	{
-		$mssg = json_decode($data, TRUE, JSON_UNESCAPED_UNICODE);
+    /**
+     * Unserializes the data
+     *
+     * @param array $data data to be unserialized
+     *
+     * @return array unserialized message
+     */
+    public function unserialize($data)
+    {
+        $mssg = json_decode($data, TRUE, JSON_UNESCAPED_UNICODE);
 
-		return $mssg;
-	}
+        return $mssg;
+    }
 
-	/**
-	 * Get this serializer's Name
-	 *
-	 * @return string name of serializer
-	 */
-	public function getName()
-	{
-		return self::$name;
-	}
+    /**
+     * Get this serializer's Name
+     *
+     * @return string name of serializer
+     */
+    public function getName()
+    {
+        return self::$name;
+    }
 
-	/**
-	 * Get this serializer's value
-	 * This will be deprecated with TP3 Gremlin-server
-	 *
-	 * @return string name of serializer
-	 */
-	public function getMimeType()
-	{
-		return self::$mimeType;
-	}
+    /**
+     * Get this serializer's value
+     * This will be deprecated with TP3 Gremlin-server
+     *
+     * @return string name of serializer
+     */
+    public function getMimeType()
+    {
+        return self::$mimeType;
+    }
 }

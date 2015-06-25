@@ -13,25 +13,25 @@ namespace brightzone\rexpro\tests;
  */
 class RexsterTestCase extends \PHPUnit_Framework_TestCase
 {
-	/**
-	 * @var mixed the database username to use with tests, if any
-	 */
-	protected $username;
+    /**
+     * @var mixed the database username to use with tests, if any
+     */
+    protected $username;
 
-	/**
-	 * @var mixed the database password to use with tests, if any
-	 */
-	protected $password;
+    /**
+     * @var mixed the database password to use with tests, if any
+     */
+    protected $password;
 
-	/**
-	 * Overriding setup to catch database arguments if set.
-	 *
-	 * @return void
-	 */
-	protected function setUp()
-	{
-		$this->username = getenv('DBUSER') ? getenv('DBUSER') : NULL;
-		$this->password = getenv('DBPASS') ? getenv('DBPASS') : NULL;
-		parent::setUp();
-	}
+    /**
+     * Overriding setup to catch database arguments if set.
+     *
+     * @return void
+     */
+    protected function setUp()
+    {
+        $this->username = getenv('DBUSER') ? getenv('DBUSER') : NULL;
+        $this->password = getenv('DBPASS') ? getenv('DBPASS') : NULL;
+        parent::setUp();
+    }
 }
