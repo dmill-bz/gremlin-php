@@ -17,7 +17,8 @@
         "driver"
     ],
     "require-dev": {
-        "yiisoft/yii2-apidoc": "2.0.0-beta"
+        "yiisoft/yii2-apidoc": "*",
+        "satooshi/php-coveralls": "dev-master"
     },
     "autoload": {
         "psr-4": {

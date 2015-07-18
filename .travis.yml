@@ -1,6 +1,10 @@
 language: php
 php:
   - 5.4
+  - 5.5
+  - 5.6
+  - hhvm
+  - nightly
 matrix:
   allow_failures:
     - php: hhvm
@@ -8,17 +12,24 @@ matrix:
 before_install:
   - sudo apt-get update > /dev/null
 install:
-  - composer install --no-dev
+  - composer install --dev
   - sudo apt-get install -y python-software-properties
   - sudo add-apt-repository -y ppa:webupd8team/java
   - sudo apt-get update
   - sudo apt-get install -y oracle-java8-installer
-  - wget -O $HOME/apache-gremlin-server-3.0.0-incubating-bin.zip https://www.apache.org/dist/incubator/tinkerpop/3.0.0-incubating/apache-gremlin-server-3.0.0-incubating-bin.zip
+  - sudo update-alternatives --auto java
+  - sudo update-alternatives --auto javac
+  - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+  - wget --no-check-certificate -O $HOME/apache-gremlin-server-3.0.0-incubating-bin.zip https://www.apache.org/dist/incubator/tinkerpop/3.0.0-incubating/apache-gremlin-server-3.0.0-incubating-bin.zip
   - unzip $HOME/apache-gremlin-server-3.0.0-incubating-bin.zip -d $HOME/
   - cp src/tests/gremlin-php-script.groovy $HOME/apache-gremlin-server-3.0.0-incubating/scripts/
   - cp src/tests/gremlin-server-php.yaml $HOME/apache-gremlin-server-3.0.0-incubating/conf/
   - cp src/tests/neo4j-empty.properties $HOME/apache-gremlin-server-3.0.0-incubating/scripts/
   - cd $HOME/apache-gremlin-server-3.0.0-incubating
   - bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.0.0-incubating
-  - bin/gremlin-server.sh conf/gremlin-server-php.yaml
-script: phpunit --bootstrap src/tests/bootstrap src/tests
+  - bin/gremlin-server.sh conf/gremlin-server-php.yaml > /dev/null 2>&1 &
+  - cd $TRAVIS_BUILD_DIR
+  - sleep 60
+script: phpunit --coverage-clover build/logs/clover.xml --bootstrap src/tests/bootstrap.php src/tests
+after_script:
+  - php vendor/bin/coveralls -v
