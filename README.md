@@ -1,4 +1,4 @@
-This is a Gremlin server client for PHP. **Supported versions : TP3-GA-RC1**
+This is a Gremlin server client for PHP. It supports TP3. For a TP2 php driver please check [rexpro-php](https://github.com/PommeVerte/rexpro-php)
 
 Installation
 ============
@@ -24,7 +24,7 @@ to the `require` section of your `composer.json` file
 Usage
 =========
 
-The Connection class exists within the `rexpro` namespace. (history: rexpro used to be the old protocol used by the driver in Tinkerpop2). This means that you have to do either of the two following:
+The Connection class exists within the `rexpro` namespace. (history: rexpro used to be the old protocol used by the driver in Tinkerpop2).
 
 ```php
 require_once('vendor/autoload.php');
@@ -36,7 +36,7 @@ $db = new Connection;
 Examples
 ========
 
-You can find more information by reading the API in the wiki.
+You can find more information by reading the [API](http://pommeverte.github.io/gremlin-php/).
 
 Here are a few basic usages.
 
@@ -155,7 +155,7 @@ Unit testing
 Neo4J is required for the full test suit. It is not bundled with gremlin-server by default so you will need to manually install it with:
 
 ```bash
-bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.0.0-SNAPSHOT
+bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.0.0-incubating
 ```
 Copy the following files :
 
