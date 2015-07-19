@@ -20,6 +20,7 @@ install:
   - sudo update-alternatives --auto java
   - sudo update-alternatives --auto javac
   - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+  - git clone -b master --depth 1 https://github.com/PommeVerte/PommeVerte.github.io.git $HOME/PommeVerte.github.io
   - wget --no-check-certificate -O $HOME/apache-gremlin-server-3.0.0-incubating-bin.zip https://www.apache.org/dist/incubator/tinkerpop/3.0.0-incubating/apache-gremlin-server-3.0.0-incubating-bin.zip
   - unzip $HOME/apache-gremlin-server-3.0.0-incubating-bin.zip -d $HOME/
   - cp src/tests/gremlin-php-script.groovy $HOME/apache-gremlin-server-3.0.0-incubating/scripts/
@@ -33,3 +34,14 @@ install:
 script: phpunit --configuration build/phpunit.xml --bootstrap src/tests/bootstrap.php
 after_script:
   - php vendor/bin/coveralls -v
+  - git config user.name "Travis CI"
+  - git config user.email "dylan.millikin@brightzone.fr"
+  - vendor/bin/apidoc api --interactive=0 src/ $HOME/PommeVerte.github.io/gremlin-php/
+  - cd $HOME/PommeVerte.github.io
+  - git add .
+  - git commit -m "Gremlin-php api update"
+  - git push
+env:
+  global:
+  - GH_REF:
+  - secure: "QqbRsl8iQVjEqm6gthFhlRPo/niUjgk9KiDN0u+pWGu08tzoGhykggwybrmDlEgFUBvJkgqGvxoTAQ0B/GagzpadUM4HlJNP1SGhhllKeKax60opKJkWwdodoZQxIG9KahtL+P8utliCzSx8R467EVWkd7YWpKF56FxmGgrfNJyCnvFwSmu/Zkc7uJi+HwBLLiwxF+nU96eZKMyC+vIY6awInxxJjRaDQLyl9X3R9cDXbM1RLgWQpBZofyIyx9TI64TyTmTscrtdUlMaJxhyV1rJJFWPwKVUj+yIw3gR2rszUqwF4zjpVmblDiEaBgDv2Rwfftm0qpiLRz/s5Zt+2AB5p8TSXa2t545oMHe59nA4RcRlWSZyotXel46Nz2DAhoywRTqEt9S/ekJhis+dwOac8dPfbr3/RJIdYtPf6IPHAIed1sAJtpmGCXjkAY3iFbooiaKqAckwYtO8eJDhKZ7/MkmQr/IfTRl9RD9KjSqsolM3337O3C5YEstq8EVDKXPyOKPC0qxeIa641XweVitOlm9jUANK7eDZAsPSM0/WEqKgw0/OCjK6WtXwx45DR12JtURCF6GYPBQkKgH+X/bLcP7EzK0myXpSjCS4bcaBSqfJCadhX3Kny267IVrx/wUWOeJCumixpzmf7xbQIoxvIe+hE1pCpUm+Kif1tLU="
