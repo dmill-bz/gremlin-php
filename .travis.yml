@@ -42,7 +42,7 @@ after_script:
   - cd $HOME/PommeVerte.github.io
   - git add .
   - git commit -m "Gremlin-php api update"
-  - git push --quiet "https://${GH_TOKEN}@${GH_REF}"
+  - git push "https://${GH_TOKEN}@${GH_REF}"
 env:
   global:
   - GH_REF: "github.com/PommeVerte/PommeVerte.github.io.git"
