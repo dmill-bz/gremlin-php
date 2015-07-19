@@ -30,6 +30,6 @@ install:
   - bin/gremlin-server.sh conf/gremlin-server-php.yaml > /dev/null 2>&1 &
   - cd $TRAVIS_BUILD_DIR
   - sleep 60
-script: phpunit --coverage-clover build/logs/clover.xml --bootstrap src/tests/bootstrap.php src/tests
+script: phpunit --configuration build/phpunit.xml --bootstrap src/tests/bootstrap.php
 after_script:
   - php vendor/bin/coveralls -v

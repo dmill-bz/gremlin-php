@@ -2,9 +2,9 @@
 
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
-         strict="true"
+         strict="false"
          verbose="true">
-       
+
   <testsuites>
     <testsuite name="rexpro-php">
       <directory suffix="Test.php">../src/tests/</directory>
@@ -18,5 +18,13 @@
     <log type="coverage-clover" target="../build/logs/clover.xml"/>
     <log type="junit" target="../build/logs/junit.xml" logIncompleteSkipped="false"/>
   </logging>
+  <filter>
+  <whitelist processUncoveredFilesFromWhitelist="true">
+    <directory suffix=".php">../src</directory>
+    <exclude>
+      <directory suffix=".php">../src/tests</directory>
+    </exclude>
+  </whitelist>
+</filter>
 
 </phpunit>
