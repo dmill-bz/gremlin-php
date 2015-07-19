@@ -12,6 +12,7 @@ matrix:
 before_install:
   - sudo apt-get update > /dev/null
 install:
+  - composer global require "fxp/composer-asset-plugin:~1.0.0"
   - composer install --dev
   - sudo apt-get install -y python-software-properties
   - sudo add-apt-repository -y ppa:webupd8team/java
