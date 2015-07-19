@@ -35,8 +35,8 @@ install:
 script: phpunit --configuration build/phpunit.xml --bootstrap src/tests/bootstrap.php
 after_script:
   - php vendor/bin/coveralls -v
-  - git config user.name "Travis CI"
-  - git config user.email "dylan.millikin@brightzone.fr"
+  - git config --global user.name "Travis CI"
+  - git config --global user.email "dylan.millikin@brightzone.fr"
   - vendor/bin/apidoc api --interactive=0 src/ $HOME/PommeVerte.github.io/gremlin-php/
   - cd $HOME/PommeVerte.github.io
   - git add .
