@@ -1,6 +1,6 @@
 This is a Gremlin server client for PHP. It supports TP3. For a TP2 php driver please check [rexpro-php](https://github.com/PommeVerte/rexpro-php)
 
-[![Build Status](https://travis-ci.org/PommeVerte/gremlin-php.svg?branch=master)](https://travis-ci.org/PommeVerte/gremlin-php) [![Coverage Status](https://coveralls.io/repos/PommeVerte/gremlin-php/badge.svg?branch=travis-conf&service=github)](https://coveralls.io/github/PommeVerte/gremlin-php?branch=travis-conf)
+[![Build Status](https://travis-ci.org/PommeVerte/gremlin-php.svg?branch=master)](https://travis-ci.org/PommeVerte/gremlin-php) [![Coverage Status](https://coveralls.io/repos/PommeVerte/gremlin-php/badge.svg?branch=master&service=github)](https://coveralls.io/github/PommeVerte/gremlin-php?branch=master)
 
 Installation
 ============
