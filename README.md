@@ -1,4 +1,5 @@
-This is a Gremlin server client for PHP. It supports TP3. For a TP2 php driver please check [rexpro-php](https://github.com/PommeVerte/rexpro-php)
+This is a Gremlin server client for PHP. It supports TP3.
+For a TP2 php driver please check [rexpro-php](https://github.com/PommeVerte/rexpro-php)
 
 [![Build Status](https://travis-ci.org/PommeVerte/gremlin-php.svg?branch=master)](https://travis-ci.org/PommeVerte/gremlin-php) [![Coverage Status](https://coveralls.io/repos/PommeVerte/gremlin-php/badge.svg?branch=master&service=github)](https://coveralls.io/github/PommeVerte/gremlin-php?branch=master)
 
@@ -12,13 +13,13 @@ Prefered method is through composer.
 Either run :
 
 ```bash
-php composer.phar require brightzone/gremlin-php "master"
+php composer.phar require brightzone/gremlin-php "*"
 ```
 
 Or add:
 
 ```json
-    "brightzone/gremlin-php": "master"
+"brightzone/gremlin-php": "*"
 ```
 
 to the `require` section of your `composer.json` file
