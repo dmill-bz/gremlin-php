@@ -132,7 +132,7 @@ Of course you can affect the current db message in the same manner through $db->
 Adding Serializers
 ==================
 
-This library comes with a Json and an unused legacy Msgpack serializer. Any other serializer that implements SerializerInterface can be added dynamically with:
+This library comes with a Json serializer. Any other serializer that implements SerializerInterface can be added dynamically with:
 
 ```php
 $db = new Connection;

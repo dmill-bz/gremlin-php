@@ -1,13 +1,12 @@
 <?php
 
-namespace brightzone\rexpro\serializers;
+namespace brightzone\rexpro\tests\stubs;
 
 use \brightzone\rexpro\Messages;
-use \brightzone\rexpro\Helper;
+use \brightzone\rexpro\serializers\SerializerInterface;
 
 /**
- * RexPro PHP MSGPACK Serializer class
- * Builds and parses message body for Messages class
+ * RexPro PHP Serializer test class (stub)
  *
  * @category DB
  * @package  Rexpro
@@ -15,17 +14,17 @@ use \brightzone\rexpro\Helper;
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
-class Msgpack implements SerializerInterface
+class TestSerializer implements SerializerInterface
 {
     /**
      * @var string the name of the serializer
      */
-    public static $name = 'MSGPACK';
+    public static $name = 'TEST';
 
     /**
      * @var int Value of this serializer. Will be deprecated in TP3
      */
-    public static $mimeType = 'application/msgpack';
+    public static $mimeType = 'application/test';
 
     /**
      * Serializes the data
@@ -36,9 +35,7 @@ class Msgpack implements SerializerInterface
      */
     public function serialize(&$data)
     {
-        $data[0] = Helper::uuidToBin($data[0]);
-        $data[1] = Helper::uuidToBin($data[1]);
-        $data = msgpack_pack($data);
+        $data = json_encode($data, JSON_UNESCAPED_UNICODE);
 
         return mb_strlen($data, 'ISO-8859-1');
     }
@@ -52,10 +49,7 @@ class Msgpack implements SerializerInterface
      */
     public function unserialize($data)
     {
-        $mssg = msgpack_unpack($data);
-        //lets just make UUIDs readable incase we need to debug
-        $mssg[0] = Helper::binToUuid($mssg[0]);
-        $mssg[1] = Helper::binToUuid($mssg[1]);
+        $mssg = json_decode($data, TRUE, JSON_UNESCAPED_UNICODE);
 
         return $mssg;
     }

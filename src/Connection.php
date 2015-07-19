@@ -125,10 +125,7 @@ class Connection
             $this->password = $password;
             $this->host = strpos($host, ':') === FALSE ? $host . ':8182' : $host;
 
-            if(!$this->connectSocket())
-            {
-                return FALSE;
-            }
+            $this->connectSocket(); // will throw error on failure.
 
             return $this->makeHandshake();
         }

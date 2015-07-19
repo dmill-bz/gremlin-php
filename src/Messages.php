@@ -117,6 +117,7 @@ class Messages
                 return $this->configuration[$name];
             }
         }
+        throw new InternalException ("Property {$name} is not defined");
     }
 
     /**
@@ -256,10 +257,7 @@ class Messages
             {
                 $this->_serializers['default'] = $value;
             }
-            else
-            {
-                $this->_serializers[] = $value;
-            }
+            $this->_serializers[$value->getMimeType()] = $value;
         }
     }
 

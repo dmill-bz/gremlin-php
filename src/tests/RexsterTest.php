@@ -305,10 +305,38 @@ class RexsterTest extends RexsterTestCase
         $serializer = $db->message->getSerializer();
 
         $this->assertTRUE($serializer instanceof \brightzone\rexpro\serializers\Json, 'Initial serializer set failed');
-        $db->message->registerSerializer('brightzone\rexpro\serializers\Msgpack');
-        $this->assertTRUE($db->message->getSerializer() instanceof \brightzone\rexpro\serializers\MsgPack, 'Failed to change serializer');
+        $db->message->registerSerializer('\brightzone\rexpro\tests\stubs\TestSerializer');
+        $this->assertTRUE($db->message->getSerializer() instanceof \brightzone\rexpro\tests\stubs\TestSerializer, 'Failed to change serializer');
     }
 
+    /**
+     * Testing getSerializer name
+     *
+     * @return void
+     */
+    public function testgetSerializerName()
+    {
+        $db = new Connection;
+        $serializer = $db->message->getSerializer();
+
+        $this->assertEquals('JSON', $serializer->getName(), 'Incorrect serializer name');
+    }
+
+    /**
+     * Testing getSerializer by mimeType
+     *
+     * @return void
+     */
+    public function testgetSerializerByMimeType()
+    {
+        $db = new Connection;
+        $db->message->registerSerializer('\brightzone\rexpro\tests\stubs\TestSerializer');
+        $db->message->registerSerializer('\brightzone\rexpro\serializers\Json');
+        $serializer = $db->message->getSerializer('application/json');
+        $this->assertEquals('JSON', $serializer->getName(), 'Incorrect serializer name');
+        $serializer = $db->message->getSerializer('application/test');
+        $this->assertEquals('TEST', $serializer->getName(), 'Incorrect serializer name');
+    }
 
     /**
      * Testing getSerializer
@@ -340,5 +368,48 @@ class RexsterTest extends RexsterTestCase
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
         $db->send('g.V().has("idontexists")');
+    }
+
+    /**
+     * Testing Helper random string generator with spaces
+     *
+     * @return void
+     */
+    public function testRandomGenerator()
+    {
+        $string = Helper::generateRandomString(10, TRUE, FALSE);
+        $this->assertTrue(strlen($string) == 10, "string should contain 10 characters");
+        $this->assertTrue(strpos($string, ' ') !== FALSE, "spaces should have been found");
+    }
+
+    /**
+     * Testing Message isset
+     *
+     * @return void
+     */
+    public function testMessageIsset()
+    {
+        $db = new Connection;
+        $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $this->assertTrue(isset($db->message->gremlin), 'gremlin should not be set');
+        $db->message->gremlin = "5 + 5";
+        $this->assertTrue(isset($db->message->gremlin), 'gremlin should be set');
+        $this->assertTrue(isset($db->message->op), 'op should be set');
+    }
+
+
+    /**
+     * Testing Message getter error
+     *
+     * @expectedException \brightzone\rexpro\InternalException
+     *
+     * @return void
+     */
+    public function testMessageGetError()
+    {
+        $db = new Connection;
+        $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $this->assertTrue(isset($db->message->gremlin), 'gremlin should not be set');
+        $what = $db->message->something;
     }
 }
