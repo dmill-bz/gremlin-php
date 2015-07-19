@@ -313,22 +313,6 @@ class RexsterTest extends RexsterTestCase
     /**
      * Testing getSerializer
      *
-     * @expectedException Exception
-     *
-     * @return void
-     */
-    public function testgetSerializerNotExist()
-    {
-        $db = new Connection;
-        $serializer = $db->message->getSerializer();
-
-        $this->assertTRUE($serializer instanceof \brightzone\rexpro\serializers\Json, 'Initial serializer set failed');
-        $db->message->registerSerializer('brightzone\rexpro\serializers\Something');
-    }
-
-    /**
-     * Testing getSerializer
-     *
      * @expectedException \brightzone\rexpro\ServerException
      *
      * @return void
