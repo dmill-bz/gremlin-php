@@ -1,4 +1,5 @@
 This is a Gremlin server client for PHP. It allows you to run gremlin queries against graph databases (including Neo4j, Titan, etc.). You can find a beginner tutorial by reading the [Get up and running with Tinkerpop 3 and PHP](https://dylanmillikin.wordpress.com/2015/07/20/get-up-and-running-with-tinkerpop-3-and-php/) article.
+
 This driver currently supports TP3+.
 
 For a TP2 compatible php driver please check [rexpro-php](https://github.com/PommeVerte/rexpro-php)
