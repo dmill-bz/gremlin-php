@@ -1,6 +1,7 @@
-This is a Gremlin server client for PHP. It supports TP3.
+This is a Gremlin server client for PHP. It allows you to run gremlin queries against graph databases (including Neo4j, Titan, etc.). You can find a beginner tutorial by reading the [Get up and running with Tinkerpop 3 and PHP](https://dylanmillikin.wordpress.com/2015/07/20/get-up-and-running-with-tinkerpop-3-and-php/) article.
+This driver currently supports TP3+.
 
-For a TP2 php driver please check [rexpro-php](https://github.com/PommeVerte/rexpro-php)
+For a TP2 compatible php driver please check [rexpro-php](https://github.com/PommeVerte/rexpro-php)
 
 [![Build Status](https://travis-ci.org/PommeVerte/gremlin-php.svg?branch=master)](https://travis-ci.org/PommeVerte/gremlin-php) [![Latest Stable Version](https://poser.pugx.org/brightzone/gremlin-php/v/stable)](https://packagist.org/packages/brightzone/gremlin-php) [![Coverage Status](https://coveralls.io/repos/PommeVerte/gremlin-php/badge.svg?branch=master&service=github)](https://coveralls.io/github/PommeVerte/gremlin-php?branch=master) [![Total Downloads](https://poser.pugx.org/brightzone/gremlin-php/downloads)](https://packagist.org/packages/brightzone/gremlin-php) [![License](https://poser.pugx.org/brightzone/gremlin-php/license)](https://packagist.org/packages/brightzone/gremlin-php)
 
