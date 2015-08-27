@@ -9,6 +9,8 @@ For a TP2 compatible php driver please check [rexpro-php](https://github.com/Pom
 Installation
 ============
 
+[![Join the chat at https://gitter.im/PommeVerte/gremlin-php](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PommeVerte/gremlin-php?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ### PHP Gremlin-Server Client
 
 Prefered method is through composer.
