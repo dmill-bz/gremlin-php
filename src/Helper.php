@@ -1,12 +1,12 @@
 <?php
 
-namespace brightzone\rexpro;
+namespace Brightzone\GremlinDriver;
 
 /**
- * RexPro PHP client Helper class
+ * Gremlin-server PHP client Helper class
  *
  * @category DB
- * @package  Rexpro
+ * @package  GremlinDriver
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki
@@ -70,7 +70,7 @@ class Helper
 
 
     /**
-     * Convert int as decimal into 32Bit binary 'equivalent' for Rexpro
+     * Convert int as decimal into 32Bit binary 'equivalent'
      *
      * Example:
      * input of $int = 44

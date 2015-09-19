@@ -1,6 +1,6 @@
 <?php
 
-namespace brightzone\rexpro;
+namespace Brightzone\GremlinDriver;
 
 use \Exception;
 
@@ -8,10 +8,9 @@ use \Exception;
  * Gremlin-server PHP Driver client Exception class for internal exceptions
  *
  * @category DB
- * @package  gremlin-php
+ * @package  GremlinDriver
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
- * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
 class InternalException extends Exception
 {

@@ -1,18 +1,17 @@
 <?php
-namespace brightzone\rexpro\tests;
+namespace Brightzone\GremlinDriver\Tests;
 
-use brightzone\rexpro\Connection;
-use brightzone\rexpro\Helper;
-use brightzone\rexpro\Messages;
+use Brightzone\GremlinDriver\Connection;
+use Brightzone\GremlinDriver\Helper;
+use Brightzone\GremlinDriver\Messages;
 
 /**
- * Unit testing of grmlin-php
+ * Unit testing of Gremlin-php
  *
  * @category DB
- * @package  gremlin-php-tests
+ * @package  Tests
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
- * @link     https://github.com/tinkerpop/rexster/wiki
  */
 class RexsterTest extends RexsterTestCase
 {
@@ -30,7 +29,7 @@ class RexsterTest extends RexsterTestCase
         $uuid = Helper::uuidToBin($uuid1);
         $this->assertTRUE(mb_strlen($uuid, 'ISO-8859-1') == 16, 'The conversion to bin of the UUID is not the correct length (16 bytes)');
         $this->assertTRUE(count(str_split($uuid, 1)) == 16, 'The conversion to bin of the UUID is not the correct length (16 bytes)');
-        //test that the bin format is correct for rexPro
+        //test that the bin format is correct
         $this->assertEquals(bin2hex($uuid), str_replace('-', '', trim($uuid1)), 'The conversion to bin of the UUID is incorrect');
 
         $uuid = Helper::binToUuid($uuid);
@@ -87,42 +86,61 @@ class RexsterTest extends RexsterTestCase
      */
     public function testConnectSuccess()
     {
-        $db = new Connection;
-        $db->open('localhost', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $this->assertTrue($db->open(), "did not succesfully connect");
 
-        $db = new Connection;
-        $db->open('localhost', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $this->assertTrue($db->open(), "did not succesfully connect");
 
-        $db = new Connection;
-        $db->open('localhost', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $this->assertTrue($db->open(), "did not succesfully connect");
     }
 
     /**
      * Testing unknown host connection errors
      *
-     * @expectedException \brightzone\rexpro\InternalException
+     * @expectedException \Brightzone\GremlinDriver\InternalException
      *
      * @return void
      */
     public function testConnectErrorsUknownHost()
     {
-        $db = new Connection;
+        $db = new Connection([
+            'host' => 'unknownhost'
+        ]);
         $db->timeout = 0.5;
-        $db->open('unknownhost');
+        $db->open();
     }
 
     /**
      * Testing wrong port connection errors
      *
-     * @expectedException \brightzone\rexpro\InternalException
+     * @expectedException \Brightzone\GremlinDriver\InternalException
      *
      * @return void
      */
     public function testConnectErrorsWrongPort()
     {
-        $db = new Connection;
+        $db = new Connection([
+            'port' => 8187
+        ]);
         $db->timeout = 0.5;
-        $db->open('localhost:8787');
+        $db->open();
     }
 
     /**
@@ -133,11 +151,17 @@ class RexsterTest extends RexsterTestCase
     public function testConnectCloseSuccess()
     {
         //do all connection checks
-        $db = new Connection;
-        $db->open('localhost', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $db->open();
 
         //check disconnection
         $db->close();
+        $this->assertFALSE($db->isConnected(), 'Despite not throwing errors, Socket connection is still established');
     }
 
     /**
@@ -147,8 +171,14 @@ class RexsterTest extends RexsterTestCase
      */
     public function testRunScriptNoSession()
     {
-        $db = new Connection;
-        $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db->open();
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
         $result = $db->send('5+5');
@@ -171,22 +201,81 @@ class RexsterTest extends RexsterTestCase
      */
     public function testRunScriptSession()
     {
-        $db = new Connection;
-        $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db->open();
 
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
-        $result = $db->send('5+5', 'session', 'eval');
+        $result = $db->send('cal = 5+5', 'session', 'eval');
 
         $this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)'); //check it's a session script reply
 
-        $result = $db->send('g.V()', 'session', 'eval');
-        $this->assertEquals(count($result), 6, 'Script response message is not the right type. (Maybe it\'s an error)'); //check it's a session script reply
+        $result = $db->send('cal', 'session', 'eval');
+        $this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)'); //check it's a session script reply
 
         //check disconnection
         $db->close();
         $this->assertFALSE($db->isConnected(), 'Despite not throwing errors, Socket connection is not established');
         $this->assertFALSE($db->inTransaction(), 'Despite closing, transaction not closed');
+    }
+
+     /**
+     * Testing That the server closes the session
+     *
+     * @expectedException \Brightzone\GremlinDriver\ServerException
+     *
+     * @return void
+     */
+    public function testSessionClose()
+    {
+        $this->markTestIncomplete("test currently fails because of bug TINKERPOP3-849");
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db->open();
+
+        $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
+
+        $result = $db->send('cal = 5+5', 'session', 'eval');
+        $sessionUid = $db->getSession();
+        $this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)'); //check it's a session script reply
+
+        $result = $db->send('cal', 'session', 'eval');
+        $this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)'); //check it's a session script reply
+
+        //check disconnection
+        $db->close();
+
+        $this->assertFALSE($db->isConnected(), 'Despite not throwing errors, Socket connection is established');
+        $this->assertFALSE($db->inTransaction(), 'Despite closing, transaction not closed');
+
+        $db2 = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db2->open();
+
+        $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
+        $msg = new Messages();
+        $msg->registerSerializer('\Brightzone\GremlinDriver\Serializers\Json');
+        $msg->gremlin = 'cal';
+        $msg->op = 'eval';
+        $msg->processor = 'session';
+        $msg->setArguments(['session'=>$sessionUid]);
+        $result = $db2->send($msg); // should throw an error as this should be next session
     }
 
     /**
@@ -196,8 +285,14 @@ class RexsterTest extends RexsterTestCase
      */
     public function testRunScriptWithBindings()
     {
-        $db = new Connection;
-        $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
         $db->message->gremlin = 'g.V(CUSTO_BINDING)';
@@ -218,8 +313,14 @@ class RexsterTest extends RexsterTestCase
      */
     public function testRunScriptWithVarsInSession()
     {
-        $db = new Connection;
-        $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
         $db->message->gremlin = 'cal = 5+5';
@@ -246,8 +347,14 @@ class RexsterTest extends RexsterTestCase
      */
     public function testRunScriptWithBindingsInSession()
     {
-        $db = new Connection;
-        $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
         $db->message->gremlin = 'g.V(CUSTO_BIND)';
@@ -269,13 +376,13 @@ class RexsterTest extends RexsterTestCase
     /**
      * Testing sendMessage without previous connection
      *
-     * @expectedException \brightzone\rexpro\InternalException
+     * @expectedException \Brightzone\GremlinDriver\InternalException
      *
      * @return void
      */
     public function testSendMessageWithoutConnection()
     {
-        $db = new Connection;
+        $db = new Connection();
         $msg = new Messages();
         $db->send($msg);
     }
@@ -284,13 +391,13 @@ class RexsterTest extends RexsterTestCase
      * Testing runScript() without making a previous
      * socket connection with open()
      *
-     * @expectedException \brightzone\rexpro\InternalException
+     * @expectedException \Brightzone\GremlinDriver\InternalException
      *
      * @return void
      */
     public function testRunScriptWithoutConnection()
     {
-        $db = new Connection;
+        $db = new Connection();
         $db->send();
     }
 
@@ -301,12 +408,12 @@ class RexsterTest extends RexsterTestCase
      */
     public function testgetSerializer()
     {
-        $db = new Connection;
+        $db = new Connection();
         $serializer = $db->message->getSerializer();
 
-        $this->assertTRUE($serializer instanceof \brightzone\rexpro\serializers\Json, 'Initial serializer set failed');
-        $db->message->registerSerializer('\brightzone\rexpro\tests\stubs\TestSerializer');
-        $this->assertTRUE($db->message->getSerializer() instanceof \brightzone\rexpro\tests\stubs\TestSerializer, 'Failed to change serializer');
+        $this->assertTRUE($serializer instanceof \Brightzone\GremlinDriver\Serializers\Json, 'Initial serializer set failed');
+        $db->message->registerSerializer('\Brightzone\GremlinDriver\Tests\Stubs\TestSerializer');
+        $this->assertTRUE($db->message->getSerializer() instanceof \Brightzone\GremlinDriver\Tests\Stubs\TestSerializer, 'Failed to change serializer');
     }
 
     /**
@@ -316,7 +423,7 @@ class RexsterTest extends RexsterTestCase
      */
     public function testgetSerializerName()
     {
-        $db = new Connection;
+        $db = new Connection();
         $serializer = $db->message->getSerializer();
 
         $this->assertEquals('JSON', $serializer->getName(), 'Incorrect serializer name');
@@ -329,9 +436,9 @@ class RexsterTest extends RexsterTestCase
      */
     public function testgetSerializerByMimeType()
     {
-        $db = new Connection;
-        $db->message->registerSerializer('\brightzone\rexpro\tests\stubs\TestSerializer');
-        $db->message->registerSerializer('\brightzone\rexpro\serializers\Json');
+        $db = new Connection();
+        $db->message->registerSerializer('\Brightzone\GremlinDriver\Tests\Stubs\TestSerializer');
+        $db->message->registerSerializer('\Brightzone\GremlinDriver\Serializers\Json');
         $serializer = $db->message->getSerializer('application/json');
         $this->assertEquals('JSON', $serializer->getName(), 'Incorrect serializer name');
         $serializer = $db->message->getSerializer('application/test');
@@ -341,14 +448,20 @@ class RexsterTest extends RexsterTestCase
     /**
      * Testing getSerializer
      *
-     * @expectedException \brightzone\rexpro\ServerException
+     * @expectedException \Brightzone\GremlinDriver\ServerException
      *
      * @return void
      */
     public function testIncorrectGremlin()
     {
-        $db = new Connection;
-        $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db->open();
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
         $db->send('g.V().incorect()');
@@ -357,14 +470,20 @@ class RexsterTest extends RexsterTestCase
     /**
      * Testing getSerializer
      *
-     * @expectedException \brightzone\rexpro\ServerException
+     * @expectedException \Brightzone\GremlinDriver\ServerException
      *
      * @return void
      */
     public function testEmptyResult()
     {
-        $db = new Connection;
-        $message = $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db->open();
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
         $db->send('g.V().has("idontexists")');
@@ -389,8 +508,14 @@ class RexsterTest extends RexsterTestCase
      */
     public function testMessageIsset()
     {
-        $db = new Connection;
-        $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $db->open();
         $this->assertTrue(isset($db->message->gremlin), 'gremlin should not be set');
         $db->message->gremlin = "5 + 5";
         $this->assertTrue(isset($db->message->gremlin), 'gremlin should be set');
@@ -401,15 +526,34 @@ class RexsterTest extends RexsterTestCase
     /**
      * Testing Message getter error
      *
-     * @expectedException \brightzone\rexpro\InternalException
+     * @expectedException \Brightzone\GremlinDriver\InternalException
      *
      * @return void
      */
     public function testMessageGetError()
     {
-        $db = new Connection;
-        $db->open('localhost:8182', 'graph', $this->username, $this->password);
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $db->open();
         $this->assertTrue(isset($db->message->gremlin), 'gremlin should not be set');
         $what = $db->message->something;
+    }
+
+    /**
+     * Test Connection Construct
+     *
+     * @return void
+     */
+    public function testConnectionConstruct()
+    {
+        $db = new Connection(['host'=>'localhost', 'port'=>8182, 'graph' => 'graph']);
+        $this->assertEquals($db->host, 'localhost', 'incorrect host');
+        $this->assertEquals($db->port, 8182, 'incorrect port');
+        $this->assertEquals($db->graph, 'graph', 'incorrect graph');
     }
 }

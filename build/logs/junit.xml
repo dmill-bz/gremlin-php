@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="rexpro-php" tests="27" assertions="69" failures="0" errors="0" time="2.595997">
-    <testsuite name="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" namespace="brightzone\rexpro\tests" fullPackage="gremlin" category="DB" package="gremlin" tests="22" assertions="58" failures="0" errors="0" time="1.543359">
-      <testcase name="testCreateUuid" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="24" assertions="8" time="0.026528"/>
-      <testcase name="testConvertIntTo32Bit" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="47" assertions="7" time="0.014167"/>
-      <testcase name="testConvertIntFrom32Bit" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="71" assertions="3" time="0.004031"/>
-      <testcase name="testConnectSuccess" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="88" assertions="0" time="0.023287"/>
-      <testcase name="testConnectErrorsUknownHost" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="107" assertions="1" time="0.603818"/>
-      <testcase name="testConnectErrorsWrongPort" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="121" assertions="1" time="0.001981"/>
-      <testcase name="testConnectCloseSuccess" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="133" assertions="0" time="0.002382"/>
-      <testcase name="testRunScriptNoSession" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="148" assertions="4" time="0.015915"/>
-      <testcase name="testRunScriptSession" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="172" assertions="5" time="0.247005"/>
-      <testcase name="testRunScriptWithBindings" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="197" assertions="3" time="0.038105"/>
-      <testcase name="testRunScriptWithVarsInSession" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="219" assertions="4" time="0.218934"/>
-      <testcase name="testRunScriptWithBindingsInSession" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="247" assertions="4" time="0.244838"/>
-      <testcase name="testSendMessageWithoutConnection" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="276" assertions="1" time="0.003897"/>
-      <testcase name="testRunScriptWithoutConnection" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="291" assertions="1" time="0.011918"/>
-      <testcase name="testgetSerializer" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="302" assertions="2" time="0.009830"/>
-      <testcase name="testgetSerializerName" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="317" assertions="1" time="0.002591"/>
-      <testcase name="testgetSerializerByMimeType" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="330" assertions="2" time="0.004336"/>
-      <testcase name="testIncorrectGremlin" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="348" assertions="2" time="0.024875"/>
-      <testcase name="testEmptyResult" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="364" assertions="2" time="0.023679"/>
-      <testcase name="testRandomGenerator" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="378" assertions="2" time="0.007957"/>
-      <testcase name="testMessageIsset" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="390" assertions="3" time="0.008529"/>
-      <testcase name="testMessageGetError" class="brightzone\rexpro\tests\RexsterTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTest.php" line="408" assertions="2" time="0.004755"/>
+  <testsuite name="rexpro-php" tests="28" assertions="76" failures="0" errors="0" time="1.897891">
+    <testsuite name="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" namespace="Brightzone\GremlinDriver\Tests" fullPackage="Tests" category="DB" package="Tests" tests="23" assertions="65" failures="0" errors="0" time="1.245667">
+      <testcase name="testCreateUuid" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="23" assertions="8" time="0.013854"/>
+      <testcase name="testConvertIntTo32Bit" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="46" assertions="7" time="0.007339"/>
+      <testcase name="testConvertIntFrom32Bit" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="70" assertions="3" time="0.002102"/>
+      <testcase name="testConnectSuccess" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="87" assertions="3" time="0.020246"/>
+      <testcase name="testConnectErrorsUknownHost" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="121" assertions="1" time="0.567798"/>
+      <testcase name="testConnectErrorsWrongPort" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="137" assertions="1" time="0.002149"/>
+      <testcase name="testConnectCloseSuccess" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="151" assertions="1" time="0.003388"/>
+      <testcase name="testRunScriptNoSession" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="172" assertions="4" time="0.012175"/>
+      <testcase name="testRunScriptSession" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="202" assertions="5" time="0.185943"/>
+      <testcase name="testRunScriptWithBindings" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="286" assertions="3" time="0.018372"/>
+      <testcase name="testRunScriptWithVarsInSession" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="314" assertions="4" time="0.139170"/>
+      <testcase name="testRunScriptWithBindingsInSession" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="348" assertions="4" time="0.223532"/>
+      <testcase name="testSendMessageWithoutConnection" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="383" assertions="1" time="0.003716"/>
+      <testcase name="testRunScriptWithoutConnection" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="398" assertions="1" time="0.002119"/>
+      <testcase name="testgetSerializer" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="409" assertions="2" time="0.003474"/>
+      <testcase name="testgetSerializerName" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="424" assertions="1" time="0.001431"/>
+      <testcase name="testgetSerializerByMimeType" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="437" assertions="2" time="0.002113"/>
+      <testcase name="testIncorrectGremlin" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="455" assertions="2" time="0.007379"/>
+      <testcase name="testEmptyResult" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="477" assertions="2" time="0.011535"/>
+      <testcase name="testRandomGenerator" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="497" assertions="2" time="0.001233"/>
+      <testcase name="testMessageIsset" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="509" assertions="3" time="0.004369"/>
+      <testcase name="testMessageGetError" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="533" assertions="2" time="0.007657"/>
+      <testcase name="testConnectionConstruct" class="Brightzone\GremlinDriver\Tests\RexsterTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTest.php" line="552" assertions="3" time="0.004573"/>
     </testsuite>
-    <testsuite name="brightzone\rexpro\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTransactionTest.php" namespace="brightzone\rexpro\tests" fullPackage="gremlin" category="DB" package="gremlin" tests="5" assertions="11" failures="0" errors="0" time="1.052639">
-      <testcase name="testTransactions" class="brightzone\rexpro\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTransactionTest.php" line="24" assertions="5" time="0.375969"/>
-      <testcase name="testTransactionsMultiRun" class="brightzone\rexpro\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTransactionTest.php" line="64" assertions="3" time="0.361806"/>
-      <testcase name="testTransactionWithNoGraphObj" class="brightzone\rexpro\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTransactionTest.php" line="105" assertions="1" time="0.010694"/>
-      <testcase name="testSeveralRunningTransactionStart" class="brightzone\rexpro\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTransactionTest.php" line="119" assertions="1" time="0.295692"/>
-      <testcase name="testTransactionStopWithNoTransaction" class="brightzone\rexpro\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/src/tests/RexsterTransactionTest.php" line="134" assertions="1" time="0.008478"/>
+    <testsuite name="Brightzone\GremlinDriver\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTransactionTest.php" namespace="Brightzone\GremlinDriver\tests" fullPackage="Tests" category="DB" package="Tests" tests="5" assertions="11" failures="0" errors="0" time="0.652223">
+      <testcase name="testTransactions" class="Brightzone\GremlinDriver\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTransactionTest.php" line="23" assertions="5" time="0.276533"/>
+      <testcase name="testTransactionsMultiRun" class="Brightzone\GremlinDriver\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTransactionTest.php" line="65" assertions="3" time="0.210545"/>
+      <testcase name="testTransactionWithNoGraphObj" class="Brightzone\GremlinDriver\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTransactionTest.php" line="110" assertions="1" time="0.002781"/>
+      <testcase name="testSeveralRunningTransactionStart" class="Brightzone\GremlinDriver\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTransactionTest.php" line="124" assertions="1" time="0.159941"/>
+      <testcase name="testTransactionStopWithNoTransaction" class="Brightzone\GremlinDriver\tests\RexsterTransactionTest" file="/home/parallels/devs/gremlin-php/tests/RexsterTransactionTest.php" line="143" assertions="1" time="0.002423"/>
     </testsuite>
   </testsuite>
 </testsuites>

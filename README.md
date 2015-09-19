@@ -65,12 +65,13 @@ Note that "graph" is the name of the graph configured in gremlin-server (not the
 
 Example 1 bis (Writing the same with message object) :
 ```php
-$db = new Connection;
+$db = new Connection([
+    'host' => 'localhost',
+    'graph' => 'graph',
+]);
 //you can set $db->timeout = 0.5; if you wish
-$db->open('localhost', 'graph');
-
-$db->message->gremlin = 'g.V(2)';
-$result = $db->send(); //automatically fetches the message
+$db->open();
+$db->send('g.V(2)');
 //do something with result
 $db->close();
 ```
@@ -79,11 +80,15 @@ $db->close();
 Example 2 (with bindings) :
 
 ```php
-$db = new Connection;
-$db->open('localhost:8182', 'graph');
+$db = new Connection([
+    'host' => 'localhost',
+    'port' => 8182,
+    'graph' => 'graph',
+]);
+$db->open();
 
 $db->message->bindValue('CUSTO_BINDING', 2);
-$result = $db->send('g.V(CUSTO_BINDING)'); //mix between Example 1 and 1B
+$db->send('g.V(CUSTO_BINDING)'); //mix between Example 1 and 1B
 //do something with result
 $db->close();
 ```
@@ -91,8 +96,11 @@ $db->close();
 Example 3 (with session) :
 
 ```php
-$db = new Connection;
-$db->open('localhost:8182');
+$db = new Connection([
+    'host' => 'localhost',
+    'port' => 8182,
+]);
+$db->open();
 $db->send('cal = 5+5', 'session');
 $result = $db->send('cal', 'session'); // result = [10]
 //do something with result
@@ -102,8 +110,13 @@ $db->close();
 Example 4 (transaction) :
 
 ```php
-$db = new Connection;
-$db->open('localhost:8182','graphT');
+$db = new Connection([
+    'host' => 'localhost',
+    'port' => 8182,
+    'graph' => 'graphT',
+]);
+$db->open();
+$originalCount = $db->send('n.V().count()');
 
 $db->transactionStart();
 
@@ -123,14 +136,14 @@ $message->gremlin = 'g.V()';
 $message->op = 'eval';
 $message->processor = '';
 $message->setArguments([
-				'language' => 'gremlin-groovy',
-				// .... etc
+                'language' => 'gremlin-groovy',
+                // ... etc
 ]);
-$message->registerSerializer('\brightzone\rexpro\serializers\Json');
+$message->registerSerializer('\Brightzone\GremlinDriver\Serializers\Json');
 
-$db = new Connection;
+$db = new Connection();
 $db->open();
-$result = $db->send($message);
+$db->send($message);
 //do something with result
 $db->close();
 ```
@@ -164,14 +177,14 @@ Unit testing
 Neo4J is required for the full test suit. It is not bundled with gremlin-server by default so you will need to manually install it with:
 
 ```bash
-bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.0.0-incubating
+bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.0.1-incubating
 ```
 Copy the following files :
 
 ```bash
-cp <gremlin-php-root-dir>/src/tests/gremlin-server-php.yaml <gremlin-server-root-dir>/conf/
-cp <gremlin-php-root-dir>/src/tests/neo4j-empty.properties <gremlin-server-root-dir>/conf/
-cp <gremlin-php-root-dir>/src/tests/gremlin-php-script.groovy <gremlin-server-root-dir>/scripts/
+cp <gremlin-php-root-dir>/build/server/gremlin-server-php.yaml <gremlin-server-root-dir>/conf/
+cp <gremlin-php-root-dir>/build/server/neo4j-empty.properties <gremlin-server-root-dir>/conf/
+cp <gremlin-php-root-dir>/build/server/gremlin-php-script.groovy <gremlin-server-root-dir>/scripts/
 ```
 
 You will then need to run gremlin-server in the following manner :
@@ -183,5 +196,5 @@ bin/gremlin-server.sh conf/gremlin-server-php.yaml
 Then run the unit test via:
 
 ```bash
-phpunit --bootstrap src/tests/bootstrap.php src/tests/
+phpunit -c build/phpunit.xml
 ```

@@ -24,15 +24,15 @@ install:
   - git clone -b master --depth 1 https://github.com/PommeVerte/PommeVerte.github.io.git $HOME/PommeVerte.github.io
   - wget --no-check-certificate -O $HOME/apache-gremlin-server-3.0.0-incubating-bin.zip https://www.apache.org/dist/incubator/tinkerpop/3.0.0-incubating/apache-gremlin-server-3.0.0-incubating-bin.zip
   - unzip $HOME/apache-gremlin-server-3.0.0-incubating-bin.zip -d $HOME/
-  - cp src/tests/gremlin-php-script.groovy $HOME/apache-gremlin-server-3.0.0-incubating/scripts/
-  - cp src/tests/gremlin-server-php.yaml $HOME/apache-gremlin-server-3.0.0-incubating/conf/
-  - cp src/tests/neo4j-empty.properties $HOME/apache-gremlin-server-3.0.0-incubating/scripts/
+  - cp build/server/gremlin-php-script.groovy $HOME/apache-gremlin-server-3.0.0-incubating/scripts/
+  - cp build/server/gremlin-server-php.yaml $HOME/apache-gremlin-server-3.0.0-incubating/conf/
+  - cp build/server/neo4j-empty.properties $HOME/apache-gremlin-server-3.0.0-incubating/scripts/
   - cd $HOME/apache-gremlin-server-3.0.0-incubating
   - bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.0.0-incubating
   - bin/gremlin-server.sh conf/gremlin-server-php.yaml > /dev/null 2>&1 &
   - cd $TRAVIS_BUILD_DIR
   - sleep 60
-script: phpunit --configuration build/phpunit.xml --bootstrap src/tests/bootstrap.php
+script: phpunit --configuration build/phpunit.xml
 after_script:
   - php vendor/bin/coveralls -v
   - git config --global user.name "Travis CI"

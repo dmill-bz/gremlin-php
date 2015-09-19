@@ -1,9 +1,9 @@
 <?php
 
-namespace brightzone\rexpro;
+namespace Brightzone\GremlinDriver;
 
-use brightzone\rexpro\serializers\Json;
-use brightzone\rexpro\ServerException;
+use Brightzone\GremlinDriver\Serializers\Json;
+use Brightzone\GremlinDriver\ServerException;
 
 /**
  * Gremlin-server PHP Driver client Connection class
@@ -28,7 +28,7 @@ use brightzone\rexpro\ServerException;
  * See Messages for more details
  *
  * @category DB
- * @package  gremlin-php
+ * @package  GremlinDriver
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki
@@ -37,12 +37,17 @@ class Connection
 {
     /**
      * @var string Contains the host information required to connect to the database.
-     * format: server:port
-     * If [port] is ommited 8182 will be assumed
      *
-     * Example: localhost:8182
+     * Default: localhost
      */
-    public $host;
+    public $host = 'localhost';
+
+    /**
+     * @var string Contains port information to connect to the database
+     *
+     * Default : 8182
+     */
+    public $port = 8182;
 
     /**
      * @var string the username for establishing DB connection. Defaults to NULL.
@@ -55,9 +60,9 @@ class Connection
     public $password;
 
     /**
-     * @var string the graphObject to use.
+     * @var string the graph to use.
      */
-    public $graphObj;
+    public $graph;
 
     /**
      * @var float timeout to use for connection to Rexster. If not set the timeout set in php.ini will be used: ini_get("default_socket_timeout")
@@ -97,8 +102,12 @@ class Connection
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($options = [])
     {
+        foreach($options as $key => $value)
+        {
+            $this->$key = $value;
+        }
         //create a message object
         $this->message = new Messages;
         //assign a default serializer to it
@@ -108,23 +117,12 @@ class Connection
     /**
      * Connects to socket and starts a session with gremlin-server
      *
-     * @param string $host        host and port seperated by ":"
-     * @param string $graphObj    graph to load into session. defaults to graph
-     * @param string $username    username for authentification
-     * @param string $password    password to use for authentification
-     * @param array  $config      extra required configuration
-     *
      * @return bool TRUE on success FALSE on error
      */
-    public function open($host = 'localhost:8182', $graphObj = 'graph', $username = NULL, $password = NULL, $config = [])
+    public function open()
     {
         if($this->_socket === NULL)
         {
-            $this->graphObj = $graphObj;
-            $this->username = $username;
-            $this->password = $password;
-            $this->host = strpos($host, ':') === FALSE ? $host . ':8182' : $host;
-
             $this->connectSocket(); // will throw error on failure.
 
             return $this->makeHandshake();
@@ -297,7 +295,7 @@ class Connection
     private function connectSocket()
     {
         $this->_socket = @stream_socket_client(
-                                    'tcp://' . $this->host,
+                                    'tcp://' . $this->host .':'.$this->port,
                                     $errno,
                                     $errorMessage,
                                     $this->timeout ? $this->timeout : ini_get("default_socket_timeout")
@@ -383,7 +381,9 @@ class Connection
                 //do not commit changes changes;
                 $this->transactionStop(FALSE);
             }
+
             $write = @fwrite($this->_socket, $this->webSocketPack("", 'close'));
+
             if($write === FALSE)
             {
                 $this->error('Could not write to socket', 500, TRUE);
@@ -406,14 +406,14 @@ class Connection
      */
     public function transactionStart()
     {
-        if(!isset($this->graphObj) || (isset($this->graphObj) && $this->graphObj == ''))
+        if(!isset($this->graph) || (isset($this->graph) && $this->graph == ''))
         {
             $this->error("A graph object needs to be specified", 500, TRUE);
         }
 
         if($this->_inTransaction)
         {
-            $this->message->gremlin = $this->graphObj . '.tx().rollback()';
+            $this->message->gremlin = $this->graph . '.tx().rollback()';
             $this->send();
             $this->_inTransaction = FALSE;
             $this->error(__METHOD__ . ': already in transaction, rolling changes back.', 500, TRUE);
@@ -423,7 +423,7 @@ class Connection
         $this->getSession();
         $this->message->setArguments(['session'=>$this->_sessionUuid]);
         $this->message->processor = 'session';
-        $this->message->gremlin = 'if(!' . $this->graphObj . '.tx().isOpen()){' . $this->graphObj . '.tx().open()}';
+        $this->message->gremlin = $this->graph . '.tx().open()';
         $this->send();
         $this->_inTransaction = TRUE;
         return TRUE;
@@ -445,11 +445,11 @@ class Connection
         //send message to stop transaction
         if($success)
         {
-            $this->message->gremlin = $this->graphObj . '.tx().commit()';
+            $this->message->gremlin = $this->graph . '.tx().commit()';
         }
         else
         {
-            $this->message->gremlin = $this->graphObj . '.tx().rollback()';
+            $this->message->gremlin = $this->graph . '.tx().rollback()';
         }
 
         $this->send();
