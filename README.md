@@ -30,6 +30,10 @@ Or add:
 
 to the `require` section of your `composer.json` file
 
+Upgrading
+=========
+BC breaking changes are introduced between major version changes. So if you're upgrading to `2.0.0` from `1.0`. Please read the [CHANGELOG](CHANGELOG.md)
+
 Usage
 =========
 
@@ -37,7 +41,7 @@ The Connection class exists within the `rexpro` namespace. (history: rexpro used
 
 ```php
 require_once('vendor/autoload.php');
-use \brightzone\rexpro\Connection;
+use \Brightzone\GremlinDriver\Connection;
 
 $db = new Connection;
 ```

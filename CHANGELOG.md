@@ -1,5 +1,5 @@
-2.0
-===
+2.0.0
+=====
 2.0 supports TP 3.0.1 with authentication features. There was a major overhaul of the code in order to make the API clearer and to stick to PSR-4 namespaces. Bellow are the BC breaking changes you will need to make if you are upgrading from v1.0 :
 
 - Namespaces currently changed from `\brightzone\rexpro\*` to `\Brightzone\GremlinDriver\*` and so forth all in CamelCase. You will need to change these in your code to reflect the change.
@@ -21,7 +21,7 @@
    ]);
    $db->open();
    ```
-   This is reflected in README.md examples.
+   This is reflected in the [README](README.md) examples.
 
 
 1.0

@@ -1,0 +1,61 @@
+checks:
+    php:
+        use_self_instead_of_fqcn: true
+        uppercase_constants: true
+        return_doc_comments: true
+        return_doc_comment_if_not_inferrable: true
+        properties_in_camelcaps: true
+        parameter_doc_comments: true
+        param_doc_comment_if_not_inferrable: true
+        no_new_line_at_end_of_file: true
+        no_goto: true
+        more_specific_types_in_doc_comments: true
+        function_in_camel_caps: true
+        parameters_in_camelcaps: true
+        fix_use_statements:
+            remove_unused: true
+            preserve_multiple: false
+            preserve_blanklines: false
+            order_alphabetically: true
+        classes_in_camel_caps: true
+        avoid_perl_style_comments: true
+        avoid_multiple_statements_on_same_line: true
+
+filter:
+    paths:
+        - src/*
+
+coding_style:
+    php:
+        spaces:
+            before_parentheses:
+                if: false
+                for: false
+                while: false
+                switch: false
+                catch: false
+        braces:
+            classes_functions:
+                class: new-line
+                function: new-line
+                closure: new-line
+            if:
+                opening: new-line
+                else_on_new_line: true
+            for:
+                opening: new-line
+            while:
+                opening: new-line
+            do_while:
+                opening: new-line
+                while_on_new_line: true
+            switch:
+                opening: new-line
+            try:
+                opening: new-line
+                catch_on_new_line: true
+        upper_lower_casing:
+            keywords:
+                general: lower
+            constants:
+                true_false_null: upper
