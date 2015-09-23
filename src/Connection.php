@@ -95,6 +95,11 @@ class Connection
      */
     private $_socket;
 
+    /**
+     * @var bool whether or not we're using ssl
+     */
+    public $ssl = FALSE;
+
 
     /**
      * Overloading constructor to instantiate a Messages instance and
@@ -109,7 +114,7 @@ class Connection
             $this->$key = $value;
         }
         //create a message object
-        $this->message = new Messages;
+        $this->message = new Messages();
         //assign a default serializer to it
         $this->message->registerSerializer(new Json, TRUE);
     }
@@ -163,6 +168,11 @@ class Connection
     {
         try
         {
+            $protocol = 'http';
+            if($this->ssl)
+            {
+                $protocol = 'ssl';
+            }
             $key = base64_encode(Helper::generateRandomString(16, FALSE, TRUE));
             $header = "GET /gremlin HTTP/1.1\r\n";
             $header .= "Upgrade: websocket\r\n";
@@ -171,7 +181,7 @@ class Connection
             $header .= "Host: " . $this->host . "\r\n";
             if($origin !== TRUE)
             {
-                $header .= "Sec-WebSocket-Origin: http://" . $this->host . "\r\n";
+                $header .= "Sec-WebSocket-Origin: ".$protocol."://" . $this->host . ":" . $this->port. "\r\n";
             }
             $header .= "Sec-WebSocket-Version: 13\r\n\r\n";
 
@@ -272,15 +282,19 @@ class Connection
             {
                 $this->error($e->getMessage(), $e->getCode(), TRUE);
             }
+            // If this is an authentication challenge, lets meet it and return the result
+            if($unpacked['status']['code'] === 407)
+            {
+                return $this->authenticate();
+            }
+
             //handle errors
             if($unpacked['status']['code'] !== 200 && $unpacked['status']['code'] !== 206)
             {
                 $this->error($unpacked['status']['message'] . " > " . implode("\n", $unpacked['status']['attributes']), $unpacked['status']['code']);
             }
-            if($unpacked['status']['code'] == 200)
-            {
-                $fullData = array_merge($fullData, $unpacked['result']['data']);
-            }
+
+            $fullData = array_merge($fullData, $unpacked['result']['data']);
         }
         while($unpacked['status']['code'] === 206);
 
@@ -294,8 +308,13 @@ class Connection
      */
     private function connectSocket()
     {
+        $protocol = 'tcp';
+        if($this->ssl)
+        {
+            $protocol = 'ssl';
+        }
         $this->_socket = @stream_socket_client(
-                                    'tcp://' . $this->host .':'.$this->port,
+                                    $protocol. '://' . $this->host .':'.$this->port,
                                     $errno,
                                     $errorMessage,
                                     $this->timeout ? $this->timeout : ini_get("default_socket_timeout")
@@ -676,5 +695,20 @@ class Connection
             $this->_sessionUuid = Helper::createUuid();
         }
         return $this->_sessionUuid;
+    }
+
+    /**
+     * Builds an authentication message when challenged by the server
+     *
+     * @return void
+     */
+    protected function authenticate()
+    {
+        $msg = new Messages();
+        $msg->op = "authentication";
+        $msg->processor = "";
+        $msg->setArguments(['sasl'=>"\x00".utf8_encode(trim($this->username))."\x00".utf8_encode(trim($this->password))]);
+        $msg->registerSerializer(new Json());
+        return $this->send($msg);
     }
 }

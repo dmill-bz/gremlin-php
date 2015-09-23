@@ -234,7 +234,7 @@ class RexsterTest extends RexsterTestCase
      */
     public function testSessionClose()
     {
-        //$this->markTestIncomplete("test currently fails because of bug TINKERPOP3-849");
+        $this->markTestSkipped("Skipping test until TP 3.0.2, see TINKERPOP3-849");
         $db = new Connection([
             'host' => 'localhost',
             'port' => 8182,
@@ -556,5 +556,23 @@ class RexsterTest extends RexsterTestCase
         $this->assertEquals($db->host, 'localhost', 'incorrect host');
         $this->assertEquals($db->port, 8182, 'incorrect port');
         $this->assertEquals($db->graph, 'graph', 'incorrect graph');
+    }
+
+    /**
+     * Test merging of streamed results.
+     *
+     * @return void
+     */
+    public function testMergedStream()
+    {
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph'
+        ]);
+        $message = $db->open();
+
+        $result = $db->send('g.V().emit().repeat(__.both()).times(5)');
+        $this->assertEquals(count($result), 714, 'Did not find the correct amounts of vertices'); //check it's a session script reply
     }
 }
