@@ -67,11 +67,13 @@ $db->close();
 
 Note that "graph" is the name of the graph configured in gremlin-server (not the reference to the traversal which is `g = graph.traversal()`)
 
-Example 1 bis (Writing the same with message object) :
+Example 1 bis (With authentication) :
 ```php
 $db = new Connection([
     'host' => 'localhost',
     'graph' => 'graph',
+    'username' => 'pomme',
+    'password' => 'easyToCrack'
 ]);
 //you can set $db->timeout = 0.5; if you wish
 $db->open();
@@ -152,6 +154,20 @@ $db->send($message);
 $db->close();
 ```
 Of course you can affect the current db message in the same manner through $db->message.
+
+Example 6 (SSL) :
+```php
+$db = new Connection([
+    'host' => 'localhost',
+    'graph' => 'graph',
+    'ssl' => TRUE
+]);
+//you can set $db->timeout = 0.5; if you wish
+$db->open();
+$db->send('g.V(2)');
+//do something with result
+$db->close();
+```
 
 Adding Serializers
 ==================

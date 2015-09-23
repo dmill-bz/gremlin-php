@@ -11,16 +11,16 @@ use Brightzone\GremlinDriver\ServerException;
  * Example of basic use:
  *
  * ~~~
- * $connection = new Connection;
- * $connection->open('localhost:8182','g');
+ * $connection = new Connection(['host' => 'localhost']);
+ * $connection->open();
  * $resultSet = $connection->send('g.V'); //returns array with results
  * ~~~
  *
  * Some more customising of message to send can be done with the message object
  *
  * ~~~
- * $connection = new Connection;
- * $connection->open('localhost:8182','g');
+ * $connection = new Connection(['host' => 'localhost']);
+ * $connection->open();
  * $connection->message->gremlin = 'g.V';
  * $connection->send();
  * ~~~
