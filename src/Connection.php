@@ -309,7 +309,7 @@ class Connection
     }
 
     /**
-     * Constructs and sends a Messages entity or gremlin script to the server.
+     * Constructs and sends a Messages entity or gremlin script to the server without waiting for a response.
      *
      *
      * @param mixed  $msg       (Messages|String|NULL) the message to send, NULL means use $this->message
@@ -319,7 +319,7 @@ class Connection
      *
      * @return array reply from server.
      */
-    public function send($msg = NULL, $processor = '', $op = 'eval', $args = [])
+    public function run($msg = NULL, $processor = '', $op = 'eval', $args = [])
     {
         try
         {
@@ -346,7 +346,33 @@ class Connection
             }
 
             $this->writeSocket();
+        }
+        catch(\Exception $e)
+        {
+            if(!($e instanceof ServerException))
+            {
+                $this->error($e->getMessage(), $e->getCode(), TRUE);
+            }
+            throw $e;
+        }
+    }
 
+    /**
+     * Constructs and sends a Messages entity or gremlin script to the server and then waits for response
+     *
+     *
+     * @param mixed  $msg       (Messages|String|NULL) the message to send, NULL means use $this->message
+     * @param string $op        Operation to run against opProcessor.
+     * @param string $processor opProcessor to use.
+     * @param array  $args      Arguments to overwrite.
+     *
+     * @return array reply from server.
+     */
+    public function send($msg = NULL, $processor = '', $op = 'eval', $args = [])
+    {
+        try
+        {
+            $this->run($msg, $processor, $op, $args);
             //lets get the response
             $response = $this->socketGetUnpack();
 
@@ -380,6 +406,18 @@ class Connection
             {
                 //do not commit changes changes;
                 $this->transactionStop(FALSE);
+            }
+
+            $msg = '';
+
+            if(isset($this->_sessionUuid))
+            {
+                $msg = new Messages();
+                $msg->op = "close";
+                $msg->processor = "session";
+                $msg->setArguments(['session'=>$this->_sessionUuid]);
+                $msg->registerSerializer(new Json());
+                $this->run($msg);
             }
 
             $write = @fwrite($this->_socket, $this->webSocketPack("", 'close'));
