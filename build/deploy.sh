@@ -12,7 +12,7 @@ git config --global push.default simple
 git clone -b master --depth 1 https://github.com/PommeVerte/PommeVerte.github.io.git $HOME/PommeVerte.github.io
 
 #generate docs
-vendor/bin/apidoc api --interactive=0 src/ $HOME/PommeVerte.github.io/gremlin-php/
+$TRAVIS_BUILD_DIR/vendor/bin/apidoc api --interactive=0 src/ $HOME/PommeVerte.github.io/gremlin-php/
 
 #update repo and push
 cd $HOME/PommeVerte.github.io
