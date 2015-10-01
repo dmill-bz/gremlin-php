@@ -707,7 +707,7 @@ class Connection
         $msg = new Messages();
         $msg->op = "authentication";
         $msg->processor = "";
-        $msg->setArguments(['sasl'=>"\x00".utf8_encode(trim($this->username))."\x00".utf8_encode(trim($this->password))]);
+        $msg->setArguments(['sasl'=>base64_encode(utf8_encode("\x00".trim($this->username)."\x00".trim($this->password)))]);
         $msg->registerSerializer(new Json());
         return $this->send($msg);
     }
