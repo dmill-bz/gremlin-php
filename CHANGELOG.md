@@ -3,7 +3,7 @@
 2.0 supports TP 3.0.1 with authentication features. There was a major overhaul of the code in order to make the API clearer and to stick to PSR-4 namespaces. Bellow are the BC breaking changes you will need to make if you are upgrading from v1.0 :
 
 - Namespaces currently changed from `\brightzone\rexpro\*` to `\Brightzone\GremlinDriver\*` and so forth all in CamelCase. You will need to change these in your code to reflect the change.
-- The Message class has been changed from `\brightzone\GremlinDriver\Messages` to `\brightzone\GremlinDriver\Message`. I you use messages directly in your code you will need to switch for the newer one.
+- The Message class has been changed from `\Brightzone\GremlinDriver\Messages` to `\Brightzone\GremlinDriver\Message`. I you use messages directly in your code you will need to switch for the newer one.
 - Tests have been moved from `src/tests` to `tests/`. This probably doesn't affect you, but just incase.
 - `Connection::open()` does not take any params anymore. You need to define all connection parameters by providing them to the Connection constructor. For example:
 
