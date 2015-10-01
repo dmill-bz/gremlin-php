@@ -1,49 +1,39 @@
 language: php
+
 php:
   - 5.4
   - 5.5
   - 5.6
+  - 7.0
   - hhvm
   - nightly
+
 matrix:
   allow_failures:
-    - php: hhvm
     - php: nightly
+
 before_install:
   - sudo apt-get update > /dev/null
+
 install:
+  # install Oracle JDK8
+  - sh -c ./build/server/jdk8-install.sh
+  # install gremlin-server
+  - sh -c ./build/server/install.sh
   - composer global require "fxp/composer-asset-plugin:~1.0.0"
   - composer install --dev
-  - sudo apt-get install -y python-software-properties
-  - sudo add-apt-repository -y ppa:webupd8team/java
-  - sudo apt-get update
-  - sudo apt-get install -y oracle-java8-installer
-  - sudo update-alternatives --auto java
-  - sudo update-alternatives --auto javac
-  - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-  - git clone -b master --depth 1 https://github.com/PommeVerte/PommeVerte.github.io.git $HOME/PommeVerte.github.io
-  - wget --no-check-certificate -O $HOME/apache-gremlin-server-3.0.0-incubating-bin.zip https://www.apache.org/dist/incubator/tinkerpop/3.0.0-incubating/apache-gremlin-server-3.0.0-incubating-bin.zip
-  - unzip $HOME/apache-gremlin-server-3.0.0-incubating-bin.zip -d $HOME/
-  - cp src/tests/gremlin-php-script.groovy $HOME/apache-gremlin-server-3.0.0-incubating/scripts/
-  - cp src/tests/gremlin-server-php.yaml $HOME/apache-gremlin-server-3.0.0-incubating/conf/
-  - cp src/tests/neo4j-empty.properties $HOME/apache-gremlin-server-3.0.0-incubating/scripts/
-  - cd $HOME/apache-gremlin-server-3.0.0-incubating
-  - bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.0.0-incubating
-  - bin/gremlin-server.sh conf/gremlin-server-php.yaml > /dev/null 2>&1 &
-  - cd $TRAVIS_BUILD_DIR
-  - sleep 60
-script: phpunit --configuration build/phpunit.xml --bootstrap src/tests/bootstrap.php
-after_script:
-  - php vendor/bin/coveralls -v
-  - git config --global user.name "Travis CI"
-  - git config --global user.email "dylan.millikin@brightzone.fr"
-  - git config --global push.default simple
-  - vendor/bin/apidoc api --interactive=0 src/ $HOME/PommeVerte.github.io/gremlin-php/
-  - cd $HOME/PommeVerte.github.io
-  - git add .
-  - git commit -m "Gremlin-php api update"
-  - git push "https://${GH_TOKEN}@${GH_REF}"
+
+script: phpunit --configuration build/phpunit.xml
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: build/deploy.sh
+  on:
+    branch: master
+
 env:
   global:
-  - GH_REF: "github.com/PommeVerte/PommeVerte.github.io.git"
-  - secure: "QqbRsl8iQVjEqm6gthFhlRPo/niUjgk9KiDN0u+pWGu08tzoGhykggwybrmDlEgFUBvJkgqGvxoTAQ0B/GagzpadUM4HlJNP1SGhhllKeKax60opKJkWwdodoZQxIG9KahtL+P8utliCzSx8R467EVWkd7YWpKF56FxmGgrfNJyCnvFwSmu/Zkc7uJi+HwBLLiwxF+nU96eZKMyC+vIY6awInxxJjRaDQLyl9X3R9cDXbM1RLgWQpBZofyIyx9TI64TyTmTscrtdUlMaJxhyV1rJJFWPwKVUj+yIw3gR2rszUqwF4zjpVmblDiEaBgDv2Rwfftm0qpiLRz/s5Zt+2AB5p8TSXa2t545oMHe59nA4RcRlWSZyotXel46Nz2DAhoywRTqEt9S/ekJhis+dwOac8dPfbr3/RJIdYtPf6IPHAIed1sAJtpmGCXjkAY3iFbooiaKqAckwYtO8eJDhKZ7/MkmQr/IfTRl9RD9KjSqsolM3337O3C5YEstq8EVDKXPyOKPC0qxeIa641XweVitOlm9jUANK7eDZAsPSM0/WEqKgw0/OCjK6WtXwx45DR12JtURCF6GYPBQkKgH+X/bLcP7EzK0myXpSjCS4bcaBSqfJCadhX3Kny267IVrx/wUWOeJCumixpzmf7xbQIoxvIe+hE1pCpUm+Kif1tLU="
+    - GREMLINSERVER_VERSION="3.0.1"
+    - GH_REF: "github.com/PommeVerte/PommeVerte.github.io.git"
+    - secure: "QqbRsl8iQVjEqm6gthFhlRPo/niUjgk9KiDN0u+pWGu08tzoGhykggwybrmDlEgFUBvJkgqGvxoTAQ0B/GagzpadUM4HlJNP1SGhhllKeKax60opKJkWwdodoZQxIG9KahtL+P8utliCzSx8R467EVWkd7YWpKF56FxmGgrfNJyCnvFwSmu/Zkc7uJi+HwBLLiwxF+nU96eZKMyC+vIY6awInxxJjRaDQLyl9X3R9cDXbM1RLgWQpBZofyIyx9TI64TyTmTscrtdUlMaJxhyV1rJJFWPwKVUj+yIw3gR2rszUqwF4zjpVmblDiEaBgDv2Rwfftm0qpiLRz/s5Zt+2AB5p8TSXa2t545oMHe59nA4RcRlWSZyotXel46Nz2DAhoywRTqEt9S/ekJhis+dwOac8dPfbr3/RJIdYtPf6IPHAIed1sAJtpmGCXjkAY3iFbooiaKqAckwYtO8eJDhKZ7/MkmQr/IfTRl9RD9KjSqsolM3337O3C5YEstq8EVDKXPyOKPC0qxeIa641XweVitOlm9jUANK7eDZAsPSM0/WEqKgw0/OCjK6WtXwx45DR12JtURCF6GYPBQkKgH+X/bLcP7EzK0myXpSjCS4bcaBSqfJCadhX3Kny267IVrx/wUWOeJCumixpzmf7xbQIoxvIe+hE1pCpUm+Kif1tLU="

@@ -22,7 +22,8 @@
     },
     "autoload": {
         "psr-4": {
-            "brightzone\\rexpro\\": "src/"
+            "Brightzone\\GremlinDriver\\": "src/",
+            "Brightzone\\GremlinDriver\\Tests\\": "tests/"
         }
     },
     "extra": {

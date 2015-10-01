@@ -1,17 +1,17 @@
 <?php
-namespace brightzone\rexpro\tests;
+namespace Brightzone\GremlinDriver\tests;
 
-use brightzone\rexpro\Connection;
-use brightzone\rexpro\Messages;
-use brightzone\rexpro\Exceptions;
-use brightzone\rexpro\Helper;
+use Brightzone\GremlinDriver\Connection;
+use Brightzone\GremlinDriver\Message;
+use Brightzone\GremlinDriver\Exceptions;
+use Brightzone\GremlinDriver\Helper;
 
 
 /**
- * Unit testing of Rexpro-php documentation examples
+ * Unit testing of Gremlin-php documentation examples
  *
  * @category DB
- * @package  gremlin-php-tests
+ * @package  Tests
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki
@@ -25,9 +25,12 @@ class RexsterTestExamples extends RexsterTestCase
      */
     public function testExample1()
     {
-        $db = new Connection;
+        $db = new Connection([
+            'host' => 'localhost',
+            'graph' => 'graph',
+        ]);
         //you can set $db->timeout = 0.5; if you wish
-        $db->open('localhost', 'graph');
+        $db->open();
         $db->send('g.V(2)');
         //do something with result
         $db->close();
@@ -40,9 +43,12 @@ class RexsterTestExamples extends RexsterTestCase
      */
     public function testExample1B()
     {
-        $db = new Connection;
+        $db = new Connection([
+            'host' => 'localhost',
+            'graph' => 'graph',
+        ]);
         //you can set $db->timeout = 0.5; if you wish
-        $db->open('localhost', 'graph');
+        $db->open();
         $db->message->gremlin = 'g.V(2)';
         $db->send(); //automatically fetches the message
         //do something with result
@@ -56,8 +62,12 @@ class RexsterTestExamples extends RexsterTestCase
      */
     public function testExample2()
     {
-        $db = new Connection;
-        $db->open('localhost:8182', 'graph');
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+        ]);
+        $db->open();
 
         $db->message->bindValue('CUSTO_BINDING', 2);
         $db->send('g.V(CUSTO_BINDING)'); //mix between Example 1 and 1B
@@ -72,8 +82,11 @@ class RexsterTestExamples extends RexsterTestCase
      */
     public function testExample3()
     {
-        $db = new Connection;
-        $db->open('localhost:8182');
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+        ]);
+        $db->open();
         $db->send('cal = 5+5', 'session');
         $result = $db->send('cal', 'session'); // result = [10]
         $this->assertEquals($result[0], 10, 'Error asserting proper result for example 3');
@@ -88,8 +101,12 @@ class RexsterTestExamples extends RexsterTestCase
      */
     public function testExample4()
     {
-        $db = new Connection;
-        $db->open('localhost:8182', 'graphT');
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graphT',
+        ]);
+        $db->open();
         $originalCount = $db->send('n.V().count()');
 
         $db->transactionStart();
@@ -113,17 +130,17 @@ class RexsterTestExamples extends RexsterTestCase
      */
     public function testExample5()
     {
-        $message = new Messages;
+        $message = new Message;
         $message->gremlin = 'g.V()';
         $message->op = 'eval';
         $message->processor = '';
         $message->setArguments([
                         'language' => 'gremlin-groovy',
-                        // .... etc
+                        // ... etc
         ]);
-        $message->registerSerializer('\brightzone\rexpro\serializers\Json');
+        $message->registerSerializer('\Brightzone\GremlinDriver\Serializers\Json');
 
-        $db = new Connection;
+        $db = new Connection();
         $db->open();
         $db->send($message);
         //do something with result

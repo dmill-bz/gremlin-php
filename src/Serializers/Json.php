@@ -1,30 +1,27 @@
 <?php
 
-namespace brightzone\rexpro\tests\stubs;
-
-use \brightzone\rexpro\Messages;
-use \brightzone\rexpro\serializers\SerializerInterface;
+namespace Brightzone\GremlinDriver\Serializers;
 
 /**
- * RexPro PHP Serializer test class (stub)
+ * Gremlin-server PHP JSON Serializer class
+ * Builds and parses message body for Messages class
  *
  * @category DB
- * @package  Rexpro
+ * @package  Serializers
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
- * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
-class TestSerializer implements SerializerInterface
+class Json implements SerializerInterface
 {
     /**
      * @var string the name of the serializer
      */
-    public static $name = 'TEST';
+    public static $name = 'JSON';
 
     /**
      * @var int Value of this serializer. Will be deprecated in TP3
      */
-    public static $mimeType = 'application/test';
+    public static $mimeType = 'application/json';
 
     /**
      * Serializes the data

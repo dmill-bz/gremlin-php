@@ -1,6 +1,6 @@
 <?php
 
-namespace brightzone\rexpro;
+namespace Brightzone\GremlinDriver;
 
 use \Exception;
 
@@ -8,14 +8,15 @@ use \Exception;
  * Gremlin-server PHP Driver client Exception class
  *
  * @category DB
- * @package  gremlin-php
+ * @package  GremlinDriver
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
- * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
+ * @link     http://tinkerpop.incubator.apache.org/docs/3.0.1-incubating/#_developing_a_driver
  */
 class ServerException extends Exception
 {
     const NO_CONTENT = 204;
+    const UNAUTHORIZED = 401;
     const MALFORMED_REQUEST = 498;
     const INVALID_REQUEST_ARGUMENTS = 499;
     const SERVER_ERROR = 500;
@@ -49,6 +50,7 @@ class ServerException extends Exception
     {
         $messages = [
             self::NO_CONTENT => "The server processed the request but there is no result to return (e.g. an {@link Iterator} with no elements).",
+            self::UNAUTHORIZED => "The request attempted to access resources that the requesting user did not have access to.",
             self::MALFORMED_REQUEST => "The request message was not properly formatted which means it could not be parsed at all or the 'op' code was not recognized such that Gremlin Server could properly route it for processing. Check the message format and retry the request.",
             self::INVALID_REQUEST_ARGUMENTS => "The request message was parseable, but the arguments supplied in the message were in conflict or incomplete. Check the message format and retry the request.",
             self::SERVER_ERROR => "A general server error occurred that prevented the request from being processed.",

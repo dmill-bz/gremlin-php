@@ -1,15 +1,14 @@
 <?php
-namespace brightzone\rexpro\tests;
+namespace Brightzone\GremlinDriver\tests;
 
 /**
  * Unit testing test case
  * Allows for developpers to use command line args to set username and password for test database
  *
  * @category DB
- * @package  gremlin-php-tests
+ * @package  Tests
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
- * @link     https://github.com/tinkerpop/rexster/wiki
  */
 class RexsterTestCase extends \PHPUnit_Framework_TestCase
 {

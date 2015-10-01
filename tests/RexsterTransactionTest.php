@@ -1,17 +1,16 @@
 <?php
-namespace brightzone\rexpro\tests;
+namespace Brightzone\GremlinDriver\tests;
 
-use brightzone\rexpro\Connection;
+use Brightzone\GremlinDriver\Connection;
 
 
 /**
  * Unit testing of gremlin-php for transactional graph
  *
  * @category DB
- * @package  gremlin-php-tests
+ * @package  Tests
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
- * @link     https://github.com/tinkerpop/rexster/wiki
  */
 class RexsterTransactionTest extends RexsterTestCase
 {
@@ -23,8 +22,10 @@ class RexsterTransactionTest extends RexsterTestCase
      */
     public function testTransactions()
     {
-        $db = new Connection;
-        $message = $db->open('localhost:8182', 'graphT', $this->username, $this->password);
+        $db = new Connection([
+            'graph' => 'graphT',
+        ]);
+        $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
         $db->message->gremlin = 't.V().count()';
@@ -63,8 +64,12 @@ class RexsterTransactionTest extends RexsterTestCase
      */
     public function testTransactionsMultiRun()
     {
-        $db = new Connection;
-        $message = $db->open('localhost:8182', 'graphT', $this->username, $this->password);
+        $db = new Connection([
+            'graph' => 'graphT',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
         $result = $db->send('t.V().count()');
@@ -98,28 +103,32 @@ class RexsterTransactionTest extends RexsterTestCase
     /**
      * Testing Transaction without graphObj
      *
-     * @expectedException \brightzone\rexpro\InternalException
+     * @expectedException \Brightzone\GremlinDriver\InternalException
      *
      * @return void
      */
     public function testTransactionWithNoGraphObj()
     {
-        $db = new Connection;
-        $db->open('localhost:8182', '', '', '', '');
+        $db = new Connection();
+        $db->open();
         $db->transactionStart();
     }
 
     /**
      * Testing transactionStart() with an other running transaction
      *
-     * @expectedException \brightzone\rexpro\InternalException
+     * @expectedException \Brightzone\GremlinDriver\InternalException
      *
      * @return void
      */
     public function testSeveralRunningTransactionStart()
     {
-        $db = new Connection;
-        $db->open('localhost:8182', 'graphT', $this->username, $this->password);
+        $db = new Connection([
+            'graph' => 'graphT',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $db->open();
         $db->transactionStart();
         $db->transactionStart();
     }
@@ -127,14 +136,18 @@ class RexsterTransactionTest extends RexsterTestCase
     /**
      * Testing transactionStop() with no running transaction
      *
-     * @expectedException \brightzone\rexpro\InternalException
+     * @expectedException \Brightzone\GremlinDriver\InternalException
      *
      * @return void
      */
     public function testTransactionStopWithNoTransaction()
     {
-        $db = new Connection;
-        $db->open('localhost:8182', 'graphT', $this->username, $this->password);
+        $db = new Connection([
+            'graph' => 'graphT',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $db->open();
         $db->transactionStop();
     }
 }

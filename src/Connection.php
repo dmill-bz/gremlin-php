@@ -1,9 +1,9 @@
 <?php
 
-namespace brightzone\rexpro;
+namespace Brightzone\GremlinDriver;
 
-use brightzone\rexpro\serializers\Json;
-use brightzone\rexpro\ServerException;
+use Brightzone\GremlinDriver\Serializers\Json;
+use Brightzone\GremlinDriver\ServerException;
 
 /**
  * Gremlin-server PHP Driver client Connection class
@@ -11,24 +11,24 @@ use brightzone\rexpro\ServerException;
  * Example of basic use:
  *
  * ~~~
- * $connection = new Connection;
- * $connection->open('localhost:8182','g');
+ * $connection = new Connection(['host' => 'localhost']);
+ * $connection->open();
  * $resultSet = $connection->send('g.V'); //returns array with results
  * ~~~
  *
  * Some more customising of message to send can be done with the message object
  *
  * ~~~
- * $connection = new Connection;
- * $connection->open('localhost:8182','g');
+ * $connection = new Connection(['host' => 'localhost']);
+ * $connection->open();
  * $connection->message->gremlin = 'g.V';
  * $connection->send();
  * ~~~
  *
- * See Messages for more details
+ * See Message for more details
  *
  * @category DB
- * @package  gremlin-php
+ * @package  GremlinDriver
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  * @link     https://github.com/tinkerpop/rexster/wiki
@@ -37,12 +37,17 @@ class Connection
 {
     /**
      * @var string Contains the host information required to connect to the database.
-     * format: server:port
-     * If [port] is ommited 8182 will be assumed
      *
-     * Example: localhost:8182
+     * Default: localhost
      */
-    public $host;
+    public $host = 'localhost';
+
+    /**
+     * @var string Contains port information to connect to the database
+     *
+     * Default : 8182
+     */
+    public $port = 8182;
 
     /**
      * @var string the username for establishing DB connection. Defaults to NULL.
@@ -55,9 +60,9 @@ class Connection
     public $password;
 
     /**
-     * @var string the graphObject to use.
+     * @var string the graph to use.
      */
-    public $graphObj;
+    public $graph;
 
     /**
      * @var float timeout to use for connection to Rexster. If not set the timeout set in php.ini will be used: ini_get("default_socket_timeout")
@@ -65,7 +70,7 @@ class Connection
     public $timeout;
 
     /**
-     * @var Messages Message object
+     * @var Message Message object
      */
     public $message;
 
@@ -90,17 +95,26 @@ class Connection
      */
     private $_socket;
 
+    /**
+     * @var bool whether or not we're using ssl
+     */
+    public $ssl = FALSE;
+
 
     /**
-     * Overloading constructor to instantiate a Messages instance and
+     * Overloading constructor to instantiate a Message instance and
      * provide it with a default serializer.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($options = [])
     {
+        foreach($options as $key => $value)
+        {
+            $this->$key = $value;
+        }
         //create a message object
-        $this->message = new Messages;
+        $this->message = new Message();
         //assign a default serializer to it
         $this->message->registerSerializer(new Json, TRUE);
     }
@@ -108,23 +122,12 @@ class Connection
     /**
      * Connects to socket and starts a session with gremlin-server
      *
-     * @param string $host        host and port seperated by ":"
-     * @param string $graphObj    graph to load into session. defaults to graph
-     * @param string $username    username for authentification
-     * @param string $password    password to use for authentification
-     * @param array  $config      extra required configuration
-     *
      * @return bool TRUE on success FALSE on error
      */
-    public function open($host = 'localhost:8182', $graphObj = 'graph', $username = NULL, $password = NULL, $config = [])
+    public function open()
     {
         if($this->_socket === NULL)
         {
-            $this->graphObj = $graphObj;
-            $this->username = $username;
-            $this->password = $password;
-            $this->host = strpos($host, ':') === FALSE ? $host . ':8182' : $host;
-
             $this->connectSocket(); // will throw error on failure.
 
             return $this->makeHandshake();
@@ -134,7 +137,7 @@ class Connection
     /**
      * Sends data over socket
      *
-     * @param Messages $msg Object containing the message to send
+     * @param Message $msg Object containing the message to send
      *
      * @return bool TRUE if success
      */
@@ -165,6 +168,11 @@ class Connection
     {
         try
         {
+            $protocol = 'http';
+            if($this->ssl)
+            {
+                $protocol = 'ssl';
+            }
             $key = base64_encode(Helper::generateRandomString(16, FALSE, TRUE));
             $header = "GET /gremlin HTTP/1.1\r\n";
             $header .= "Upgrade: websocket\r\n";
@@ -173,7 +181,7 @@ class Connection
             $header .= "Host: " . $this->host . "\r\n";
             if($origin !== TRUE)
             {
-                $header .= "Sec-WebSocket-Origin: http://" . $this->host . "\r\n";
+                $header .= "Sec-WebSocket-Origin: ".$protocol."://" . $this->host . ":" . $this->port. "\r\n";
             }
             $header .= "Sec-WebSocket-Version: 13\r\n\r\n";
 
@@ -274,15 +282,19 @@ class Connection
             {
                 $this->error($e->getMessage(), $e->getCode(), TRUE);
             }
+            // If this is an authentication challenge, lets meet it and return the result
+            if($unpacked['status']['code'] === 407)
+            {
+                return $this->authenticate();
+            }
+
             //handle errors
             if($unpacked['status']['code'] !== 200 && $unpacked['status']['code'] !== 206)
             {
                 $this->error($unpacked['status']['message'] . " > " . implode("\n", $unpacked['status']['attributes']), $unpacked['status']['code']);
             }
-            if($unpacked['status']['code'] == 200)
-            {
-                $fullData = array_merge($fullData, $unpacked['result']['data']);
-            }
+
+            $fullData = array_merge($fullData, $unpacked['result']['data']);
         }
         while($unpacked['status']['code'] === 206);
 
@@ -296,8 +308,13 @@ class Connection
      */
     private function connectSocket()
     {
+        $protocol = 'tcp';
+        if($this->ssl)
+        {
+            $protocol = 'ssl';
+        }
         $this->_socket = @stream_socket_client(
-                                    'tcp://' . $this->host,
+                                    $protocol. '://' . $this->host .':'.$this->port,
                                     $errno,
                                     $errorMessage,
                                     $this->timeout ? $this->timeout : ini_get("default_socket_timeout")
@@ -311,10 +328,84 @@ class Connection
     }
 
     /**
-     * Constructs and sends a Messages entity or gremlin script to the server.
+     * Constructs and sends a Message entity or gremlin script to the server without waiting for a response.
      *
      *
-     * @param mixed  $msg       (Messages|String|NULL) the message to send, NULL means use $this->message
+     * @param mixed  $msg            (Message|String|NULL) the message to send, NULL means use $this->message
+     * @param string $op             Operation to run against opProcessor.
+     * @param string $processor      opProcessor to use.
+     * @param array  $args           Arguments to overwrite.
+     * @param bool   $expectResponse Arguments to overwrite.
+     *
+     * @return void
+     */
+    public function run($msg = NULL, $processor = '', $op = 'eval', $args = [], $expectResponse = TRUE)
+    {
+        try
+        {
+            $this->prepareWrite($msg, $processor, $op, $args);
+            if($expectResponse)
+            {
+                $this->socketGetUnpack();
+            }
+        }
+        catch(\Exception $e)
+        {
+            // on run lets ignore anything comming back from the server
+            if(!($e instanceof ServerException))
+            {
+                throw $e;
+            }
+        }
+
+        //reset message and remove binds
+        $this->message->clear();
+    }
+
+    /**
+     * Private function that Constructs and sends a Message entity or gremlin script to the server and then waits for response
+     *
+     * The main use here is to centralise this code for run() and send()
+     *
+     *
+     * @param mixed  $msg       (Message|String|NULL) the message to send, NULL means use $this->message
+     * @param string $processor opProcessor to use.
+     * @param string $op        Operation to run against opProcessor.
+     * @param array  $args      Arguments to overwrite.
+     *
+     * @return array reply from server.
+     */
+    private function prepareWrite($msg, $processor, $op, $args)
+    {
+        if(!($msg instanceof Message) || $msg === NULL)
+        {
+            //lets make a script message:
+
+            $this->message->gremlin = $msg === NULL ? $this->message->gremlin : $msg;
+            $this->message->op = $op === 'eval' ? $this->message->op : $op;
+            $this->message->processor = $processor === '' ? $this->message->processor : $processor;
+
+            if($this->_inTransaction === TRUE || $this->message->processor == 'session')
+            {
+                $this->getSession();
+                $this->message->processor = $processor == '' ? 'session' : $processor;
+                $this->message->setArguments(['session'=>$this->_sessionUuid]);
+            }
+
+            $this->message->setArguments($args);
+        }
+        else
+        {
+            $this->message = $msg;
+        }
+        $this->writeSocket();
+    }
+
+    /**
+     * Constructs and sends a Message entity or gremlin script to the server and then waits for response
+     *
+     *
+     * @param mixed  $msg       (Message|String|NULL) the message to send, NULL means use $this->message
      * @param string $op        Operation to run against opProcessor.
      * @param string $processor opProcessor to use.
      * @param array  $args      Arguments to overwrite.
@@ -325,30 +416,7 @@ class Connection
     {
         try
         {
-            if(!($msg instanceof Messages) || $msg === NULL)
-            {
-                //lets make a script message:
-
-                $this->message->gremlin = $msg === NULL ? $this->message->gremlin : $msg;
-                $this->message->op = $op === 'eval' ? $this->message->op : $op;
-                $this->message->processor = $processor === '' ? $this->message->processor : $processor;
-
-                if($this->_inTransaction === TRUE || $this->message->processor == 'session')
-                {
-                    $this->getSession();
-                    $this->message->processor = $processor == '' ? 'session' : $processor;
-                    $this->message->setArguments(['session'=>$this->_sessionUuid]);
-                }
-
-                $this->message->setArguments($args);
-            }
-            else
-            {
-                $this->message = $msg;
-            }
-
-            $this->writeSocket();
-
+            $this->prepareWrite($msg, $processor, $op, $args);
             //lets get the response
             $response = $this->socketGetUnpack();
 
@@ -383,7 +451,21 @@ class Connection
                 //do not commit changes changes;
                 $this->transactionStop(FALSE);
             }
+
+            $msg = '';
+
+            if(isset($this->_sessionUuid))
+            {
+                $msg = new Message();
+                $msg->op = "close";
+                $msg->processor = "session";
+                $msg->setArguments(['session'=>$this->_sessionUuid]);
+                $msg->registerSerializer(new Json());
+                $this->run($msg, NULL, NULL, NULL, FALSE); // Tell run not to expect a return
+            }
+
             $write = @fwrite($this->_socket, $this->webSocketPack("", 'close'));
+
             if($write === FALSE)
             {
                 $this->error('Could not write to socket', 500, TRUE);
@@ -406,14 +488,14 @@ class Connection
      */
     public function transactionStart()
     {
-        if(!isset($this->graphObj) || (isset($this->graphObj) && $this->graphObj == ''))
+        if(!isset($this->graph) || (isset($this->graph) && $this->graph == ''))
         {
             $this->error("A graph object needs to be specified", 500, TRUE);
         }
 
         if($this->_inTransaction)
         {
-            $this->message->gremlin = $this->graphObj . '.tx().rollback()';
+            $this->message->gremlin = $this->graph . '.tx().rollback()';
             $this->send();
             $this->_inTransaction = FALSE;
             $this->error(__METHOD__ . ': already in transaction, rolling changes back.', 500, TRUE);
@@ -423,8 +505,8 @@ class Connection
         $this->getSession();
         $this->message->setArguments(['session'=>$this->_sessionUuid]);
         $this->message->processor = 'session';
-        $this->message->gremlin = 'if(!' . $this->graphObj . '.tx().isOpen()){' . $this->graphObj . '.tx().open()}';
-        $this->send();
+        $this->message->gremlin = $this->graph . '.tx().open()';
+        $this->run();
         $this->_inTransaction = TRUE;
         return TRUE;
     }
@@ -445,14 +527,14 @@ class Connection
         //send message to stop transaction
         if($success)
         {
-            $this->message->gremlin = $this->graphObj . '.tx().commit()';
+            $this->message->gremlin = $this->graph . '.tx().commit()';
         }
         else
         {
-            $this->message->gremlin = $this->graphObj . '.tx().rollback()';
+            $this->message->gremlin = $this->graph . '.tx().rollback()';
         }
 
-        $this->send();
+        $this->run();
         $this->_inTransaction = FALSE;
         return TRUE;
     }
@@ -599,7 +681,7 @@ class Connection
 
     /**
      * Custom error throwing method.
-     * We use this to run rollbacks when errors occure
+     * We use this to run rollbacks when errors occur
      *
      * @return void
      */
@@ -638,5 +720,20 @@ class Connection
             $this->_sessionUuid = Helper::createUuid();
         }
         return $this->_sessionUuid;
+    }
+
+    /**
+     * Builds an authentication message when challenged by the server
+     *
+     * @return void
+     */
+    protected function authenticate()
+    {
+        $msg = new Message();
+        $msg->op = "authentication";
+        $msg->processor = "";
+        $msg->setArguments(['sasl'=>base64_encode(utf8_encode("\x00".trim($this->username)."\x00".trim($this->password)))]);
+        $msg->registerSerializer(new Json());
+        return $this->send($msg);
     }
 }

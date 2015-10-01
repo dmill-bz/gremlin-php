@@ -1,19 +1,19 @@
 <?php
 
-namespace brightzone\rexpro;
+namespace Brightzone\GremlinDriver;
 
 /**
  * Gremlin-server PHP Driver client Messages class
- * Builds and parses binary messages for communication with RexPro
+ * Builds and parses binary messages for communication with Gremlin-server
  * Use example:
  *
  * ~~~
- * $message = new Messages;
+ * $message = new Message;
  * $message->gremlin = 'g.V';
  * $message->op = 'eval';
  * $message->processor = '';
  * $message->setArguments(['language'=>'gremlin-groovy']);
- * $message->registerSerializer('\brightzone\rexpro\serializers\Json');
+ * $message->registerSerializer('\Brightzone\GremlinDriver\Serializers\Json');
  * // etc ...
  * $db = new Connection;
  * $db->open();
@@ -21,10 +21,9 @@ namespace brightzone\rexpro;
  * ~~~
  *
  * @category DB
- * @package  gremlin-php
+ * @package  GremlinDriver
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
- * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  *
  * @property string $gremlin     The gremlin query for this message
  * @property string $op          The operation that should be performed by this message
@@ -32,7 +31,7 @@ namespace brightzone\rexpro;
  * @property string $requestUuid The UUID for the individual request
  *
  */
-class Messages
+class Message
 {
     /**
      * @var array basic message configuration
@@ -251,7 +250,7 @@ class Messages
             $value = new $value();
         }
 
-        if(in_array('brightzone\rexpro\serializers\SerializerInterface', class_implements($value)))
+        if(in_array('Brightzone\GremlinDriver\Serializers\SerializerInterface', class_implements($value)))
         {
             if($default)
             {

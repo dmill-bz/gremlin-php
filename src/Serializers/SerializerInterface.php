@@ -1,16 +1,15 @@
 <?php
 
-namespace brightzone\rexpro\serializers;
+namespace Brightzone\GremlinDriver\Serializers;
 
 /**
- * RexPro PHP Interface for Serializer classes
+ * Gremlin-server PHP Interface for Serializer classes
  * Builds and parses message body for Messages class
  *
  * @category DB
- * @package  Rexpro
+ * @package  Serializers
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
- * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
 interface SerializerInterface
 {
