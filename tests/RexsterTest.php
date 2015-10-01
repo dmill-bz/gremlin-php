@@ -234,6 +234,7 @@ class RexsterTest extends RexsterTestCase
      */
     public function testSessionClose()
     {
+        $this->markTestSkipped("Skipping test until TP 3.0.2, see TINKERPOP3-849");
         $db = new Connection([
             'host' => 'localhost',
             'port' => 8182,
