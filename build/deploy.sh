@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PHP_VERSION" == "5.6"]; then
+if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then
 
     # run coveralls
     php $TRAVIS_BUILD_DIR/vendor/bin/coveralls -v
