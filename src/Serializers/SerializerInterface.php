@@ -10,7 +10,6 @@ namespace Brightzone\GremlinDriver\Serializers;
  * @package  Serializers
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
- * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
 interface SerializerInterface
 {

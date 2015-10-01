@@ -2,7 +2,6 @@
 namespace Brightzone\GremlinDriver\Tests;
 
 use Brightzone\GremlinDriver\Connection;
-use Brightzone\GremlinDriver\Messages;
 
 /**
  * Unit testing of Gremlin-php authentication

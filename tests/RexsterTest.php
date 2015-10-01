@@ -3,7 +3,7 @@ namespace Brightzone\GremlinDriver\Tests;
 
 use Brightzone\GremlinDriver\Connection;
 use Brightzone\GremlinDriver\Helper;
-use Brightzone\GremlinDriver\Messages;
+use Brightzone\GremlinDriver\Message;
 
 /**
  * Unit testing of Gremlin-php
@@ -269,7 +269,7 @@ class RexsterTest extends RexsterTestCase
         $message = $db2->open();
 
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
-        $msg = new Messages();
+        $msg = new Message();
         $msg->registerSerializer('\Brightzone\GremlinDriver\Serializers\Json');
         $msg->gremlin = 'cal';
         $msg->op = 'eval';
@@ -384,7 +384,7 @@ class RexsterTest extends RexsterTestCase
     public function testSendMessageWithoutConnection()
     {
         $db = new Connection();
-        $msg = new Messages();
+        $msg = new Message();
         $db->send($msg);
     }
 

@@ -2,8 +2,6 @@
 
 namespace Brightzone\GremlinDriver\Serializers;
 
-use \Brightzone\GremlinDriver\Messages;
-
 /**
  * Gremlin-server PHP JSON Serializer class
  * Builds and parses message body for Messages class
@@ -12,7 +10,6 @@ use \Brightzone\GremlinDriver\Messages;
  * @package  Serializers
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
- * @link     https://github.com/tinkerpop/rexster/wiki/RexPro-Messages
  */
 class Json implements SerializerInterface
 {

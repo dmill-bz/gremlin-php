@@ -56,9 +56,12 @@ Here are a few basic usages.
 Example 1 :
 
 ```php
-$db = new Connection;
+$db = new Connection([
+    'host' => 'localhost',
+    'graph' => 'graph'
+]);
 //you can set $db->timeout = 0.5; if you wish
-$db->open('localhost', 'graph');
+$db->open();
 
 $result = $db->send('g.V(2)');
 //do something with result
@@ -73,7 +76,7 @@ $db = new Connection([
     'host' => 'localhost',
     'graph' => 'graph',
     'username' => 'pomme',
-    'password' => 'easyToCrack'
+    'password' => 'hardToCrack'
 ]);
 //you can set $db->timeout = 0.5; if you wish
 $db->open();
@@ -137,7 +140,7 @@ Note that "graphT" above refers to a graph that supports transactions. And that 
 Example 5 (Using message object) :
 
 ```php
-$message = new Messages;
+$message = new Message;
 $message->gremlin = 'g.V()';
 $message->op = 'eval';
 $message->processor = '';

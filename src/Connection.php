@@ -25,7 +25,7 @@ use Brightzone\GremlinDriver\ServerException;
  * $connection->send();
  * ~~~
  *
- * See Messages for more details
+ * See Message for more details
  *
  * @category DB
  * @package  GremlinDriver
@@ -70,7 +70,7 @@ class Connection
     public $timeout;
 
     /**
-     * @var Messages Message object
+     * @var Message Message object
      */
     public $message;
 
@@ -102,7 +102,7 @@ class Connection
 
 
     /**
-     * Overloading constructor to instantiate a Messages instance and
+     * Overloading constructor to instantiate a Message instance and
      * provide it with a default serializer.
      *
      * @return void
@@ -114,7 +114,7 @@ class Connection
             $this->$key = $value;
         }
         //create a message object
-        $this->message = new Messages();
+        $this->message = new Message();
         //assign a default serializer to it
         $this->message->registerSerializer(new Json, TRUE);
     }
@@ -137,7 +137,7 @@ class Connection
     /**
      * Sends data over socket
      *
-     * @param Messages $msg Object containing the message to send
+     * @param Message $msg Object containing the message to send
      *
      * @return bool TRUE if success
      */
@@ -328,10 +328,10 @@ class Connection
     }
 
     /**
-     * Constructs and sends a Messages entity or gremlin script to the server without waiting for a response.
+     * Constructs and sends a Message entity or gremlin script to the server without waiting for a response.
      *
      *
-     * @param mixed  $msg            (Messages|String|NULL) the message to send, NULL means use $this->message
+     * @param mixed  $msg            (Message|String|NULL) the message to send, NULL means use $this->message
      * @param string $op             Operation to run against opProcessor.
      * @param string $processor      opProcessor to use.
      * @param array  $args           Arguments to overwrite.
@@ -363,12 +363,12 @@ class Connection
     }
 
     /**
-     * Private function that Constructs and sends a Messages entity or gremlin script to the server and then waits for response
+     * Private function that Constructs and sends a Message entity or gremlin script to the server and then waits for response
      *
      * The main use here is to centralise this code for run() and send()
      *
      *
-     * @param mixed  $msg       (Messages|String|NULL) the message to send, NULL means use $this->message
+     * @param mixed  $msg       (Message|String|NULL) the message to send, NULL means use $this->message
      * @param string $processor opProcessor to use.
      * @param string $op        Operation to run against opProcessor.
      * @param array  $args      Arguments to overwrite.
@@ -377,7 +377,7 @@ class Connection
      */
     private function prepareWrite($msg, $processor, $op, $args)
     {
-        if(!($msg instanceof Messages) || $msg === NULL)
+        if(!($msg instanceof Message) || $msg === NULL)
         {
             //lets make a script message:
 
@@ -402,10 +402,10 @@ class Connection
     }
 
     /**
-     * Constructs and sends a Messages entity or gremlin script to the server and then waits for response
+     * Constructs and sends a Message entity or gremlin script to the server and then waits for response
      *
      *
-     * @param mixed  $msg       (Messages|String|NULL) the message to send, NULL means use $this->message
+     * @param mixed  $msg       (Message|String|NULL) the message to send, NULL means use $this->message
      * @param string $op        Operation to run against opProcessor.
      * @param string $processor opProcessor to use.
      * @param array  $args      Arguments to overwrite.
@@ -456,7 +456,7 @@ class Connection
 
             if(isset($this->_sessionUuid))
             {
-                $msg = new Messages();
+                $msg = new Message();
                 $msg->op = "close";
                 $msg->processor = "session";
                 $msg->setArguments(['session'=>$this->_sessionUuid]);
@@ -729,7 +729,7 @@ class Connection
      */
     protected function authenticate()
     {
-        $msg = new Messages();
+        $msg = new Message();
         $msg->op = "authentication";
         $msg->processor = "";
         $msg->setArguments(['sasl'=>base64_encode(utf8_encode("\x00".trim($this->username)."\x00".trim($this->password)))]);

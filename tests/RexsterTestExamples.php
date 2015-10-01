@@ -2,7 +2,7 @@
 namespace Brightzone\GremlinDriver\tests;
 
 use Brightzone\GremlinDriver\Connection;
-use Brightzone\GremlinDriver\Messages;
+use Brightzone\GremlinDriver\Message;
 use Brightzone\GremlinDriver\Exceptions;
 use Brightzone\GremlinDriver\Helper;
 
@@ -130,7 +130,7 @@ class RexsterTestExamples extends RexsterTestCase
      */
     public function testExample5()
     {
-        $message = new Messages;
+        $message = new Message;
         $message->gremlin = 'g.V()';
         $message->op = 'eval';
         $message->processor = '';

@@ -8,7 +8,7 @@ namespace Brightzone\GremlinDriver;
  * Use example:
  *
  * ~~~
- * $message = new Messages;
+ * $message = new Message;
  * $message->gremlin = 'g.V';
  * $message->op = 'eval';
  * $message->processor = '';
@@ -31,7 +31,7 @@ namespace Brightzone\GremlinDriver;
  * @property string $requestUuid The UUID for the individual request
  *
  */
-class Messages
+class Message
 {
     /**
      * @var array basic message configuration

@@ -2,7 +2,6 @@
 
 namespace Brightzone\GremlinDriver\Tests\stubs;
 
-use Brightzone\GremlinDriver\Messages;
 use Brightzone\GremlinDriver\serializers\SerializerInterface;
 
 /**
