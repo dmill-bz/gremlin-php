@@ -331,49 +331,74 @@ class Connection
      * Constructs and sends a Messages entity or gremlin script to the server without waiting for a response.
      *
      *
+     * @param mixed  $msg            (Messages|String|NULL) the message to send, NULL means use $this->message
+     * @param string $op             Operation to run against opProcessor.
+     * @param string $processor      opProcessor to use.
+     * @param array  $args           Arguments to overwrite.
+     * @param bool   $expectResponse Arguments to overwrite.
+     *
+     * @return void
+     */
+    public function run($msg = NULL, $processor = '', $op = 'eval', $args = [], $expectResponse = TRUE)
+    {
+        try
+        {
+            $this->prepareWrite($msg, $processor, $op, $args);
+            if($expectResponse)
+            {
+                $this->socketGetUnpack();
+            }
+        }
+        catch(\Exception $e)
+        {
+            // on run lets ignore anything comming back from the server
+            if(!($e instanceof ServerException))
+            {
+                throw $e;
+            }
+        }
+
+        //reset message and remove binds
+        $this->message->clear();
+    }
+
+    /**
+     * Private function that Constructs and sends a Messages entity or gremlin script to the server and then waits for response
+     *
+     * The main use here is to centralise this code for run() and send()
+     *
+     *
      * @param mixed  $msg       (Messages|String|NULL) the message to send, NULL means use $this->message
-     * @param string $op        Operation to run against opProcessor.
      * @param string $processor opProcessor to use.
+     * @param string $op        Operation to run against opProcessor.
      * @param array  $args      Arguments to overwrite.
      *
      * @return array reply from server.
      */
-    public function run($msg = NULL, $processor = '', $op = 'eval', $args = [])
+    private function prepareWrite($msg, $processor, $op, $args)
     {
-        try
+        if(!($msg instanceof Messages) || $msg === NULL)
         {
-            if(!($msg instanceof Messages) || $msg === NULL)
+            //lets make a script message:
+
+            $this->message->gremlin = $msg === NULL ? $this->message->gremlin : $msg;
+            $this->message->op = $op === 'eval' ? $this->message->op : $op;
+            $this->message->processor = $processor === '' ? $this->message->processor : $processor;
+
+            if($this->_inTransaction === TRUE || $this->message->processor == 'session')
             {
-                //lets make a script message:
-
-                $this->message->gremlin = $msg === NULL ? $this->message->gremlin : $msg;
-                $this->message->op = $op === 'eval' ? $this->message->op : $op;
-                $this->message->processor = $processor === '' ? $this->message->processor : $processor;
-
-                if($this->_inTransaction === TRUE || $this->message->processor == 'session')
-                {
-                    $this->getSession();
-                    $this->message->processor = $processor == '' ? 'session' : $processor;
-                    $this->message->setArguments(['session'=>$this->_sessionUuid]);
-                }
-
-                $this->message->setArguments($args);
-            }
-            else
-            {
-                $this->message = $msg;
+                $this->getSession();
+                $this->message->processor = $processor == '' ? 'session' : $processor;
+                $this->message->setArguments(['session'=>$this->_sessionUuid]);
             }
 
-            $this->writeSocket();
+            $this->message->setArguments($args);
         }
-        catch(\Exception $e)
+        else
         {
-            if(!($e instanceof ServerException))
-            {
-                $this->error($e->getMessage(), $e->getCode(), TRUE);
-            }
-            throw $e;
+            $this->message = $msg;
         }
+        $this->writeSocket();
     }
 
     /**
@@ -391,7 +416,7 @@ class Connection
     {
         try
         {
-            $this->run($msg, $processor, $op, $args);
+            $this->prepareWrite($msg, $processor, $op, $args);
             //lets get the response
             $response = $this->socketGetUnpack();
 
@@ -436,7 +461,7 @@ class Connection
                 $msg->processor = "session";
                 $msg->setArguments(['session'=>$this->_sessionUuid]);
                 $msg->registerSerializer(new Json());
-                $this->run($msg);
+                $this->run($msg, NULL, NULL, NULL, FALSE); // Tell run not to expect a return
             }
 
             $write = @fwrite($this->_socket, $this->webSocketPack("", 'close'));
@@ -481,7 +506,7 @@ class Connection
         $this->message->setArguments(['session'=>$this->_sessionUuid]);
         $this->message->processor = 'session';
         $this->message->gremlin = $this->graph . '.tx().open()';
-        $this->send();
+        $this->run();
         $this->_inTransaction = TRUE;
         return TRUE;
     }
@@ -509,7 +534,7 @@ class Connection
             $this->message->gremlin = $this->graph . '.tx().rollback()';
         }
 
-        $this->send();
+        $this->run();
         $this->_inTransaction = FALSE;
         return TRUE;
     }
@@ -656,7 +681,7 @@ class Connection
 
     /**
      * Custom error throwing method.
-     * We use this to run rollbacks when errors occure
+     * We use this to run rollbacks when errors occur
      *
      * @return void
      */
