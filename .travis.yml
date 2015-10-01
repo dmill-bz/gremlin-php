@@ -25,12 +25,8 @@ install:
 
 script: phpunit --configuration build/phpunit.xml
 
-deploy:
-  skip_cleanup: true
-  provider: script
-  script: build/deploy.sh
-  on:
-    branch: master
+after_success:
+  - sh -c ./build/deploy.sh
 
 env:
   global:
