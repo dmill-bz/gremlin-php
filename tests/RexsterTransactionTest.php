@@ -1,5 +1,5 @@
 <?php
-namespace Brightzone\GremlinDriver\tests;
+namespace Brightzone\GremlinDriver\Tests;
 
 use Brightzone\GremlinDriver\Connection;
 

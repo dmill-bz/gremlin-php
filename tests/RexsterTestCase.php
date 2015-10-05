@@ -1,5 +1,5 @@
 <?php
-namespace Brightzone\GremlinDriver\tests;
+namespace Brightzone\GremlinDriver\Tests;
 
 /**
  * Unit testing test case

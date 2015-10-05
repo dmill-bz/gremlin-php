@@ -1,6 +1,6 @@
 <?php
 
-namespace Brightzone\GremlinDriver\Tests\stubs;
+namespace Brightzone\GremlinDriver\Tests\Stubs;
 
 use Brightzone\GremlinDriver\serializers\SerializerInterface;
 
