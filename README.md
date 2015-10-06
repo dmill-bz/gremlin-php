@@ -53,7 +53,7 @@ You can find more information by reading the [API](http://pommeverte.github.io/g
 
 Here are a few basic usages.
 
-Example 1 :
+**Example 1 :**
 
 ```php
 $db = new Connection([
@@ -70,7 +70,7 @@ $db->close();
 
 Note that "graph" is the name of the graph configured in gremlin-server (not the reference to the traversal which is `g = graph.traversal()`)
 
-Example 1 bis (With authentication) :
+**Example 1 bis (With authentication) :**
 ```php
 $db = new Connection([
     'host' => 'localhost',
@@ -86,7 +86,7 @@ $db->close();
 ```
 
 
-Example 2 (with bindings) :
+**Example 2 (with bindings) :**
 
 ```php
 $db = new Connection([
@@ -102,7 +102,7 @@ $db->send('g.V(CUSTO_BINDING)'); //mix between Example 1 and 1B
 $db->close();
 ```
 
-Example 3 (with session) :
+**Example 3 (with session) :**
 
 ```php
 $db = new Connection([
@@ -116,7 +116,7 @@ $result = $db->send('cal', 'session'); // result = [10]
 $db->close();
 ```
 
-Example 4 (transaction) :
+**Example 4 (transaction) :**
 
 ```php
 $db = new Connection([
@@ -125,7 +125,6 @@ $db = new Connection([
     'graph' => 'graphT',
 ]);
 $db->open();
-$originalCount = $db->send('n.V().count()');
 
 $db->transactionStart();
 
@@ -138,7 +137,7 @@ $db->close();
 
 Note that "graphT" above refers to a graph that supports transactions. And that transactions start a session automatically.
 
-Example 4 bis (alternative transaction syntax)
+**Example 4 bis (alternative transaction syntax) :**
 
 It is also possible to express transactions in the following manner:
 
@@ -149,7 +148,6 @@ $db = new Connection([
     'graph' => 'graphT',
 ]);
 $db->open();
-$originalCount = $db->send('n.V().count()');
 
 $db->transaction(function(&$db){
     $db->send('n.addVertex("name","michael")');
@@ -159,9 +157,9 @@ $db->transaction(function(&$db){
 $db->close();
 ```
 
-This will commit these changes or return an Exception if an error occured (and automatically rollback changes). The advantage of using this syntax is that it allows you to handle fail-retry scenarios as describbed in the next example:
+This will commit these changes or return an `Exception` if an error occured (and automatically rollback changes). The advantage of using this syntax is that it allows you to handle fail-retry scenarios as describbed in the next example.
 
-Example 4 tres (transaction fail-retry)
+**Example 4 tres (transaction fail-retry) :**
 
 It is sometimes important to implement a fail-retry strategy for your transactional queries. One such example is in the event of concurrent writes to the same elements, the databases (such as titan) will throw an error. When this happens you will most likely want the driver to retry the query a few times until the element is unlocked and the write can proceed. For such instances you can do:
 
@@ -173,7 +171,6 @@ $db = new Connection([
     'retryAttempts' => 10
 ]);
 $db->open();
-$originalCount = $db->send('n.V().count()');
 
 $db->transaction(function(&$db){
     $db->send('n.addVertex("name","michael")');
@@ -190,7 +187,7 @@ It is worth noting that `retryAttempts` also works with out of session queries:
 $db->send('gremlin.code.here'); // will retry multiple times if 'retryAttempts' is set
 ```
 
-Example 5 (Using message object) :
+**Example 5 (Using message object) :**
 
 ```php
 $message = new Message;
@@ -209,9 +206,11 @@ $db->send($message);
 //do something with result
 $db->close();
 ```
-Of course you can affect the current db message in the same manner through $db->message.
 
-Example 6 (SSL) :
+Of course you can affect the current db message in the same manner through `$db->message`.
+
+**Example 6 (SSL) :**
+
 ```php
 $db = new Connection([
     'host' => 'localhost',
