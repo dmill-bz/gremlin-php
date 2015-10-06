@@ -100,6 +100,16 @@ class Connection
      */
     public $ssl = FALSE;
 
+    /**
+     * @var the strategy to use for retry
+     */
+    public $retryStrategy = 'linear';
+
+    /**
+     * @var the number of attempts before total failure
+     */
+    public $retryAttempts = 1;
+
 
     /**
      * Overloading constructor to instantiate a Message instance and
@@ -416,13 +426,16 @@ class Connection
     {
         try
         {
-            $this->prepareWrite($msg, $processor, $op, $args);
-            //lets get the response
-            $response = $this->socketGetUnpack();
+            $workload = new Workload(function(&$db, $msg, $processor, $op, $args){
+                    $db->prepareWrite($msg, $processor, $op, $args);
+                    //lets get the response
+                    return $db->socketGetUnpack();
+                }, [&$this, $msg, $processor, $op, $args]);
+
+            $response = $workload->linearRetry($this->retryAttempts);
 
             //reset message and remove binds
             $this->message->clear();
-
 
             return $response;
         }
@@ -509,6 +522,52 @@ class Connection
         $this->run();
         $this->_inTransaction = TRUE;
         return TRUE;
+    }
+
+    /**
+     * Run a callback in a transaction.
+     * The advantage of this is that it allows for fail-retry strategies
+     *
+     * @param callable $callback the code to execute within the scope of this transaction
+     * @param array    $params   The params to pass to the callback
+     *
+     * @return mixed the return value of the provided callable
+     */
+    public function transaction(callable $callback, $params = [])
+    {
+        //create a callback from the callback to introduce transaction handling
+        $workload = new Workload(function(&$db, $callback, $params){
+                try
+                {
+                    $db->transactionStart();
+                    $result = call_user_func_array($callback, $params);
+
+                    if($db->_inTransaction)
+                    {
+                        $db->transactionStop(TRUE);
+                    }
+
+                    return $result;
+                }
+                catch(\Exception $e)
+                {
+                    /**
+                     * We need to catch the exception again before the workload catches it
+                     * this allows us to terminate the transaction properly before each retry attempt
+                     */
+                    if($db->_inTransaction)
+                    {
+                        $db->transactionStop(FALSE);
+                    }
+                    throw $e;
+                }
+            },
+            [&$this, $callback, $params]
+        );
+
+        $result = $workload->linearRetry($this->retryAttempts);
+
+        return $result;
     }
 
     /**

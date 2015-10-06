@@ -4,6 +4,7 @@ namespace Brightzone\GremlinDriver\Tests;
 use Brightzone\GremlinDriver\Connection;
 use Brightzone\GremlinDriver\Helper;
 use Brightzone\GremlinDriver\Message;
+use Brightzone\GremlinDriver\Workload;
 
 /**
  * Unit testing of Gremlin-php
@@ -574,5 +575,57 @@ class RexsterTest extends RexsterTestCase
 
         $result = $db->send('g.V().emit().repeat(__.both()).times(5)');
         $this->assertEquals(count($result), 714, 'Did not find the correct amounts of vertices'); //check it's a session script reply
+    }
+
+    /**
+     * Test Workload retry strategy
+     *
+     * @expectedException \Brightzone\GremlinDriver\ServerException
+     *
+     * @return void
+     */
+    public function testRetry()
+    {
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'retryAttempts' => 5
+        ]);
+        $db->open();
+
+        $count = 0;
+        $workload = new Workload(function(&$count){
+            $count++;
+            throw new \Brightzone\GremlinDriver\ServerException("test error", 500);
+        }, [&$count]);
+
+        try
+        {
+            $response = $workload->linearRetry($db->retryAttempts);
+        }
+        catch(\Exception $e)
+        {
+            $this->assertEquals(5, $count, "incorrect number of attempts executed");
+            throw $e;
+        }
+
+    }
+
+    /**
+     * Test opening multiple times
+     *
+     * @return void
+     */
+    public function testMultipleOpen()
+    {
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'retryAttempts' => 5
+        ]);
+        $db->open();
+        $db->open();
     }
 }
