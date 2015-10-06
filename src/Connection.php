@@ -93,7 +93,7 @@ class Connection
     /**
      * @var resource rexpro socket connection
      */
-    private $_socket;
+    protected $_socket;
 
     /**
      * @var bool whether or not we're using ssl
@@ -109,6 +109,12 @@ class Connection
      * @var the number of attempts before total failure
      */
     public $retryAttempts = 1;
+
+    /**
+     * @var bool whether or not to accept different return formats from the on the message was sent with.
+     * This is an extreemly rare occurence. Only happens if using a custom serializer.
+     */
+    private $_acceptDiffResponseFormat = FALSE;
 
 
     /**
@@ -210,20 +216,17 @@ class Connection
     }
 
     /**
-     * Recieves binary data over the socket and parses it
+     * Get and parse message from the socket
      *
-     * @return array PHP native result from server
+     * @return array the message returned from the db
      */
-    protected function socketGetUnpack()
+    private function socketGetMessage()
     {
-        $fullData = [];
-        do
-        {
-            $data = $head = @stream_get_contents($this->_socket, 1);
+        $data = $head = @stream_get_contents($this->_socket, 1);
             $head = unpack('C*', $head);
 
             //extract opcode from first byte
-            $isBinary = ($head[1] & 15) == 2;
+            $isBinary = (($head[1] & 15) == 2) && $this->_acceptDiffResponseFormat;
 
             $data .= $maskAndLength = @stream_get_contents($this->_socket, 1);
             list($maskAndLength) = array_values(unpack('C', $maskAndLength));
@@ -267,7 +270,7 @@ class Connection
             if($maskSet)
             {
                 //unmask payload
-                $payload = $this->unmask($payload, $mask);
+                $payload = $this->unmask($mask, $payload);
             }
 
             //ugly code but we can seperate the two errors this way
@@ -286,12 +289,26 @@ class Connection
             //now that we have the payload lets parse it
             try
             {
-                $unpacked = $this->message->parse($payload, FALSE/*$isBinary*/); // currently unsupported diff return type by gremlin server
+                $unpacked = $this->message->parse($payload, $isBinary);
             }
             catch(\Exception $e)
             {
                 $this->error($e->getMessage(), $e->getCode(), TRUE);
             }
+            return $unpacked;
+    }
+
+    /**
+     * Recieves binary data over the socket and parses it
+     *
+     * @return array PHP native result from server
+     */
+    protected function socketGetUnpack()
+    {
+        $fullData = [];
+        do
+        {
+            $unpacked = $this->socketGetMessage();
             // If this is an authentication challenge, lets meet it and return the result
             if($unpacked['status']['code'] === 407)
             {
@@ -729,12 +746,12 @@ class Connection
         $unmaskedPayload = '';
         for($i = 0; $i < strlen($data); $i++)
         {
-                if(isset($data[$i]))
-                {
-                    $unmaskedPayload .= $data[$i] ^ $mask[$i % 4];
-                }
+            if(isset($data[$i]))
+            {
+                $unmaskedPayload .= $data[$i] ^ $mask[$i % 4];
             }
-            return $unmaskedPayload;
+        }
+        return $unmaskedPayload;
     }
 
 

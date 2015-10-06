@@ -202,8 +202,8 @@ class Message
     {
         if($isBinary)
         {
-            list($mimeLength) = unpack('C', $payload[0]);
-            $mimeType = substr($payload, 1, $mimeLength + 1);
+            list($mimeLength) = array_values(unpack('C', $payload[0]));
+            $mimeType = substr($payload, 1, $mimeLength);
             $serializer = $this->getSerializer($mimeType);
             $payload = substr($payload, $mimeLength + 1, strlen($payload));
 

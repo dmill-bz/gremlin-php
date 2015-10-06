@@ -628,4 +628,34 @@ class RexsterTest extends RexsterTestCase
         $db->open();
         $db->open();
     }
+
+    /**
+     * Test unmasking of packet
+     *
+     * @return void
+     */
+    public function testPackUnpack()
+    {
+        $message = new Message();
+        //$message->status = ["code" => 200];
+        $message->gremlin = "something";
+        $message->registerSerializer('\Brightzone\GremlinDriver\Serializers\Json');
+
+        $payload = $message->buildMessage();
+
+        $expected = [
+            'requestId' => $message->requestUuid,
+            'processor' => '',
+            'op' => 'eval',
+            'args' => [
+                'gremlin' => 'something',
+            ],
+        ];
+
+        $connection = new \Brightzone\GremlinDriver\Tests\Stubs\Connection(["_acceptDiffResponseFormat"=>TRUE]);
+        $connection->setSocket($this->invokeMethod($connection, 'webSocketPack', [$payload, $type = 'binary', $masked = TRUE]));
+
+        $data = $this->invokeMethod($connection, 'socketGetMessage');
+        $this->assertEquals($expected, $data, "could not unpack properly");
+    }
 }
