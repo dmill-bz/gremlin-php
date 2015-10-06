@@ -93,12 +93,28 @@ class Connection
     /**
      * @var resource rexpro socket connection
      */
-    private $_socket;
+    protected $_socket;
 
     /**
      * @var bool whether or not we're using ssl
      */
     public $ssl = FALSE;
+
+    /**
+     * @var the strategy to use for retry
+     */
+    public $retryStrategy = 'linear';
+
+    /**
+     * @var the number of attempts before total failure
+     */
+    public $retryAttempts = 1;
+
+    /**
+     * @var bool whether or not to accept different return formats from the on the message was sent with.
+     * This is an extreemly rare occurence. Only happens if using a custom serializer.
+     */
+    private $_acceptDiffResponseFormat = FALSE;
 
 
     /**
@@ -200,20 +216,17 @@ class Connection
     }
 
     /**
-     * Recieves binary data over the socket and parses it
+     * Get and parse message from the socket
      *
-     * @return array PHP native result from server
+     * @return array the message returned from the db
      */
-    protected function socketGetUnpack()
+    private function socketGetMessage()
     {
-        $fullData = [];
-        do
-        {
-            $data = $head = @stream_get_contents($this->_socket, 1);
+        $data = $head = @stream_get_contents($this->_socket, 1);
             $head = unpack('C*', $head);
 
             //extract opcode from first byte
-            $isBinary = ($head[1] & 15) == 2;
+            $isBinary = (($head[1] & 15) == 2) && $this->_acceptDiffResponseFormat;
 
             $data .= $maskAndLength = @stream_get_contents($this->_socket, 1);
             list($maskAndLength) = array_values(unpack('C', $maskAndLength));
@@ -257,7 +270,7 @@ class Connection
             if($maskSet)
             {
                 //unmask payload
-                $payload = $this->unmask($payload, $mask);
+                $payload = $this->unmask($mask, $payload);
             }
 
             //ugly code but we can seperate the two errors this way
@@ -276,12 +289,26 @@ class Connection
             //now that we have the payload lets parse it
             try
             {
-                $unpacked = $this->message->parse($payload, FALSE/*$isBinary*/); // currently unsupported diff return type by gremlin server
+                $unpacked = $this->message->parse($payload, $isBinary);
             }
             catch(\Exception $e)
             {
                 $this->error($e->getMessage(), $e->getCode(), TRUE);
             }
+            return $unpacked;
+    }
+
+    /**
+     * Recieves binary data over the socket and parses it
+     *
+     * @return array PHP native result from server
+     */
+    protected function socketGetUnpack()
+    {
+        $fullData = [];
+        do
+        {
+            $unpacked = $this->socketGetMessage();
             // If this is an authentication challenge, lets meet it and return the result
             if($unpacked['status']['code'] === 407)
             {
@@ -416,13 +443,16 @@ class Connection
     {
         try
         {
-            $this->prepareWrite($msg, $processor, $op, $args);
-            //lets get the response
-            $response = $this->socketGetUnpack();
+            $workload = new Workload(function(&$db, $msg, $processor, $op, $args){
+                    $db->prepareWrite($msg, $processor, $op, $args);
+                    //lets get the response
+                    return $db->socketGetUnpack();
+                }, [&$this, $msg, $processor, $op, $args]);
+
+            $response = $workload->linearRetry($this->retryAttempts);
 
             //reset message and remove binds
             $this->message->clear();
-
 
             return $response;
         }
@@ -509,6 +539,52 @@ class Connection
         $this->run();
         $this->_inTransaction = TRUE;
         return TRUE;
+    }
+
+    /**
+     * Run a callback in a transaction.
+     * The advantage of this is that it allows for fail-retry strategies
+     *
+     * @param callable $callback the code to execute within the scope of this transaction
+     * @param array    $params   The params to pass to the callback
+     *
+     * @return mixed the return value of the provided callable
+     */
+    public function transaction(callable $callback, $params = [])
+    {
+        //create a callback from the callback to introduce transaction handling
+        $workload = new Workload(function(&$db, $callback, $params){
+                try
+                {
+                    $db->transactionStart();
+                    $result = call_user_func_array($callback, $params);
+
+                    if($db->_inTransaction)
+                    {
+                        $db->transactionStop(TRUE);
+                    }
+
+                    return $result;
+                }
+                catch(\Exception $e)
+                {
+                    /**
+                     * We need to catch the exception again before the workload catches it
+                     * this allows us to terminate the transaction properly before each retry attempt
+                     */
+                    if($db->_inTransaction)
+                    {
+                        $db->transactionStop(FALSE);
+                    }
+                    throw $e;
+                }
+            },
+            [&$this, $callback, $params]
+        );
+
+        $result = $workload->linearRetry($this->retryAttempts);
+
+        return $result;
     }
 
     /**
@@ -670,12 +746,12 @@ class Connection
         $unmaskedPayload = '';
         for($i = 0; $i < strlen($data); $i++)
         {
-                if(isset($data[$i]))
-                {
-                    $unmaskedPayload .= $data[$i] ^ $mask[$i % 4];
-                }
+            if(isset($data[$i]))
+            {
+                $unmaskedPayload .= $data[$i] ^ $mask[$i % 4];
             }
-            return $unmaskedPayload;
+        }
+        return $unmaskedPayload;
     }
 
 

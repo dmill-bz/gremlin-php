@@ -1,5 +1,5 @@
 <?php
-namespace Brightzone\GremlinDriver\tests;
+namespace Brightzone\GremlinDriver\Tests;
 
 use Brightzone\GremlinDriver\Connection;
 
@@ -149,5 +149,124 @@ class RexsterTransactionTest extends RexsterTestCase
         ]);
         $db->open();
         $db->transactionStop();
+    }
+
+    /**
+     * Testing transaction retry error on already open transaction
+     *
+     * @expectedException \Brightzone\GremlinDriver\InternalException
+     *
+     * @return void
+     */
+    public function testTransactionRetryAlreadyOpen()
+    {
+        $db = new Connection([
+            'graph' => 'graphT',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $db->open();
+        $db->transactionStart();
+        $count = 0;
+        try
+        {
+            $db->transaction(function(&$c){$c++;}, [&$count]);
+        }
+        catch(\Exception $e)
+        {
+            $this->assertEquals(0, $count, "the workload has been executed when it shouldn't have");
+            throw $e;
+        }
+
+    }
+
+    /**
+     * Testing transaction retry
+     *
+     * @expectedException \Brightzone\GremlinDriver\ServerException
+     *
+     * @return void
+     */
+    public function testTransactionRetry()
+    {
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graphT',
+            'retryAttempts' => 5
+        ]);
+        $db->open();
+
+        $count = 0;
+        try
+        {
+            $db->transaction(function(&$c){
+                $c++;
+                throw new \Brightzone\GremlinDriver\ServerException('transaction test error', 500);
+            }, [&$count]);
+        }
+        catch(\Exception $e)
+        {
+            $this->assertEquals(5, $count, "the workload has been executed when it shouldn't have");
+            throw $e;
+        }
+    }
+
+    /**
+     * Test callable transaction
+     *
+     * @return void
+     */
+    public function testCallableTransaction()
+    {
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graphT',
+            'retryAttempts' => 5
+        ]);
+        $message = $db->open();
+        $this->assertNotEquals($message, FALSE);
+
+        $db->message->gremlin = 't.V().count()';
+        $result = $db->send();
+        $elementCount = $result[0];
+
+        $count = 0;
+        try
+        {
+            $db->transaction(function(&$db, &$c){
+                $db->message->gremlin = 't.addV()';
+                $db->send();
+                $c++;
+                throw new \Brightzone\GremlinDriver\ServerException('transaction callable test error', 500);
+            }, [&$db, &$count]);
+        }
+        catch(\Exception $e)
+        {
+            $this->assertEquals(5, $count, "the code didn't execute properly");
+        }
+
+        $db->message->gremlin = 't.V().count()';
+        $result = $db->send();
+        $elementCount2 = $result[0];
+
+        $this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
+        $this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
+
+        $count = 0;
+        $db->transaction(function(&$db, &$c){
+            $db->send('t.addV("name","michael").next()');
+            $c++;
+            if($c < 3)
+            {
+                throw new \Brightzone\GremlinDriver\ServerException('transaction callable test error', 500);
+            }
+        }, [&$db, &$count]);
+
+        $this->assertEquals(3, $count, "the code didn't execute the proper amount of times");
+
+        $elementCount2 = $db->send('t.V().count()');
+        $this->AssertEquals($elementCount + 1, $elementCount2[0], 'Transaction submition didn\'t work');
     }
 }

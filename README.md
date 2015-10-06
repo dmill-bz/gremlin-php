@@ -135,7 +135,60 @@ $db->send('n.addVertex("name","john")');
 $db->transactionStop(FALSE); //rollback changes. Set to true to commit.
 $db->close();
 ```
+
 Note that "graphT" above refers to a graph that supports transactions. And that transactions start a session automatically.
+
+Example 4 bis (alternative transaction syntax)
+
+It is also possible to express transactions in the following manner:
+
+```php
+$db = new Connection([
+    'host' => 'localhost',
+    'port' => 8182,
+    'graph' => 'graphT',
+]);
+$db->open();
+$originalCount = $db->send('n.V().count()');
+
+$db->transaction(function(&$db){
+    $db->send('n.addVertex("name","michael")');
+    $db->send('n.addVertex("name","john")');
+}, [&$db]);
+
+$db->close();
+```
+
+This will commit these changes or return an Exception if an error occured (and automatically rollback changes). The advantage of using this syntax is that it allows you to handle fail-retry scenarios as describbed in the next example:
+
+Example 4 tres (transaction fail-retry)
+
+It is sometimes important to implement a fail-retry strategy for your transactional queries. One such example is in the event of concurrent writes to the same elements, the databases (such as titan) will throw an error. When this happens you will most likely want the driver to retry the query a few times until the element is unlocked and the write can proceed. For such instances you can do:
+
+```php
+$db = new Connection([
+    'host' => 'localhost',
+    'port' => 8182,
+    'graph' => 'graphT',
+    'retryAttempts' => 10
+]);
+$db->open();
+$originalCount = $db->send('n.V().count()');
+
+$db->transaction(function(&$db){
+    $db->send('n.addVertex("name","michael")');
+    $db->send('n.addVertex("name","john")');
+}, [&$db]);
+
+$db->close();
+```
+
+This will attempt to run the query 10 times before fully failing.
+It is worth noting that `retryAttempts` also works with out of session queries:
+
+```php
+$db->send('gremlin.code.here'); // will retry multiple times if 'retryAttempts' is set
+```
 
 Example 5 (Using message object) :
 
