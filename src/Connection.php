@@ -536,7 +536,7 @@ class Connection
         $this->message->setArguments(['session'=>$this->_sessionUuid]);
         $this->message->processor = 'session';
         $this->message->gremlin = $this->graph . '.tx().open()';
-        $this->run();
+        $this->send();
         $this->_inTransaction = TRUE;
         return TRUE;
     }
@@ -610,7 +610,7 @@ class Connection
             $this->message->gremlin = $this->graph . '.tx().rollback()';
         }
 
-        $this->run();
+        $this->send();
         $this->_inTransaction = FALSE;
         return TRUE;
     }
