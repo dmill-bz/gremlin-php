@@ -224,6 +224,22 @@ $db->send('g.V(2)');
 $db->close();
 ```
 
+*Note that with php 5.6+ you will need to provide certificate information in the same manner you would to a `stream_context_create()`. In which case your `Connection()` call could look something like the following (replace with your own certificates and/or bundles):*
+
+```php
+$db = new Connection([
+    'host' => 'localhost',
+    'graph' => 'graph',
+    'ssl' => [
+        "ssl"=> [
+            "cafile" => "/path/to/bundle/ca-bundle.crt",
+            "verify_peer"=> true,
+            "verify_peer_name"=> true,
+        ]
+    ]
+]);
+```
+
 Adding Serializers
 ==================
 
