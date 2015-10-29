@@ -21,7 +21,12 @@ class AuthTest extends RexsterTestCase
             'graph' => 'graph',
             'username' => 'stephen',
             'password' => 'password',
-            'ssl' => TRUE,
+            'ssl' => [
+                "ssl"=>[
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ]
+            ],
         ]);
         $message = $db->open();
 
@@ -38,7 +43,12 @@ class AuthTest extends RexsterTestCase
             'graph' => 'graph',
             'username' => 'stephen',
             'password' => 'password',
-            'ssl' => TRUE,
+            'ssl' => [
+                "ssl"=>[
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ]
+            ],
         ]);
         $message = $db->open();
 

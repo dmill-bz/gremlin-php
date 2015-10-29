@@ -96,7 +96,7 @@ class Connection
     protected $_socket;
 
     /**
-     * @var bool whether or not we're using ssl
+     * @var bool|array whether or not we're using ssl. If an array is set it should correspond to a stream_context_create() array.
      */
     public $ssl = FALSE;
 
@@ -189,6 +189,7 @@ class Connection
             {
                 $protocol = 'ssl';
             }
+
             $key = base64_encode(Helper::generateRandomString(16, FALSE, TRUE));
             $header = "GET /gremlin HTTP/1.1\r\n";
             $header .= "Upgrade: websocket\r\n";
@@ -336,15 +337,22 @@ class Connection
     private function connectSocket()
     {
         $protocol = 'tcp';
+        $context = stream_context_create([]);
         if($this->ssl)
         {
             $protocol = 'ssl';
+            if(is_array($this->ssl) && !empty($this->ssl))
+            {
+                $context = stream_context_create($this->ssl);
+            }
         }
         $this->_socket = @stream_socket_client(
                                     $protocol. '://' . $this->host .':'.$this->port,
                                     $errno,
                                     $errorMessage,
-                                    $this->timeout ? $this->timeout : ini_get("default_socket_timeout")
+                                    $this->timeout ? $this->timeout : ini_get("default_socket_timeout"),
+                                    STREAM_CLIENT_CONNECT,
+                                    $context
                                     );
         if(!$this->_socket)
         {

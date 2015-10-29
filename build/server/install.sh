@@ -27,12 +27,12 @@ bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin $GREMLINSERVER_VERSI
 # Start gremlin-server in the background and wait for it to be available
 bin/gremlin-server.sh conf/gremlin-server-php.yaml > /dev/null 2>&1 &
 
-sleep 300
+sleep 30
 # Start the secure server
 cd $HOME/secure/apache-gremlin-server-$GREMLINSERVER_VERSION-incubating
 bin/gremlin-server.sh conf/gremlin-server-php-secure.yaml > /dev/null 2>&1 &
 
 # Wait for all to load
 cd $TRAVIS_BUILD_DIR
-sleep 300
+sleep 30
 
