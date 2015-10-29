@@ -235,7 +235,6 @@ class RexsterTest extends RexsterTestCase
      */
     public function testSessionClose()
     {
-        $this->markTestSkipped("Skipping test until TP 3.0.2, see TINKERPOP3-849");
         $db = new Connection([
             'host' => 'localhost',
             'port' => 8182,
@@ -277,7 +276,6 @@ class RexsterTest extends RexsterTestCase
         $msg->processor = 'session';
         $msg->setArguments(['session'=>$sessionUid]);
         $result = $db2->send($msg); // should throw an error as this should be next session
-        print_r($result);
     }
 
     /**
