@@ -15,14 +15,18 @@ class AuthTest extends RexsterTestCase
 {
     public function testAuthenticationSimple()
     {
-        $this->markTestSkipped("Skipping test until we sort out DB setup");
         $db = new Connection([
             'host' => 'localhost',
-            'port' => 8182,
+            'port' => 8184,
             'graph' => 'graph',
             'username' => 'stephen',
             'password' => 'password',
-            'ssl' => TRUE,
+            'ssl' => [
+                "ssl"=>[
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ]
+            ],
         ]);
         $message = $db->open();
 
@@ -33,14 +37,18 @@ class AuthTest extends RexsterTestCase
 
     public function testAuthenticationComplex()
     {
-        $this->markTestSkipped("Skipping test until we sort out DB setup");
         $db = new Connection([
             'host' => 'localhost',
-            'port' => 8182,
+            'port' => 8184,
             'graph' => 'graph',
             'username' => 'stephen',
             'password' => 'password',
-            'ssl' => TRUE,
+            'ssl' => [
+                "ssl"=>[
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ]
+            ],
         ]);
         $message = $db->open();
 
