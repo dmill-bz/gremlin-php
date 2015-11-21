@@ -661,4 +661,45 @@ class RexsterTest extends RexsterTestCase
         $data = $this->invokeMethod($connection, 'socketGetMessage');
         $this->assertEquals($expected, $data, "could not unpack properly");
     }
+
+    /**
+     * Test configuration for empty result sets instead of error
+     *
+     * @return void
+     */
+    public function testEmptyResultSetNoException()
+    {
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'retryAttempts' => 5,
+            'emptySet' => TRUE
+        ]);
+        $db->open();
+
+        $result = $db->send("g.V().has('name', 'doesnotexist')");
+        $this->assertTrue(empty($result), "the result set should be empty");
+
+    }
+
+    /**
+     * Test configuration for empty result sets instead of error
+     *
+     * @expectedException \Brightzone\GremlinDriver\ServerException
+     *
+     * @return void
+     */
+    public function testEmptyResultSetException()
+    {
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'retryAttempts' => 5
+        ]);
+        $db->open();
+
+        $result = $db->send("g.V().has('name', 'doesnotexist')");
+    }
 }
