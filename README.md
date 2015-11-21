@@ -19,13 +19,13 @@ Prefered method is through composer.
 Either run :
 
 ```bash
-php composer.phar require brightzone/gremlin-php "*"
+php composer.phar require brightzone/gremlin-php "2.*"
 ```
 
 Or add:
 
 ```json
-"brightzone/gremlin-php": "*"
+"brightzone/gremlin-php": "2.*"
 ```
 
 to the `require` section of your `composer.json` file
