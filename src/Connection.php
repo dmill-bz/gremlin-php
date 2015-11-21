@@ -80,6 +80,12 @@ class Connection
     public $bindings;
 
     /**
+     * @var bool whether or not the driver should return empty result sets as an empty array
+     * (the default behavior is to propagate the exception from the server - yes the server throws exceptions on empty result sets.)
+     */
+    public $emptySet = FALSE;
+
+    /**
      * @var bool tells us if we're inside a transaction
      */
     private $_inTransaction = FALSE;
@@ -314,6 +320,11 @@ class Connection
             if($unpacked['status']['code'] === 407)
             {
                 return $this->authenticate();
+            }
+
+            if($unpacked['status']['code'] === 204 && $this->emptySet)
+            {
+                return [];
             }
 
             //handle errors
