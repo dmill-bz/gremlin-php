@@ -254,8 +254,12 @@ class RexsterTest extends RexsterTestCase
         $this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)'); //check it's a session script reply
 
         //check disconnection
-        $db->close();
-
+        try {
+            $db->close();
+        } catch(\Exception $e)
+        {
+            $this->fail("Close shouldn't throw an exception");
+        }
         $this->assertFALSE($db->isConnected(), 'Despite not throwing errors, Socket connection is established');
         $this->assertFALSE($db->inTransaction(), 'Despite closing, transaction not closed');
 
@@ -276,6 +280,7 @@ class RexsterTest extends RexsterTestCase
         $msg->processor = 'session';
         $msg->setArguments(['session'=>$sessionUid]);
         $result = $db2->send($msg); // should throw an error as this should be next session
+        $this->fail("Second request should have failed and this assert never run");
     }
 
     /**
