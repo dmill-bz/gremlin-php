@@ -1,3 +1,7 @@
+2.2.1
+=====
+- Added a fix for large result sets in hhvm (and a test case)
+
 2.2.0
 =====
 - Added a few more test cases around existing features
