@@ -271,8 +271,16 @@ class Connection
                 $data .= $mask = @stream_get_contents($this->_socket, 4);
             }
 
-            //get payload
-            $data .= $payload = @stream_get_contents($this->_socket, $payloadLength);
+            // get payload
+            // we loop incase the payload isn't entirely in the buffer at this stage.
+            // This corrects an issue with hhvm as it is just too damn fast ;)
+            // well either that or PHP waits for the maxLength to be hit. dunno
+            $payload = NULL;
+            do
+            {
+                $length = strlen($payload);
+                $data .= $payload .= @stream_get_contents($this->_socket, $payloadLength - $length);
+            } while($length < $payloadLength);
 
             if($maskSet)
             {
