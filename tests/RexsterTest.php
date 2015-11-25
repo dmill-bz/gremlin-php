@@ -702,4 +702,30 @@ class RexsterTest extends RexsterTestCase
 
         $result = $db->send("g.V().has('name', 'doesnotexist')");
     }
+
+    /**
+     * Lets test retrning a large set back from the database
+     *
+     * @return void
+     */
+    public function testLargeResponseSet()
+    {
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'retryAttempts' => 5
+        ]);
+        $db->open();
+
+        $db->send("
+            for(i in 1..35){
+                graph.addVertex('name', 'john', 'age', 25, 'somefillertext', 'FFFFFFFFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF')
+            }"
+        );
+
+        $result = $db->send("g.V()");
+
+        $db->close();
+    }
 }
