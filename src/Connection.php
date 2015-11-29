@@ -275,7 +275,7 @@ class Connection
             // we loop incase the payload isn't entirely in the buffer at this stage.
             // This corrects an issue with hhvm as it is just too damn fast ;)
             // well either that or PHP waits for the maxLength to be hit. dunno
-            $data .= $payload .= $this->streamGetContent($payloadLength);
+            $data .= $payload = $this->streamGetContent($payloadLength);
 
             if($maskSet)
             {
