@@ -1,3 +1,7 @@
+2.2.2
+=====
+- Generalized some stream get behavior to be consistant accross all operations. This can correct some issues with hhvm streaming content before it's done loading in the socket.
+
 2.2.1
 =====
 - Added a fix for large result sets in hhvm (and a test case)
