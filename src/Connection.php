@@ -235,7 +235,7 @@ class Connection
             //extract opcode from first byte
             $isBinary = (($head[1] & 15) == 2) && $this->_acceptDiffResponseFormat;
 
-            $data .= $maskAndLength = @stream_get_contents($this->_socket, 1);
+            $data .= $maskAndLength = $this->streamGetContent(1);
             list($maskAndLength) = array_values(unpack('C', $maskAndLength));
 
             //set first bit to 0
@@ -249,12 +249,12 @@ class Connection
 
             if($length == 126)
             {
-                $data .= $payloadLength = @stream_get_contents($this->_socket, 2);
+                $data .= $payloadLength = $this->streamGetContent(2);
                 list($payloadLength) = array_values(unpack('n', $payloadLength)); // S for 16 bit int
             }
             elseif($length == 127)
             {
-                $data .= $payloadLength = @stream_get_contents($this->_socket, 8);
+                $data .= $payloadLength = $this->streamGetContent(8);
                 //lets save it as two 32 bit integers and reatach using bitwise operators
                 //we do this as pack doesn't support 64 bit packing/unpacking.
                 list($higher, $lower) = array_values(unpack('N2', $payloadLength));
@@ -268,19 +268,14 @@ class Connection
             //get mask
             if($maskSet)
             {
-                $data .= $mask = @stream_get_contents($this->_socket, 4);
+                $data .= $mask = $this->streamGetContent(4);
             }
 
             // get payload
             // we loop incase the payload isn't entirely in the buffer at this stage.
             // This corrects an issue with hhvm as it is just too damn fast ;)
             // well either that or PHP waits for the maxLength to be hit. dunno
-            $payload = NULL;
-            do
-            {
-                $length = strlen($payload);
-                $data .= $payload .= @stream_get_contents($this->_socket, $payloadLength - $length);
-            } while($length < $payloadLength);
+            $data .= $payload .= $this->streamGetContent($payloadLength);
 
             if($maskSet)
             {
@@ -838,5 +833,26 @@ class Connection
         $msg->setArguments(['sasl'=>base64_encode(utf8_encode("\x00".trim($this->username)."\x00".trim($this->password)))]);
         $msg->registerSerializer(new Json());
         return $this->send($msg);
+    }
+
+    /**
+     * Custom stream get content that will wait for the content to be ready before streaming it
+     *
+     * @param int $limit  the length of the data we want to get from the stream
+     * @param int $offset the offset to start reading the stream from
+     *
+     * @return string the data streamed from the socket
+     */
+    private function streamGetContent($limit, $offset = -1)
+    {
+        $buffer = NULL;
+        $bufferedSize = 0;
+        do
+        {
+            $buffer .= stream_get_contents($this->_socket, $limit - $bufferedSize, $offset);
+            $bufferedSize = strlen($buffer);
+        } while($bufferedSize < $limit);
+
+        return $buffer;
     }
 }
