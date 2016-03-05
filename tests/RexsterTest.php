@@ -704,7 +704,7 @@ class RexsterTest extends RexsterTestCase
     }
 
     /**
-     * Lets test retrning a large set back from the database
+     * Lets test returning a large set back from the database
      *
      * @return void
      */
@@ -714,7 +714,8 @@ class RexsterTest extends RexsterTestCase
             'host' => 'localhost',
             'port' => 8182,
             'graph' => 'graph',
-            'retryAttempts' => 5
+            'retryAttempts' => 5,
+            //'emptySet' => TRUE
         ]);
         $db->open();
 
@@ -725,6 +726,8 @@ class RexsterTest extends RexsterTestCase
         );
 
         $result = $db->send("g.V()");
+
+        $db->run("g.V().has('name', 'john').sideEffect{it.get().remove()}.iterate()");
 
         $db->close();
     }
