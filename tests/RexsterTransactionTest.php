@@ -275,7 +275,6 @@ class RexsterTransactionTest extends RexsterTestCase
      */
     public function testSessionSessionlessTransactionIsOpenSingleClient()
     {
-        $this->markTestSkipped("Skipping test until TP 3.1.0, see TINKERPOP3-910");
         $db = new Connection([
             'graph' => 'graphT',
             'username' => $this->username,

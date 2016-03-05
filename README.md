@@ -37,7 +37,7 @@ BC breaking changes are introduced between major version changes. So if you're u
 Usage
 =========
 
-The Connection class exists within the `rexpro` namespace. (history: rexpro used to be the old protocol used by the driver in Tinkerpop2).
+The Connection class exists within the `GremlinDriver` namespace.
 
 ```php
 require_once('vendor/autoload.php');
@@ -268,7 +268,7 @@ Unit testing
 Neo4J is required for the full test suit. It is not bundled with gremlin-server by default so you will need to manually install it with:
 
 ```bash
-bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.0.2-incubating
+bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.1.1-incubating
 ```
 Copy the following files :
 
