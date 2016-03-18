@@ -1,3 +1,9 @@
+2.2.3
+=====
+- Corrected an issue where using a custom mimeType for requests was producing an error.
+- Updated testing build to use gremlin-server `v3.1.1`
+- Added several new test cases.
+
 2.2.2
 =====
 - Generalized some stream get behavior to be consistant accross all operations. This can correct some issues with hhvm streaming content before it's done loading in the socket.

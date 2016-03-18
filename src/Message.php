@@ -186,7 +186,7 @@ class Message
         $this->_serializers['default']->serialize($message);
         $mimeType = $this->_serializers['default']->getMimeType();
 
-        $finalMessage = pack('C', 16) . $mimeType . $message;
+        $finalMessage = pack('C', strlen($mimeType)) . $mimeType . $message;
         return $finalMessage;
     }
 

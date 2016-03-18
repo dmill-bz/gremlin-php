@@ -731,4 +731,95 @@ class RexsterTest extends RexsterTestCase
 
         $db->close();
     }
+
+
+    /**
+     * Lets test returning a large set back from the database
+     *
+     * @return void
+     */
+    public function testTree()
+    {
+        $this->markTestSkipped("Skip until tree() is functional in gremlin-server 3.1.2. See TINKERPOP-732");
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'retryAttempts' => 5
+        ]);
+        $db->open();
+
+        $expected = [[
+            1 =>[
+                'key' =>[
+                    'id' => 1,
+                    'label' => 'vertex',
+                    'type' => 'vertex',
+                    'properties' =>[
+                        'name' =>[['id' => 0, 'value' => 'marko']],
+                        'age' =>[['id' => 2, 'value' => 29]],
+                    ],
+                ],
+                'value' =>[
+                    2 =>[
+                        'key' =>[
+                            'id' => 2,
+                            'label' => 'vertex',
+                            'type' => 'vertex',
+                            'properties' =>[
+                                'name' =>[['id' => 3, 'value' => 'vadas']],
+                                'age' =>[['id' => 4, 'value' => 27]],
+                            ],
+                        ],
+                        'value' =>[
+                            3 =>[
+                                'key' =>['id' => 3, 'value' => 'vadas', 'label' => 'name'],
+                                'value' =>[],
+                            ],
+                        ],
+                    ],
+                    3 =>[
+                        'key' =>[
+                            'id' => 3,
+                            'label' => 'vertex',
+                            'type' => 'vertex',
+                            'properties' =>[
+                                'name' =>[['id' => 5, 'value' => 'lop']],
+                                'lang' =>[['id' => 6, 'value' => 'java']],
+                            ],
+                        ],
+                        'value' =>[
+                            5 =>[
+                                'key' =>['id' => 5, 'value' => 'lop', 'label' => 'name'],
+                                'value' =>[],
+                            ],
+                        ],
+                    ],
+                    4 =>[
+                        'key' =>[
+                            'id' => 4,
+                            'label' => 'vertex',
+                            'type' => 'vertex',
+                            'properties' =>[
+                                'name' =>[['id' => 7, 'value' => 'josh']],
+                                'age' =>[['id' => 8, 'value' => 32]],
+                            ],
+                        ],
+                        'value' =>[
+                            7 =>[
+                                'key' =>['id' => 7, 'value' => 'josh', 'label' => 'name'],
+                                'value' =>[],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]];
+
+        $result = $db->send('g.V(1).out().properties("name").tree()');
+
+        $this->assertEquals($expected, $result, "the response is not formated as expected.");
+
+        $db->close();
+    }
 }
