@@ -9,6 +9,9 @@
             "email": "dylan.millikin@brightzone.fr"
         }
     ],
+    "require": {
+        "php": ">=5.4.*"
+    },
     "keywords": [
         "rexpro-php",
         "rexpro",
