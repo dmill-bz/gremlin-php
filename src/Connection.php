@@ -837,8 +837,7 @@ class Connection
 
     /**
      * Custom stream get content that will wait for the content to be ready before streaming it
-     * This corrects an issue with hhvm as it is just too damn fast ;)
-     * well either that or PHP waits for the maxLength to be hit. dunno
+     * This corrects an issue with hhvm handling streams in non-blocking mode.
      *
      * @param int $limit  the length of the data we want to get from the stream
      * @param int $offset the offset to start reading the stream from
