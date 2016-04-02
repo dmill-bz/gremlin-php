@@ -577,7 +577,7 @@ class RexsterTest extends RexsterTestCase
         $message = $db->open();
 
         $result = $db->send('g.V().emit().repeat(__.both()).times(5)');
-        $this->assertEquals(count($result), 714, 'Did not find the correct amounts of vertices'); //check it's a session script reply
+        $this->assertEquals(714, count($result), 'Did not find the correct amounts of vertices'); //check it's a session script reply
     }
 
     /**

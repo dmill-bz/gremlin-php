@@ -229,83 +229,80 @@ class Connection
      */
     private function socketGetMessage()
     {
-        $data = $head = @stream_get_contents($this->_socket, 1);
-            $head = unpack('C*', $head);
+        $data = $head = $this->streamGetContent(1);
+        $head = unpack('C*', $head);
 
-            //extract opcode from first byte
-            $isBinary = (($head[1] & 15) == 2) && $this->_acceptDiffResponseFormat;
+        //extract opcode from first byte
+        $isBinary = (($head[1] & 15) == 2) && $this->_acceptDiffResponseFormat;
 
-            $data .= $maskAndLength = $this->streamGetContent(1);
-            list($maskAndLength) = array_values(unpack('C', $maskAndLength));
+        $data .= $maskAndLength = $this->streamGetContent(1);
+        list($maskAndLength) = array_values(unpack('C', $maskAndLength));
 
-            //set first bit to 0
-            $length = $maskAndLength & 127;
+        //set first bit to 0
+        $length = $maskAndLength & 127;
 
-            $maskSet = FALSE;
-            if($maskAndLength & 128)
-            {
-                $maskSet = TRUE;
-            }
+        $maskSet = FALSE;
+        if($maskAndLength & 128)
+        {
+            $maskSet = TRUE;
+        }
 
-            if($length == 126)
-            {
-                $data .= $payloadLength = $this->streamGetContent(2);
-                list($payloadLength) = array_values(unpack('n', $payloadLength)); // S for 16 bit int
-            }
-            elseif($length == 127)
-            {
-                $data .= $payloadLength = $this->streamGetContent(8);
-                //lets save it as two 32 bit integers and reatach using bitwise operators
-                //we do this as pack doesn't support 64 bit packing/unpacking.
-                list($higher, $lower) = array_values(unpack('N2', $payloadLength));
-                $payloadLength = $higher << 32 | $lower;
-            }
-            else
-            {
-                $payloadLength = $length;
-            }
+        if($length == 126)
+        {
+            $data .= $payloadLength = $this->streamGetContent(2);
+            list($payloadLength) = array_values(unpack('n', $payloadLength)); // S for 16 bit int
+        }
+        elseif($length == 127)
+        {
+            $data .= $payloadLength = $this->streamGetContent(8);
+            //lets save it as two 32 bit integers and reatach using bitwise operators
+            //we do this as pack doesn't support 64 bit packing/unpacking.
+            list($higher, $lower) = array_values(unpack('N2', $payloadLength));
+            $payloadLength = $higher << 32 | $lower;
+        }
+        else
+        {
+            $payloadLength = $length;
+        }
 
-            //get mask
-            if($maskSet)
-            {
-                $data .= $mask = $this->streamGetContent(4);
-            }
+        //get mask
+        if($maskSet)
+        {
+            $data .= $mask = $this->streamGetContent(4);
+        }
 
-            // get payload
-            // we loop incase the payload isn't entirely in the buffer at this stage.
-            // This corrects an issue with hhvm as it is just too damn fast ;)
-            // well either that or PHP waits for the maxLength to be hit. dunno
-            $data .= $payload = $this->streamGetContent($payloadLength);
+        // get payload
+        $data .= $payload = $this->streamGetContent($payloadLength);
 
-            if($maskSet)
-            {
-                //unmask payload
-                $payload = $this->unmask($mask, $payload);
-            }
+        if($maskSet)
+        {
+            //unmask payload
+            $payload = $this->unmask($mask, $payload);
+        }
 
-            //ugly code but we can seperate the two errors this way
-            if($head === FALSE || $payload === FALSE || $maskAndLength === FALSE
-            || $payloadLength === FALSE || ($maskSet === TRUE && $mask === FALSE)
-            )
-            {
-                $this->error('Could not stream contents', 500);
-            }
-            if(empty($head) || empty($payload) || empty($maskAndLength)
-            || empty($payloadLength) || ($maskSet === TRUE && empty($mask)))
-            {
-                $this->error('Empty reply. Most likely the result of an irregular request. (Check custom Meta, or lack of in the case of a non-isolated query)', 500);
-            }
+        //ugly code but we can seperate the two errors this way
+        if($head === FALSE || $payload === FALSE || $maskAndLength === FALSE
+        || $payloadLength === FALSE || ($maskSet === TRUE && $mask === FALSE)
+        )
+        {
+            $this->error('Could not stream contents', 500);
+        }
+        if(empty($head) || empty($payload) || empty($maskAndLength)
+        || empty($payloadLength) || ($maskSet === TRUE && empty($mask)))
+        {
+            $this->error('Empty reply. Most likely the result of an irregular request. (Check custom Meta, or lack of in the case of a non-isolated query)', 500);
+        }
 
-            //now that we have the payload lets parse it
-            try
-            {
-                $unpacked = $this->message->parse($payload, $isBinary);
-            }
-            catch(\Exception $e)
-            {
-                $this->error($e->getMessage(), $e->getCode(), TRUE);
-            }
-            return $unpacked;
+        //now that we have the payload lets parse it
+        try
+        {
+            $unpacked = $this->message->parse($payload, $isBinary);
+        }
+        catch(\Exception $e)
+        {
+            $this->error($e->getMessage(), $e->getCode(), TRUE);
+        }
+        return $unpacked;
     }
 
     /**
@@ -336,7 +333,10 @@ class Connection
                 $this->error($unpacked['status']['message'] . " > " . implode("\n", $unpacked['status']['attributes']), $unpacked['status']['code']);
             }
 
-            $fullData = array_merge($fullData, $unpacked['result']['data']);
+            foreach($unpacked['result']['data'] as $row)
+            {
+                $fullData[] = $row;
+            }
         }
         while($unpacked['status']['code'] === 206);
 
@@ -837,6 +837,7 @@ class Connection
 
     /**
      * Custom stream get content that will wait for the content to be ready before streaming it
+     * This corrects an issue with hhvm handling streams in non-blocking mode.
      *
      * @param int $limit  the length of the data we want to get from the stream
      * @param int $offset the offset to start reading the stream from
