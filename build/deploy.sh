@@ -20,6 +20,6 @@ if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then
     cd $HOME/PommeVerte.github.io
     git add .
     git commit -m "Gremlin-php api update"
-    git push "https://${GH_TOKEN}@${GH_REF}"
+    git push --quiet "https://${GH_TOKEN}@${GH_REF}" > /dev/null 2>&1
 
 fi
