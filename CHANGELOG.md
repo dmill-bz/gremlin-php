@@ -1,3 +1,65 @@
+2.3.0
+=====
+- Added support for Aliases. You can implement them either globally or locally as shown bellow:
+
+   ```php
+   // Global
+   $db = new Connection([
+        'graph' => 'graph',
+        'aliases' => ["somethingcrazy" => "g"]
+   ]);
+   $db->open();
+
+   $result = $db->send("somethingcrazy.V().count()");
+   ```
+
+   ```php
+   // Local
+   $db = new Connection([
+        'graph' => 'graph',
+   ]);
+   $db->open();
+
+   $db->message->setArguments([
+        'aliases' => ['somethingcrazy'=>'g'],
+   ]);
+   $result = $db->send("somethingcrazy.V().count()");
+   ```
+
+- Added tests for aliases
+- Added tests to manageTransaction which allows session requests to auto commit transactions on each request (or rollback if error). The code bellow will actually commit the added vertex to the graph since the transaction is auto managed on the request level:
+
+   ```php
+   $db = new Connection([
+        'graph' => 'graphT',
+   ]);
+   $db->open();
+
+   $db->transactiontart();
+   $db->transactionStart();
+
+   $db->message->setArguments([
+        'manageTransaction' => TRUE,
+   ]);
+   $db->message->gremlin = 't.addV()';
+   $db->send();
+
+   $db->transactionStop(FALSE);
+   ```
+
+- Added a test for scriptEvaluationTimeout.
+- Added support for a custom saslMechanism for authentication. By default gremlin-server ignores this feature. But custom gremlin-server builds may require it. You can simply define it as follows:
+
+   ```php
+   $db = new Connection([
+        'graph' => 'graphT',
+        'saslMechanism' => 'GSSAPI', // defaults to 'PLAIN'
+   ]);
+   $db->open();
+   ```
+
+- Updated testing and travis to use gremlin-server `3.2.1`
+
 2.2.3
 =====
 - Corrected an issue where using a custom mimeType for requests was producing an error.
@@ -22,8 +84,7 @@
        'host' => 'localhost',
        'port' => 8182,
        'graph' => 'graph',
-           'retryAttempts' => 5,
-           'emptySet' => TRUE
+       'emptySet' => TRUE
    ]);
    $db->open();
 

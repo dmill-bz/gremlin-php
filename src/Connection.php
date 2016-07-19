@@ -80,6 +80,12 @@ class Connection
     public $bindings;
 
     /**
+     * @var array Aliases to be used for this connection.
+     * Allows users to set up whichever character on the db end such as "g" and reference it with another alias.
+     */
+    public $aliases = [];
+
+    /**
      * @var bool whether or not the driver should return empty result sets as an empty array
      * (the default behavior is to propagate the exception from the server - yes the server throws exceptions on empty result sets.)
      */
@@ -105,6 +111,12 @@ class Connection
      * @var bool|array whether or not we're using ssl. If an array is set it should correspond to a stream_context_create() array.
      */
     public $ssl = FALSE;
+
+    /**
+     * @var string which sasl mechanism to use for authentication. Can be either PLAIN or GSSAPI.
+     * This is ignored by gremlin-server by default but some custom server implementations may use this
+     */
+    public $saslMechanism = "PLAIN";
 
     /**
      * @var the strategy to use for retry
@@ -439,6 +451,11 @@ class Connection
                 $this->getSession();
                 $this->message->processor = $processor == '' ? 'session' : $processor;
                 $this->message->setArguments(['session'=>$this->_sessionUuid]);
+            }
+
+            if((isset($args['aliases']) && !empty($args['aliases'])) || !empty($this->aliases))
+            {
+                $args['aliases'] = isset($args['aliases']) ? array_merge($args['aliases'], $this->aliases) : $this->aliases;
             }
 
             $this->message->setArguments($args);
@@ -830,7 +847,10 @@ class Connection
         $msg = new Message();
         $msg->op = "authentication";
         $msg->processor = "";
-        $msg->setArguments(['sasl'=>base64_encode(utf8_encode("\x00".trim($this->username)."\x00".trim($this->password)))]);
+        $msg->setArguments([
+            'sasl'=>base64_encode(utf8_encode("\x00".trim($this->username)."\x00".trim($this->password))),
+            'saslMechanism' => $this->saslMechanism,
+            ]);
         $msg->registerSerializer(new Json());
         return $this->send($msg);
     }

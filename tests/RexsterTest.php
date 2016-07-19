@@ -740,7 +740,7 @@ class RexsterTest extends RexsterTestCase
      */
     public function testTree()
     {
-        $this->markTestSkipped("Skip until tree() is functional in gremlin-server 3.1.2. See TINKERPOP-732");
+        //$this->markTestSkipped("Skip until tree() is functional in gremlin-server 3.1.2. See TINKERPOP-732");
         $db = new Connection([
             'host' => 'localhost',
             'port' => 8182,
@@ -821,5 +821,67 @@ class RexsterTest extends RexsterTestCase
         $this->assertEquals($expected, $result, "the response is not formated as expected.");
 
         $db->close();
+    }
+
+
+    /**
+     * Testing Aliases in message
+     */
+    public function testLocalAliases()
+    {
+        $db = new Connection([
+            'graph' => 'graph',
+        ]);
+        $message = $db->open();
+        $this->assertNotEquals($message, FALSE);
+
+        $db->message->gremlin = 'crazyname.V().count()';
+        $db->message->setArguments([
+                'aliases' => ['crazyname'=>'g'],
+        ]);
+        $result = $db->send();
+
+        $this->assertEquals($result[0], 6, 'Script request did not return the correct count');
+    }
+
+    /**
+     * Testing Global connection Aliases
+     */
+    public function testGlobalAliases()
+    {
+        $db = new Connection([
+            'graph' => 'graph',
+            'aliases' => ['crazyname'=>'g'],
+        ]);
+        $message = $db->open();
+        $this->assertNotEquals($message, FALSE);
+
+        $db->message->gremlin = 'crazyname.V().count()';
+        $result = $db->send();
+
+        $this->assertEquals($result[0], 6, 'Script request did not return the correct count');
+    }
+
+
+    /**
+     * Testing script evaluation timeout
+     *
+     * @expectedException \Brightzone\GremlinDriver\ServerException
+     */
+    public function testScriptEvalTimeout()
+    {
+        $db = new Connection([
+            'graph' => 'graph',
+        ]);
+        $message = $db->open();
+        $this->assertNotEquals($message, FALSE);
+
+        $db->message->gremlin = 'Thread.sleep(4000);g.V().count()';
+        $db->message->setArguments([
+                'scriptEvaluationTimeout' => 100,
+        ]);
+        $result = $db->send();
+
+        $this->fail('We should get a timeout error.');
     }
 }
