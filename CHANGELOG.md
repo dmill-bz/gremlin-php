@@ -27,7 +27,7 @@
    ```
 
 - Added tests for aliases
-- Added tests to manageTransaction which allows session requests to auto commit transactions on each request (or rollback if error). The code bellow will actually commit the added vertex to the graph since the transaction is auto managed on the request level:
+- Added tests to `manageTransaction` which allows session requests to auto commit transactions on each request (or rollback if error). The code bellow will actually commit the added vertex to the graph since the transaction is auto managed on the request level:
 
    ```php
    $db = new Connection([
@@ -47,8 +47,8 @@
    $db->transactionStop(FALSE);
    ```
 
-- Added a test for scriptEvaluationTimeout.
-- Added support for a custom saslMechanism for authentication. By default gremlin-server ignores this feature. But custom gremlin-server builds may require it. You can simply define it as follows:
+- Added a test for `scriptEvaluationTimeout`.
+- Added support for a custom `saslMechanism` for authentication. By default gremlin-server ignores this feature. But custom gremlin-server builds may require it. You can simply define it as follows:
 
    ```php
    $db = new Connection([

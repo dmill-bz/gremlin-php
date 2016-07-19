@@ -75,11 +75,6 @@ class Connection
     public $message;
 
     /**
-     * @var array Bindings for the gremlin script
-     */
-    public $bindings;
-
-    /**
      * @var array Aliases to be used for this connection.
      * Allows users to set up whichever character on the db end such as "g" and reference it with another alias.
      */
