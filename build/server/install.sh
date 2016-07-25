@@ -9,7 +9,7 @@ wget --no-check-certificate -O $HOME/apache-gremlin-server-$GREMLINSERVER_VERSIO
 unzip $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION-bin.zip -d $HOME/
 # make a secure server
 mkdir $HOME/secure
-unzip $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION-bin.zip -d $HOME/secure/
+unzip -q $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION-bin.zip -d $HOME/secure/
 
 # get gremlin-server configuration files
 cp ./build/server/gremlin-php-script.groovy $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION/scripts/

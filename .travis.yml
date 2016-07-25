@@ -20,7 +20,7 @@ install:
   - sh -c ./build/server/jdk8-install.sh
   # install gremlin-server
   - sh -c ./build/server/install.sh
-  - composer global require "fxp/composer-asset-plugin:dev-master"
+  - composer global require "fxp/composer-asset-plugin:^1.2.0"
   - composer install
 
 script: phpunit --configuration build/phpunit.xml
