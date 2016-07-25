@@ -518,15 +518,7 @@ class Connection
 
             $msg = '';
 
-            if(isset($this->_sessionUuid))
-            {
-                $msg = new Message();
-                $msg->op = "close";
-                $msg->processor = "session";
-                $msg->setArguments(['session'=>$this->_sessionUuid]);
-                $msg->registerSerializer(new Json());
-                $this->run($msg, NULL, NULL, NULL, FALSE); // Tell run not to expect a return
-            }
+            $this->closeSession();
 
             $write = @fwrite($this->_socket, $this->webSocketPack("", 'close'));
 
@@ -536,12 +528,30 @@ class Connection
             }
             @stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR); //ignore error
             $this->_socket = NULL;
-            $this->_sessionUuid = NULL;
 
             return TRUE;
         }
     }
 
+    /**
+     * Closes an open session if it exists
+     * You can use this to close open sessions on the server end. This allows to free up threads on the server end.
+     *
+     * @return void
+     */
+    public function closeSession()
+    {
+        if(isset($this->_sessionUuid))
+        {
+            $msg = new Message();
+            $msg->op = "close";
+            $msg->processor = "session";
+            $msg->setArguments(['session'=>$this->_sessionUuid]);
+            $msg->registerSerializer(new Json());
+            $this->run($msg, NULL, NULL, NULL, FALSE); // Tell run not to expect a return
+            $this->_sessionUuid = NULL;
+        }
+    }
 
     /**
      * Start a transaction.

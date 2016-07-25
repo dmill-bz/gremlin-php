@@ -59,6 +59,7 @@
    ```
 
 - Updated testing and travis to use gremlin-server `3.2.1`
+- Added a public method `closeSession()` that allows developpers to manually close a server side session. (used to be that sessions would only be closed on a call to `close()` which also closed the websocket.
 
 2.2.3
 =====
