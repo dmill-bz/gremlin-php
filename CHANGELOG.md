@@ -1,5 +1,6 @@
-2.3.0
+3.0.0
 =====
+- Dropped testing and support for `PHP 5.4`. It is worth noting that we no longer test against `5.4` but this does not mean the library will not execute properly on `5.4`.
 - Added support for Aliases. You can implement them either globally or locally as shown bellow:
 
    ```php
