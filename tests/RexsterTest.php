@@ -740,7 +740,7 @@ class RexsterTest extends RexsterTestCase
      */
     public function testTree()
     {
-        $this->markTestSkipped("Skip until tree() is functional in gremlin-server 3.1.2. See TINKERPOP-732");
+        //$this->markTestSkipped("Skip until tree() is functional in gremlin-server 3.1.2. See TINKERPOP-732");
         $db = new Connection([
             'host' => 'localhost',
             'port' => 8182,
@@ -821,5 +821,104 @@ class RexsterTest extends RexsterTestCase
         $this->assertEquals($expected, $result, "the response is not formated as expected.");
 
         $db->close();
+    }
+
+
+    /**
+     * Testing Aliases in message
+     */
+    public function testLocalAliases()
+    {
+        $db = new Connection([
+            'graph' => 'graph',
+        ]);
+        $message = $db->open();
+        $this->assertNotEquals($message, FALSE);
+
+        $db->message->gremlin = 'crazyname.V().count()';
+        $db->message->setArguments([
+                'aliases' => ['crazyname'=>'g'],
+        ]);
+        $result = $db->send();
+
+        $this->assertEquals($result[0], 6, 'Script request did not return the correct count');
+    }
+
+    /**
+     * Testing Global connection Aliases
+     */
+    public function testGlobalAliases()
+    {
+        $db = new Connection([
+            'graph' => 'graph',
+            'aliases' => ['crazyname'=>'g'],
+        ]);
+        $message = $db->open();
+        $this->assertNotEquals($message, FALSE);
+
+        $db->message->gremlin = 'crazyname.V().count()';
+        $result = $db->send();
+
+        $this->assertEquals($result[0], 6, 'Script request did not return the correct count');
+    }
+
+
+    /**
+     * Testing script evaluation timeout
+     *
+     * @expectedException \Brightzone\GremlinDriver\ServerException
+     */
+    public function testScriptEvalTimeout()
+    {
+        $db = new Connection([
+            'graph' => 'graph',
+        ]);
+        $message = $db->open();
+        $this->assertNotEquals($message, FALSE);
+
+        $db->message->gremlin = 'Thread.sleep(4000);g.V().count()';
+        $db->message->setArguments([
+                'scriptEvaluationTimeout' => 100,
+        ]);
+        $result = $db->send();
+
+        $this->fail('We should get a timeout error.');
+    }
+
+    /**
+     * Bindings should be cleared in between requests
+     */
+    public function testClearBindings()
+    {
+        $db = new Connection([
+            'host' => 'localhost',
+            'port' => 8182,
+            'graph' => 'graph',
+            'username' => $this->username,
+            'password' => $this->password
+        ]);
+        $message = $db->open();
+        $this->assertNotEquals($message, FALSE);
+
+        $db->message->gremlin = 'g.V(CUSTO_BIND)';
+        $db->message->bindValue('CUSTO_BIND', 2);
+        $result = $db->send(NULL, 'session', 'eval');
+
+        $this->assertNotEquals($result, [], 'Running a script with bindings produced an error');
+
+
+        //the binding should no longer reside on the client side but instead only be on the server.
+        $this->assertTrue(!isset($db->message->args['bindings']), "there should be no registered bindings in the message");
+
+        $db->message->gremlin = 'g.V(CUSTO_BIND)';
+        $result = $db->send(NULL, 'session', 'eval');
+        $this->assertNotEquals($result, [], 'Running a script with bindings produced an error');
+
+
+        //check disconnection
+        $message = $db->close();
+        $this->assertNotEquals($message, FALSE, 'Disconnecting from a session where bindings were used created an error');
+
+
     }
 }

@@ -413,4 +413,41 @@ class RexsterTransactionTest extends RexsterTestCase
         $elementCount2 = $result[0];
         $this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
     }
+
+    /**
+     * Test transaction management
+     * This was introduced in GS 3.1.2. It should make session requests handle like sessionless
+     * Thus keeping bindings but managing transactions automatically
+     */
+    public function testAutoTransactionManagement()
+    {
+        $db = new Connection([
+            'graph' => 'graphT',
+        ]);
+        $message = $db->open();
+        $this->assertNotEquals($message, FALSE);
+
+        $db->message->gremlin = 't.V().count()';
+        $result = $db->send();
+
+        $this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
+        $elementCount = $result[0];
+
+        $db->transactionStart();
+
+        $db->message->setArguments([
+                'manageTransaction' => TRUE,
+        ]);
+        $db->message->gremlin = 't.addV()';
+        $db->send();
+
+        $db->transactionStop(FALSE);
+
+        $db->message->gremlin = 't.V().count()';
+        $result = $db->send();
+        $elementCount2 = $result[0];
+
+        $this->assertNotEquals($result, FALSE, 'Script request throws an error in transaction mode');
+        $this->AssertNotEquals($elementCount, $elementCount2, 'Transaction rollback worked when instead the transaction should have been committed prior to that.');
+    }
 }
