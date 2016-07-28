@@ -278,10 +278,10 @@ echo $serializer->getName(); // JSON
 echo $serializer->getMimeType(); // application/json
 
 $db->message->registerSerializer('namespace\to\my\CustomSerializer', TRUE); // sets this as default
-$serializer = $db->message->getSerializer(); // returns an instance the CustomSerializer serializer (default)
-$serializer = $db->message->getSerializer('application/json'); // returns an instance the JSON serializer
+$serializer = $db->message->getSerializer(); // returns an instance of the CustomSerializer serializer (default)
+$serializer = $db->message->getSerializer('application/json'); // returns an instance of the JSON serializer
 ```
-You can add many serializers in this fashion. When gremlin-server responds to your requests, gremlin-client-php will be capable of using the appropriate one to unserialize the message.
+You can add many serializers in this fashion. When gremlin-server responds to your requests, gremlin-php will be capable of using the appropriate one to unserialize the message.
 
 API
 ============
@@ -294,7 +294,7 @@ Unit testing
 Neo4J is required for the full test suit. It is not bundled with gremlin-server by default so you will need to manually install it with:
 
 ```bash
-bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.1.1-incubating
+bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.2.1
 ```
 Copy the following files :
 
