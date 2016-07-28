@@ -46,14 +46,14 @@ use \Brightzone\GremlinDriver\Connection;
 $db = new Connection;
 ```
 
-Examples
+Features
 ========
 
 You can find more information by reading the [API](http://pommeverte.github.io/gremlin-php/).
 
-Here are a few basic usages.
+### Basic connection
 
-**Example 1 :**
+A basic connection can be created by creating a new `Connection` as follows.
 
 ```php
 $db = new Connection([
@@ -70,7 +70,8 @@ $db->close();
 
 Note that "graph" is the name of the graph configured in gremlin-server (not the reference to the traversal which is `g = graph.traversal()`)
 
-**Example 1 bis (With authentication) :**
+It is also possible to specify authentication credentials as follows:
+
 ```php
 $db = new Connection([
     'host' => 'localhost',
@@ -85,10 +86,16 @@ $db->send('g.V(2)');
 $db->close();
 ```
 
+You can find all the options available to the `Connection` class [here](http://pommeverte.github.io/gremlin-php/brightzone-gremlindriver-connection.html).
 
-**Example 2 (with bindings) :**
+## Bindings
+
+Bindings are important for several reasons. They protect from code injections, but they also prevent the server from having to compile scripts on every run.
+
+The following example illustrates both of these points:
 
 ```php
+$unsafeUserValue = 2; //This could be anything submitted via form.
 $db = new Connection([
     'host' => 'localhost',
     'port' => 8182,
@@ -96,13 +103,22 @@ $db = new Connection([
 ]);
 $db->open();
 
-$db->message->bindValue('CUSTO_BINDING', 2);
-$db->send('g.V(CUSTO_BINDING)'); //mix between Example 1 and 1B
+$db->message->bindValue('CUSTO_BINDING', $unsafeUserValue); // protects from injections
+$result1 = $db->send('g.V(CUSTO_BINDING)'); // The server compiles this script and adds it to cache
+
+$db->message->bindValue('CUSTO_BINDING', 5);
+$result2 = $db->send('g.V(CUSTO_BINDING)'); // The server already has this script so gets it from cache without compiling it, but runs it with 5 instead of $unsafeUserValue
+$result3 = $db->send('g.V(5)'); // The script is different so the server compiles this script and adds it to cache
+
 //do something with result
 $db->close();
 ```
 
-**Example 3 (with session) :**
+As you can see from the example above, not using bindings can be costly as the server needs to compile every new script.
+
+## Sessions
+
+Sessions allow you to maintain variables and bindings accross multiple requests.
 
 ```php
 $db = new Connection([
@@ -110,13 +126,15 @@ $db = new Connection([
     'port' => 8182,
 ]);
 $db->open();
-$db->send('cal = 5+5', 'session');
+$db->send('cal = 5+5', 'session'); // first query sets the `cal` variable
 $result = $db->send('cal', 'session'); // result = [10]
 //do something with result
 $db->close();
 ```
 
-**Example 4 (transaction) :**
+## Transactions
+
+Transactions will allow you to revert or confirm a set of changes made accross multiple requests.
 
 ```php
 $db = new Connection([
@@ -131,15 +149,13 @@ $db->transactionStart();
 $db->send('n.addVertex("name","michael")');
 $db->send('n.addVertex("name","john")');
 
-$db->transactionStop(FALSE); //rollback changes. Set to true to commit.
+$db->transactionStop(FALSE); //rollback changes. Set to TRUE to commit.
 $db->close();
 ```
 
-Note that "graphT" above refers to a graph that supports transactions. And that transactions start a session automatically.
+Note that "graphT" above refers to a graph that supports transactions. And that transactions start a session automatically. You can check which features are supported by your graph with `graph.features()`.
 
-**Example 4 bis (alternative transaction syntax) :**
-
-It is also possible to express transactions in the following manner:
+It is also possible to express transactions with a lambda notation:
 
 ```php
 $db = new Connection([
@@ -157,11 +173,9 @@ $db->transaction(function(&$db){
 $db->close();
 ```
 
-This will commit these changes or return an `Exception` if an error occured (and automatically rollback changes). The advantage of using this syntax is that it allows you to handle fail-retry scenarios as describbed in the next example.
+This will commit these changes or return an `Exception` if an error occured (and automatically rollback changes). The advantage of using this syntax is that it allows you to handle fail-retry scenarios.
 
-**Example 4 tres (transaction fail-retry) :**
-
-It is sometimes important to implement a fail-retry strategy for your transactional queries. One such example is in the event of concurrent writes to the same elements, the databases (such as titan) will throw an error. When this happens you will most likely want the driver to retry the query a few times until the element is unlocked and the write can proceed. For such instances you can do:
+It is sometimes important to implement a fail-retry strategy for your transactional queries. One such example is in the event of concurrent writes to the same elements, the databases (such as titan) will throw an error when elements are locked. When this happens you will most likely want the driver to retry the query a few times until the element is unlocked and the write can proceed. For such instances you can do:
 
 ```php
 $db = new Connection([
@@ -181,13 +195,15 @@ $db->close();
 ```
 
 This will attempt to run the query 10 times before fully failing.
-It is worth noting that `retryAttempts` also works with out of session queries:
+It is worth noting that `retryAttempts` also works with -out of session- queries:
 
 ```php
 $db->send('gremlin.code.here'); // will retry multiple times if 'retryAttempts' is set
 ```
+Advanced features
+=================
 
-**Example 5 (Using message object) :**
+## Message objects
 
 ```php
 $message = new Message;
