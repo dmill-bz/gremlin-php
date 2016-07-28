@@ -205,13 +205,17 @@ Advanced features
 
 ## Message objects
 
+Sometimes you may need to have greater control over individual requests. The reasons for this can range from using custom serializers, different query languages (`gremlin-python`, `gremlin-scala`, `java`), to specifying a request timeout limit or a local alias.
+For these cases you can construct a custom `Message` object as follows:
+
 ```php
 $message = new Message;
-$message->gremlin = 'g.V()';
-$message->op = 'eval';
-$message->processor = '';
+$message->gremlin = 'custom.V()'; // note that custom refers to the graph traversal set on the server as g (see alias bellow)
+$message->op = 'eval'; // operation we want to run
+$message->processor = ''; // the opProcessor the server should use
 $message->setArguments([
                 'language' => 'gremlin-groovy',
+                'alias' => ['custom' => 'g'],
                 // ... etc
 ]);
 $message->registerSerializer('\Brightzone\GremlinDriver\Serializers\Json');
@@ -225,7 +229,11 @@ $db->close();
 
 Of course you can affect the current db message in the same manner through `$db->message`.
 
-**Example 6 (SSL) :**
+For a full list of arguments and values available please refer to the [TinkerPop documentation for drivers](http://tinkerpop.apache.org/docs/current/dev/provider/#_opprocessors_arguments).
+
+## SSL
+
+When security is important you will want to use the SSL features available. you can do so as follows:
 
 ```php
 $db = new Connection([
@@ -256,10 +264,12 @@ $db = new Connection([
 ]);
 ```
 
-Adding Serializers
-==================
+For dev and testing purposes you can use [this configuration](https://github.com/PommeVerte/gremlin-php/blob/master/tests/AuthTest.php#L24-L29)
 
-This library comes with a Json serializer. Any other serializer that implements SerializerInterface can be added dynamically with:
+## Serializers
+
+Serializers can be changed on the gremlin-server level. This allows users to set their own serializing rules. 
+This library comes by default with a Json serializer. Any other serializer that implements `SerializerInterface` can be added dynamically with:
 
 ```php
 $db = new Connection;
@@ -276,7 +286,7 @@ You can add many serializers in this fashion. When gremlin-server responds to yo
 API
 ============
 
-You can find the api [here](http://pommeverte.github.io/gremlin-php/).
+You can find the full api [here](http://pommeverte.github.io/gremlin-php/).
 
 Unit testing
 ============
