@@ -202,7 +202,7 @@ class RexsterTransactionTest extends RexsterTestCase
         {
             $db->transaction(function(&$c){
                 $c++;
-                throw new \Brightzone\GremlinDriver\ServerException('transaction test error', 500);
+                throw new \Brightzone\GremlinDriver\ServerException('transaction test error', 597);
             }, [&$count]);
         }
         catch(\Exception $e)
@@ -239,7 +239,7 @@ class RexsterTransactionTest extends RexsterTestCase
                 $db->message->gremlin = 't.addV()';
                 $db->send();
                 $c++;
-                throw new \Brightzone\GremlinDriver\ServerException('transaction callable test error', 500);
+                throw new \Brightzone\GremlinDriver\ServerException('transaction callable test error', 597);
             }, [&$db, &$count]);
         }
         catch(\Exception $e)
@@ -260,7 +260,7 @@ class RexsterTransactionTest extends RexsterTestCase
             $c++;
             if($c < 3)
             {
-                throw new \Brightzone\GremlinDriver\ServerException('transaction callable test error', 500);
+                throw new \Brightzone\GremlinDriver\ServerException('transaction callable test error', 597);
             }
         }, [&$db, &$count]);
 

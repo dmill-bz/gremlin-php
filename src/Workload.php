@@ -80,7 +80,7 @@ class Workload
             }
             catch (\Exception $e)
             {
-                if($e instanceof ServerException && $e->getCode() == 500 && $attempts > 1)
+                if($e instanceof ServerException && $e->getCode() == 597 && $attempts > 1)
                 {
                     usleep(200);
                     $attempts--;

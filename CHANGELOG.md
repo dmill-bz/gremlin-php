@@ -1,3 +1,7 @@
+3.0.1
+=====
+- Fixed an issue where the retry strategy would be applied on an errorcode `500` when in reality it should have been applied on `597`
+
 3.0.0
 =====
 - Dropped testing and support for `PHP 5.4`. It is worth noting that we no longer test against `5.4` but this does not mean the library will not execute properly on `5.4`.
