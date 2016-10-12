@@ -600,7 +600,7 @@ class RexsterTest extends RexsterTestCase
         $count = 0;
         $workload = new Workload(function(&$count){
             $count++;
-            throw new \Brightzone\GremlinDriver\ServerException("test error", 500);
+            throw new \Brightzone\GremlinDriver\ServerException("test error", 597);
         }, [&$count]);
 
         try
@@ -740,7 +740,6 @@ class RexsterTest extends RexsterTestCase
      */
     public function testTree()
     {
-        //$this->markTestSkipped("Skip until tree() is functional in gremlin-server 3.1.2. See TINKERPOP-732");
         $db = new Connection([
             'host' => 'localhost',
             'port' => 8182,
