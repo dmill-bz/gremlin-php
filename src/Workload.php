@@ -58,7 +58,7 @@ class Workload
      */
     public function __construct(callable $callback, $params)
     {
-        $this->callback = $callback;
+        $this->callback = &$callback;
         $this->params = $params;
     }
 
