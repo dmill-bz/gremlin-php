@@ -367,7 +367,7 @@ class Connection
                 $context = stream_context_create($this->ssl);
             }
         }
-        $this->_socket = @stream_socket_client(
+        $fp = @stream_socket_client(
                                     $protocol. '://' . $this->host .':'.$this->port,
                                     $errno,
                                     $errorMessage,
@@ -375,10 +375,12 @@ class Connection
                                     STREAM_CLIENT_CONNECT,
                                     $context
                                     );
-        if(!$this->_socket)
-        {
+
+        if(!$fp){
             $this->error($errorMessage, $errno, TRUE);
         }
+
+        $this->_socket = $fp;
 
         return TRUE;
     }
