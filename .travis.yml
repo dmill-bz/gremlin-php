@@ -22,7 +22,7 @@ install:
   # install gremlin-server
   - sh -c ./build/server/install.sh
   - composer global require "fxp/composer-asset-plugin:^1.2.0"
-  - composer install
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.5" ]]; then composer update; else composer install; fi
 
 script: vendor/bin/phpunit --configuration build/phpunit.xml
 
