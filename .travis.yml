@@ -22,7 +22,7 @@ install:
   - composer global require "fxp/composer-asset-plugin:^1.2.0"
   - composer install
 
-script: phpunit --configuration build/phpunit.xml
+script: vendor/bin/phpunit --configuration build/phpunit.xml
 
 after_success:
   - sh -c ./build/deploy.sh

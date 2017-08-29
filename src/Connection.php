@@ -65,7 +65,8 @@ class Connection
     public $graph;
 
     /**
-     * @var float timeout to use for connection to Rexster. If not set the timeout set in php.ini will be used: ini_get("default_socket_timeout")
+     * @var float timeout to use for connection to Rexster. If not set the timeout set in php.ini will be used:
+     *      ini_get("default_socket_timeout")
      */
     public $timeout;
 
@@ -82,7 +83,8 @@ class Connection
 
     /**
      * @var bool whether or not the driver should return empty result sets as an empty array
-     * (the default behavior is to propagate the exception from the server - yes the server throws exceptions on empty result sets.)
+     * (the default behavior is to propagate the exception from the server - yes the server throws exceptions on empty
+     * result sets.)
      */
     public $emptySet = FALSE;
 
@@ -103,7 +105,8 @@ class Connection
     protected $_socket;
 
     /**
-     * @var bool|array whether or not we're using ssl. If an array is set it should correspond to a stream_context_create() array.
+     * @var bool|array whether or not we're using ssl. If an array is set it should correspond to a
+     *      stream_context_create() array.
      */
     public $ssl = FALSE;
 
@@ -128,7 +131,6 @@ class Connection
      * This is an extreemly rare occurence. Only happens if using a custom serializer.
      */
     private $_acceptDiffResponseFormat = FALSE;
-
 
     /**
      * Overloading constructor to instantiate a Message instance and
@@ -183,6 +185,7 @@ class Connection
         {
             $this->error(__METHOD__ . ': Could not write to socket', 500, TRUE);
         }
+
         return TRUE;
     }
 
@@ -211,7 +214,7 @@ class Connection
             $header .= "Host: " . $this->host . "\r\n";
             if($origin !== TRUE)
             {
-                $header .= "Sec-WebSocket-Origin: ".$protocol."://" . $this->host . ":" . $this->port. "\r\n";
+                $header .= "Sec-WebSocket-Origin: " . $protocol . "://" . $this->host . ":" . $this->port . "\r\n";
             }
             $header .= "Sec-WebSocket-Version: 13\r\n\r\n";
 
@@ -221,6 +224,7 @@ class Connection
             preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches);
             $keyAccept = trim($matches[1]);
             $expectedResponse = base64_encode(pack('H*', sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
+
             return ($keyAccept === $expectedResponse) ? TRUE : FALSE;
         }
         catch(\Exception $e)
@@ -289,13 +293,13 @@ class Connection
 
         //ugly code but we can seperate the two errors this way
         if($head === FALSE || $payload === FALSE || $maskAndLength === FALSE
-        || $payloadLength === FALSE || ($maskSet === TRUE && $mask === FALSE)
+            || $payloadLength === FALSE || ($maskSet === TRUE && $mask === FALSE)
         )
         {
             $this->error('Could not stream contents', 500);
         }
         if(empty($head) || empty($payload) || empty($maskAndLength)
-        || empty($payloadLength) || ($maskSet === TRUE && empty($mask)))
+            || empty($payloadLength) || ($maskSet === TRUE && empty($mask)))
         {
             $this->error('Empty reply. Most likely the result of an irregular request. (Check custom Meta, or lack of in the case of a non-isolated query)', 500);
         }
@@ -309,6 +313,7 @@ class Connection
         {
             $this->error($e->getMessage(), $e->getCode(), TRUE);
         }
+
         return $unpacked;
     }
 
@@ -368,13 +373,13 @@ class Connection
             }
         }
         $this->_socket = @stream_socket_client(
-                                    $protocol. '://' . $this->host .':'.$this->port,
-                                    $errno,
-                                    $errorMessage,
-                                    $this->timeout ? $this->timeout : ini_get("default_socket_timeout"),
-                                    STREAM_CLIENT_CONNECT,
-                                    $context
-                                    );
+            $protocol . '://' . $this->host . ':' . $this->port,
+            $errno,
+            $errorMessage,
+            $this->timeout ? $this->timeout : ini_get("default_socket_timeout"),
+            STREAM_CLIENT_CONNECT,
+            $context
+        );
         if(!$this->_socket)
         {
             $this->error($errorMessage, $errno, TRUE);
@@ -407,7 +412,7 @@ class Connection
         }
         catch(\Exception $e)
         {
-            // on run lets ignore anything comming back from the server
+            // on run lets ignore anything coming back from the server
             if(!($e instanceof ServerException))
             {
                 throw $e;
@@ -419,7 +424,8 @@ class Connection
     }
 
     /**
-     * Private function that Constructs and sends a Message entity or gremlin script to the server and then waits for response
+     * Private function that Constructs and sends a Message entity or gremlin script to the server and then waits for
+     * response
      *
      * The main use here is to centralise this code for run() and send()
      *
@@ -445,7 +451,7 @@ class Connection
             {
                 $this->getSession();
                 $this->message->processor = $processor == '' ? 'session' : $processor;
-                $this->message->setArguments(['session'=>$this->_sessionUuid]);
+                $this->message->setArguments(['session' => $this->_sessionUuid]);
             }
 
             if((isset($args['aliases']) && !empty($args['aliases'])) || !empty($this->aliases))
@@ -477,11 +483,12 @@ class Connection
     {
         try
         {
-            $workload = new Workload(function(&$db, $msg, $processor, $op, $args){
-                    $db->prepareWrite($msg, $processor, $op, $args);
-                    //lets get the response
-                    return $db->socketGetUnpack();
-                }, [&$this, $msg, $processor, $op, $args]);
+            $workload = new Workload(function($db, $msg, $processor, $op, $args) {
+                $db->prepareWrite($msg, $processor, $op, $args);
+
+                //lets get the response
+                return $db->socketGetUnpack();
+            }, [$this, $msg, $processor, $op, $args]);
 
             $response = $workload->linearRetry($this->retryAttempts);
 
@@ -546,7 +553,7 @@ class Connection
             $msg = new Message();
             $msg->op = "close";
             $msg->processor = "session";
-            $msg->setArguments(['session'=>$this->_sessionUuid]);
+            $msg->setArguments(['session' => $this->_sessionUuid]);
             $msg->registerSerializer(new Json());
             $this->run($msg, NULL, NULL, NULL, FALSE); // Tell run not to expect a return
             $this->_sessionUuid = NULL;
@@ -577,11 +584,12 @@ class Connection
 
         //if we aren't in transaction we need to start a session
         $this->getSession();
-        $this->message->setArguments(['session'=>$this->_sessionUuid]);
+        $this->message->setArguments(['session' => $this->_sessionUuid]);
         $this->message->processor = 'session';
         $this->message->gremlin = $this->graph . '.tx().open()';
         $this->send();
         $this->_inTransaction = TRUE;
+
         return TRUE;
     }
 
@@ -597,33 +605,33 @@ class Connection
     public function transaction(callable $callback, $params = [])
     {
         //create a callback from the callback to introduce transaction handling
-        $workload = new Workload(function(&$db, $callback, $params){
-                try
-                {
-                    $db->transactionStart();
-                    $result = call_user_func_array($callback, $params);
+        $workload = new Workload(function($db, $callback, $params) {
+            try
+            {
+                $db->transactionStart();
+                $result = call_user_func_array($callback, $params);
 
-                    if($db->_inTransaction)
-                    {
-                        $db->transactionStop(TRUE);
-                    }
-
-                    return $result;
-                }
-                catch(\Exception $e)
+                if($db->_inTransaction)
                 {
-                    /**
-                     * We need to catch the exception again before the workload catches it
-                     * this allows us to terminate the transaction properly before each retry attempt
-                     */
-                    if($db->_inTransaction)
-                    {
-                        $db->transactionStop(FALSE);
-                    }
-                    throw $e;
+                    $db->transactionStop(TRUE);
                 }
-            },
-            [&$this, $callback, $params]
+
+                return $result;
+            }
+            catch(\Exception $e)
+            {
+                /**
+                 * We need to catch the exception again before the workload catches it
+                 * this allows us to terminate the transaction properly before each retry attempt
+                 */
+                if($db->_inTransaction)
+                {
+                    $db->transactionStop(FALSE);
+                }
+                throw $e;
+            }
+        },
+            [$this, $callback, $params]
         );
 
         $result = $workload->linearRetry($this->retryAttempts);
@@ -656,6 +664,7 @@ class Connection
 
         $this->send();
         $this->_inTransaction = FALSE;
+
         return TRUE;
     }
 
@@ -679,19 +688,18 @@ class Connection
         $this->close();
     }
 
-
     /**
      * Constructs the Websocket packet frame
      *
-     * @param string  $payload string or binary, the message to insert into the packet.
-     * @param string $type the type of frame you send (usualy text or string) ie: opcode
-     * @param bool   $masked whether to mask the packet or not.
+     * @param string $payload string or binary, the message to insert into the packet.
+     * @param string $type    the type of frame you send (usualy text or string) ie: opcode
+     * @param bool   $masked  whether to mask the packet or not.
      *
      * @return string Binary message to pump into the socket
      */
     private function webSocketPack($payload, $type = 'binary', $masked = TRUE)
     {
-        $frameHead = array();
+        $frameHead = [];
         $payloadLength = strlen($payload);
 
         switch($type)
@@ -699,27 +707,27 @@ class Connection
             case 'text':
                 // first byte indicates FIN, Text-Frame (10000001):
                 $frameHead[0] = 129;
-            break;
+                break;
 
             case 'binary':
                 // first byte indicates FIN, Binary-Frame (10000010):
                 $frameHead[0] = 130;
-            break;
+                break;
 
             case 'close':
                 // first byte indicates FIN, Close Frame(10001000):
                 $frameHead[0] = 136;
-            break;
+                break;
 
             case 'ping':
                 // first byte indicates FIN, Ping frame (10001001):
                 $frameHead[0] = 137;
-            break;
+                break;
 
             case 'pong':
                 // first byte indicates FIN, Pong frame (10001010):
                 $frameHead[0] = 138;
-            break;
+                break;
         }
 
         // set mask and payload length (using 1, 3 or 9 bytes)
@@ -735,6 +743,7 @@ class Connection
             if($frameHead[2] > 127)
             {
                 $this->close();
+
                 return FALSE;
             }
         }
@@ -758,7 +767,7 @@ class Connection
         if($masked === TRUE)
         {
             // generate a random mask:
-            $mask = array();
+            $mask = [];
             for($i = 0; $i < 4; $i++)
             {
                 $mask[$i] = chr(rand(0, 255));
@@ -795,9 +804,9 @@ class Connection
                 $unmaskedPayload .= $data[$i] ^ $mask[$i % 4];
             }
         }
+
         return $unmaskedPayload;
     }
-
 
     /**
      * Custom error throwing method.
@@ -839,6 +848,7 @@ class Connection
         {
             $this->_sessionUuid = Helper::createUuid();
         }
+
         return $this->_sessionUuid;
     }
 
@@ -853,10 +863,11 @@ class Connection
         $msg->op = "authentication";
         $msg->processor = "";
         $msg->setArguments([
-            'sasl'=>base64_encode(utf8_encode("\x00".trim($this->username)."\x00".trim($this->password))),
+            'sasl'          => base64_encode(utf8_encode("\x00" . trim($this->username) . "\x00" . trim($this->password))),
             'saslMechanism' => $this->saslMechanism,
-            ]);
+        ]);
         $msg->registerSerializer(new Json());
+
         return $this->send($msg);
     }
 
@@ -877,7 +888,8 @@ class Connection
         {
             $buffer .= stream_get_contents($this->_socket, $limit - $bufferedSize, $offset);
             $bufferedSize = strlen($buffer);
-        } while($bufferedSize < $limit);
+        }
+        while($bufferedSize < $limit);
 
         return $buffer;
     }
