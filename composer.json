@@ -21,7 +21,9 @@
     ],
     "require-dev": {
         "yiisoft/yii2-apidoc": "*",
-        "satooshi/php-coveralls": "dev-master"
+        "satooshi/php-coveralls": "dev-master",
+        "phpunit/php-code-coverage": "~2.2|~4.0",
+        "phpunit/phpunit": "~4.8|~5.7"
     },
     "autoload": {
         "psr-4": {

@@ -27,7 +27,7 @@ namespace Brightzone\GremlinDriver;
 class Workload
 {
     /**
-     * @var the callback code to be executed
+     * @var callable the callback code to be executed
      * Bellow is a common example:
      * ~~~
      * function(&db, $msg, $processor, $op, $processor, $args){}
@@ -37,7 +37,7 @@ class Workload
     protected $callback;
 
     /**
-     * @var paramteres required for the workload
+     * @var array paramteres required for the workload
      *
      * Ideas of params would be :
      * - Connection &db        connection object to operate on
@@ -67,7 +67,7 @@ class Workload
      *
      * @param int $attempts the number of times to retry
      *
-     * @return the result of the executable code
+     * @return mixed the result of the executable code
      */
     public function linearRetry($attempts)
     {
@@ -76,9 +76,10 @@ class Workload
             try
             {
                 $result = call_user_func_array($this->callback, $this->params);
+
                 return $result;
             }
-            catch (\Exception $e)
+            catch(\Exception $e)
             {
                 if($e instanceof ServerException && $e->getCode() == 597 && $attempts > 1)
                 {
