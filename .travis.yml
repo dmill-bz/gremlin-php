@@ -21,7 +21,7 @@ install:
   - sh -c ./build/server/jdk8-install.sh
   # install gremlin-server
   - sh -c ./build/server/install.sh
-  - composer update "phpunit/phpunit"
+  - composer update --prefer-lowest "phpunit/phpunit"
   - composer install
 
 script: vendor/bin/phpunit --configuration build/phpunit.xml
