@@ -22,7 +22,6 @@ install:
   # install gremlin-server
   - sh -c ./build/server/install.sh
   - composer global require "fxp/composer-asset-plugin:^1.2.0"
-  - composer update "phpunit/phpunit"
   - composer install
 
 script: vendor/bin/phpunit --configuration build/phpunit.xml
