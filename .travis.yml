@@ -11,7 +11,9 @@ dist: trusty
 
 matrix:
   allow_failures:
-    - php: nightly
+    - php:
+       - nightly
+       - 5.5
 
 before_install:
   - sudo apt-get update > /dev/null

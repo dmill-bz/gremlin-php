@@ -313,5 +313,10 @@ bin/gremlin-server.sh conf/gremlin-server-php.yaml
 Then run the unit test via:
 
 ```bash
+# make sure test dependecies are installed 
+composer install # PHP >=5.6
+composer update # PHP 5.5
+
+# Run the tests
 phpunit -c build/phpunit.xml
 ```
