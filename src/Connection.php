@@ -342,7 +342,7 @@ class Connection
             //handle errors
             if($unpacked['status']['code'] !== 200 && $unpacked['status']['code'] !== 206)
             {
-                $this->error($unpacked['status']['message'] . " > " . implode("\n", $unpacked['status']['attributes']), $unpacked['status']['code']);
+                $this->error($unpacked['status']['message'] . " > \n" . var_export($unpacked['status']['attributes'], TRUE), $unpacked['status']['code']);
             }
 
             foreach($unpacked['result']['data'] as $row)
