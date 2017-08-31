@@ -4,14 +4,30 @@
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export JRE_HOME=/usr/lib/jvm/java-8-oracle
 
+# Depending on the TP version file names may change 3.1.3 and 3.2.1 use old file names.
+if [ $GREMLINSERVER_VERSION = "3.2.1" -o $GREMLINSERVER_VERSION = "3.1.3" ]
+then
+    TPFILENAME=apache-gremlin-server-$GREMLINSERVER_VERSION
+else
+    TPFILENAME=apache-tinkerpop-gremlin-server-$GREMLINSERVER_VERSION
+fi
+
+# Depending on the TP version we will want to use different configuration files for the server.
+if ! [ $GREMLINSERVER_VERSION \< "3.3.0" ]
+then
+    TP_CONF_DIR="3.3.x"
+else
+    TP_CONF_DIR="3.2.x"
+fi
+
 # Install gremlin-server
 echo "Downloading & Extracting gremlin-server"
-wget --no-check-certificate -O $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION-bin.zip https://archive.apache.org/dist/tinkerpop/$GREMLINSERVER_VERSION/apache-gremlin-server-$GREMLINSERVER_VERSION-bin.zip
-unzip -q $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION-bin.zip -d $HOME/
+wget --no-check-certificate -O $HOME/$TPFILENAME-bin.zip https://archive.apache.org/dist/tinkerpop/$GREMLINSERVER_VERSION/$TPFILENAME-bin.zip
+unzip -q $HOME/$TPFILENAME-bin.zip -d $HOME/
 # make a secure server
 echo "Extracting secure gremlin-server"
 mkdir $HOME/secure
-unzip -q $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION-bin.zip -d $HOME/secure/
+unzip -q $HOME/$TPFILENAME-bin.zip -d $HOME/secure/
 #Set grape configuration
 mkdir ~/.groovy
 echo '<ivysettings>
@@ -32,19 +48,19 @@ echo '<ivysettings>
 
 # get gremlin-server configuration files
 echo "Copying configuration files"
-cp ./build/server/gremlin-php-script.groovy $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION/scripts/
-cp ./build/server/gremlin-server-php.yaml $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION/conf/
-cp ./build/server/neo4j-empty.properties $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION/conf/
+cp ./build/server/$TP_CONF_DIR/gremlin-php-script.groovy $HOME/$TPFILENAME/scripts/
+cp ./build/server/$TP_CONF_DIR/gremlin-server-php.yaml $HOME/$TPFILENAME/conf/
+cp ./build/server/$TP_CONF_DIR/neo4j-empty.properties $HOME/$TPFILENAME/conf/
 
 # get gremlin-server secure configuration files
 echo "Copying secure configuration files"
-cp ./build/server/gremlin-php-script-secure.groovy $HOME/secure/apache-gremlin-server-$GREMLINSERVER_VERSION/scripts/
-cp ./build/server/gremlin-server-php-secure.yaml $HOME/secure/apache-gremlin-server-$GREMLINSERVER_VERSION/conf/
+cp ./build/server/$TP_CONF_DIR/gremlin-php-script-secure.groovy $HOME/secure/$TPFILENAME/scripts/
+cp ./build/server/$TP_CONF_DIR/gremlin-server-php-secure.yaml $HOME/secure/$TPFILENAME/conf/
 
 # get neo4j dependencies
 cat ~/.groovy/grapeConfig.xml
 echo "Installing Neo4J dependency"
-cd $HOME/apache-gremlin-server-$GREMLINSERVER_VERSION
+cd $HOME/$TPFILENAME
 bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin $GREMLINSERVER_VERSION
 
 # Start gremlin-server in the background and wait for it to be available
@@ -55,7 +71,7 @@ sleep 30
 
 # Start the secure server
 echo "Starting secure server"
-cd $HOME/secure/apache-gremlin-server-$GREMLINSERVER_VERSION
+cd $HOME/secure/$TPFILENAME
 bin/gremlin-server.sh conf/gremlin-server-php-secure.yaml > /dev/null 2>&1 &
 
 # Wait for all to load

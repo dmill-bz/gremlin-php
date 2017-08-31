@@ -342,7 +342,10 @@ class Connection
             //handle errors
             if($unpacked['status']['code'] !== 200 && $unpacked['status']['code'] !== 206)
             {
-                $this->error($unpacked['status']['message'] . " > " . implode("\n", $unpacked['status']['attributes']), $unpacked['status']['code']);
+                $this->error($unpacked['status']['message']
+                    . "\n\n ===================  SERVER TRACE  ========================= \n"
+                    . var_export($unpacked['status']['attributes'], TRUE)
+                    . "\n ============================================================ \n", $unpacked['status']['code']);
             }
 
             foreach($unpacked['result']['data'] as $row)
@@ -372,7 +375,7 @@ class Connection
                 $context = stream_context_create($this->ssl);
             }
         }
-        $this->_socket = @stream_socket_client(
+        $fp = @stream_socket_client(
             $protocol . '://' . $this->host . ':' . $this->port,
             $errno,
             $errorMessage,
@@ -380,10 +383,12 @@ class Connection
             STREAM_CLIENT_CONNECT,
             $context
         );
-        if(!$this->_socket)
+        if(!$fp)
         {
             $this->error($errorMessage, $errno, TRUE);
         }
+
+        $this->_socket = $fp;
 
         return TRUE;
     }
@@ -515,15 +520,13 @@ class Connection
      */
     public function close()
     {
-        if($this->_socket !== NULL)
+        if(is_resource($this->_socket))
         {
             if($this->_inTransaction === TRUE)
             {
                 //do not commit changes changes;
                 $this->transactionStop(FALSE);
             }
-
-            $msg = '';
 
             $this->closeSession();
 

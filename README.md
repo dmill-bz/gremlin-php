@@ -30,6 +30,14 @@ Or add:
 
 to the `require` section of your `composer.json` file
 
+### Tinkerpop 3.3.x server Configuration 
+
+This driver does not yet support `GRAPHSON 3.0` so it is necessary to configure the server to use `GRAPHSON 1.0`. To do this, make sure to replace the `# application/json` serializer in your `gremlin-server.yaml` configuration file with the following:
+
+```yaml
+- { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0, config: { ioRegistries: [org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV1d0]  }}        # application/json
+``` 
+
 Upgrading
 =========
 BC breaking changes are introduced between major version changes. So if you're upgrading to `2.0.0` from `1.0`. Please read the [CHANGELOG](CHANGELOG.md)
@@ -320,3 +328,9 @@ composer update # PHP 5.5
 # Run the tests
 phpunit -c build/phpunit.xml
 ```
+
+### Browser /tests/webtest.php file
+
+If your gremlin-php folder is on the web path. You can also load `tests/webtest.php` instead of using the command line to run PHPUNIT tests.
+
+This is useful in some wamp or limited access command line situations. 

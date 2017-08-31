@@ -1,4 +1,5 @@
 <?php
+
 namespace Brightzone\GremlinDriver\Tests;
 
 use Brightzone\GremlinDriver\Connection;
@@ -49,7 +50,7 @@ class RexsterTransactionTest extends RexsterTestCase
         $this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
 
         $db->transactionStart();
-        $db->send('t.addV("name","michael").next()');
+        $db->send('t.addV().property("name","stephen").next()');
 
         $db->transactionStop(TRUE);
 
@@ -65,9 +66,9 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testTransactionsMultiRun()
     {
         $db = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
@@ -77,8 +78,8 @@ class RexsterTransactionTest extends RexsterTestCase
 
         $db->transactionStart();
 
-        $db->send('t.addV("name","michael").next()');
-        $db->send('t.addV("name","michael").next()');
+        $db->send('t.addV().property("name","michael").next()');
+        $db->send('t.addV().property("name","michael").next()');
 
         $db->transactionStop(FALSE);
 
@@ -89,8 +90,8 @@ class RexsterTransactionTest extends RexsterTestCase
 
         $db->transactionStart();
 
-        $db->send('t.addV("name","michael").next()');
-        $db->send('t.addV("name","michael").next()');
+        $db->send('t.addV().property("name","michael").next()');
+        $db->send('t.addV().property("name","michael").next()');
 
         $db->transactionStop(TRUE);
 
@@ -124,9 +125,9 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testSeveralRunningTransactionStart()
     {
         $db = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $db->open();
         $db->transactionStart();
@@ -143,9 +144,9 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testTransactionStopWithNoTransaction()
     {
         $db = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $db->open();
         $db->transactionStop();
@@ -161,23 +162,24 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testTransactionRetryAlreadyOpen()
     {
         $db = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $db->open();
         $db->transactionStart();
         $count = 0;
         try
         {
-            $db->transaction(function(&$c){$c++;}, [&$count]);
+            $db->transaction(function(&$c) {
+                $c++;
+            }, [&$count]);
         }
         catch(\Exception $e)
         {
             $this->assertEquals(0, $count, "the workload has been executed when it shouldn't have");
             throw $e;
         }
-
     }
 
     /**
@@ -190,17 +192,17 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testTransactionRetry()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graphT',
-            'retryAttempts' => 5
+            'host'          => 'localhost',
+            'port'          => 8182,
+            'graph'         => 'graphT',
+            'retryAttempts' => 5,
         ]);
         $db->open();
 
         $count = 0;
         try
         {
-            $db->transaction(function(&$c){
+            $db->transaction(function(&$c) {
                 $c++;
                 throw new \Brightzone\GremlinDriver\ServerException('transaction test error', 597);
             }, [&$count]);
@@ -220,10 +222,10 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testCallableTransaction()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graphT',
-            'retryAttempts' => 5
+            'host'          => 'localhost',
+            'port'          => 8182,
+            'graph'         => 'graphT',
+            'retryAttempts' => 5,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
@@ -235,7 +237,7 @@ class RexsterTransactionTest extends RexsterTestCase
         $count = 0;
         try
         {
-            $db->transaction(function(&$db, &$c){
+            $db->transaction(function(&$db, &$c) {
                 $db->message->gremlin = 't.addV()';
                 $db->send();
                 $c++;
@@ -255,8 +257,8 @@ class RexsterTransactionTest extends RexsterTestCase
         $this->AssertEquals($elementCount, $elementCount2, 'Transaction rollback didn\'t work');
 
         $count = 0;
-        $db->transaction(function(&$db, &$c){
-            $db->send('t.addV("name","michael").next()');
+        $db->transaction(function(&$db, &$c) {
+            $db->send('t.addV().property("name","michael").next()');
             $c++;
             if($c < 3)
             {
@@ -276,9 +278,9 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testSessionSessionlessTransactionIsOpenSingleClient()
     {
         $db = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
 
         $message = $db->open();
@@ -286,16 +288,16 @@ class RexsterTransactionTest extends RexsterTestCase
 
         $db->transactionStart();
 
-        $db->send('t.addV("name","stephen").next()');
+        $db->send('t.addV().property("name","stephen").next()');
 
         $db->transactionStop(TRUE);
-        $isOpen = $db->send("graphT.tx().isOpen()","session")[0];
+        $isOpen = $db->send("graphT.tx().isOpen()", "session")[0];
         $this->assertTrue(!$isOpen, "transaction should be closed");
 
         $db->message->gremlin = 'graphT.traversal().V()';
         $result = $db->send();
 
-        $isOpen = $db->send("graphT.tx().isOpen()","session")[0];
+        $isOpen = $db->send("graphT.tx().isOpen()", "session")[0];
         $this->assertTrue(!$isOpen, "transaction should still be closed after sessionless request");
     }
 
@@ -305,34 +307,33 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testSessionSessionlessTransactionIsOpenMultiClient()
     {
         $db = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
 
         $db2 = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
         $db->transactionStart();
 
-        $db->send('t.addV("name","stephen").next()');
+        $db->send('t.addV().property("name","stephen").next()');
 
         $db->transactionStop(TRUE);
-        $isOpen = $db->send("graphT.tx().isOpen()","session")[0];
+        $isOpen = $db->send("graphT.tx().isOpen()", "session")[0];
         $this->assertTrue(!$isOpen, "transaction should be closed");
 
         $db2->message->gremlin = 'graphT.traversal().V()';
         $result = $db->send();
 
-        $isOpen = $db->send("graphT.tx().isOpen()","session")[0];
+        $isOpen = $db->send("graphT.tx().isOpen()", "session")[0];
         $this->assertTrue(!$isOpen, "transaction should still be closed after sessionless request");
     }
-
 
     /**
      * Testing combination of session and sessionless requests
@@ -340,17 +341,17 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testSessionSessionlessCombinationConcurrentCommit()
     {
         $db = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
         $db2 = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db2->open();
         $this->assertNotEquals($message, FALSE);
@@ -360,12 +361,12 @@ class RexsterTransactionTest extends RexsterTestCase
 
         $db->transactionStart();
 
-        $db->send('t.addV("name","michael").next()');
+        $db->send('t.addV().property("name","michael").next()');
 
         $db2->message->gremlin = 't.V()';
         $db2->send();
 
-        $db->send('t.addV("name","michael").next()');
+        $db->send('t.addV().property("name","michael").next()');
         $db->transactionStop(TRUE);
 
         $db->message->gremlin = 't.V().count()';
@@ -380,17 +381,17 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testSessionSessionlessCombinationConcurrentRollback()
     {
         $db = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
         $db2 = new Connection([
-            'graph' => 'graphT',
+            'graph'    => 'graphT',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db2->open();
         $this->assertNotEquals($message, FALSE);
@@ -400,12 +401,12 @@ class RexsterTransactionTest extends RexsterTestCase
 
         $db->transactionStart();
 
-        $db->send('t.addV("name","michael").next()');
+        $db->send('t.addV().property("name","michael").next()');
 
         $db2->message->gremlin = 't.V()';
         $db2->send();
 
-        $db->send('t.addV("name","michael").next()');
+        $db->send('t.addV().property("name","michael").next()');
         $db->transactionStop(FALSE);
 
         $db->message->gremlin = 't.V().count()';
@@ -436,7 +437,7 @@ class RexsterTransactionTest extends RexsterTestCase
         $db->transactionStart();
 
         $db->message->setArguments([
-                'manageTransaction' => TRUE,
+            'manageTransaction' => TRUE,
         ]);
         $db->message->gremlin = 't.addV()';
         $db->send();
