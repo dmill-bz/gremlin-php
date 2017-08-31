@@ -10,5 +10,5 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 
 echo "<pre>";
 $command = new PHPUnit_TextUI_Command;
-$command->run(['phpunit', '--conf', '/../build/phpunit.xml'], TRUE);
+$command->run(['phpunit', '--conf', '../build/phpunit.xml'], TRUE);
 echo "</pre>";
