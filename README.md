@@ -328,3 +328,9 @@ composer update # PHP 5.5
 # Run the tests
 phpunit -c build/phpunit.xml
 ```
+
+### Browser /tests/webtest.php file
+
+If your gremlin-php folder is on the web path. You can also load `tests/webtest.php` instead of using the command line to run PHPUNIT tests.
+
+This is useful in some wamp or limited access command line situations. 

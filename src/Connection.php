@@ -375,7 +375,7 @@ class Connection
                 $context = stream_context_create($this->ssl);
             }
         }
-        $this->_socket = @stream_socket_client(
+        $fp = @stream_socket_client(
             $protocol . '://' . $this->host . ':' . $this->port,
             $errno,
             $errorMessage,
@@ -383,10 +383,12 @@ class Connection
             STREAM_CLIENT_CONNECT,
             $context
         );
-        if(!$this->_socket)
+        if(!$fp)
         {
             $this->error($errorMessage, $errno, TRUE);
         }
+
+        $this->_socket = $fp;
 
         return TRUE;
     }
@@ -518,15 +520,13 @@ class Connection
      */
     public function close()
     {
-        if($this->_socket !== NULL)
+        if(is_resource($this->_socket))
         {
             if($this->_inTransaction === TRUE)
             {
                 //do not commit changes changes;
                 $this->transactionStop(FALSE);
             }
-
-            $msg = '';
 
             $this->closeSession();
 

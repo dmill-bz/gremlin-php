@@ -128,6 +128,29 @@ class RexsterTest extends RexsterTestCase
     }
 
     /**
+     * Testing unknown host connection errors try catch scenario
+     * This is meant to cover issue #37
+     *
+     * @return void
+     */
+    public function testConnectErrorsUnknownHostTryCatch()
+    {
+        $db = new Connection([
+            'host' => 'unknownhost',
+        ]);
+        $db->timeout = 0.5;
+        try
+        {
+            $db->open();
+        }
+        catch(\Brightzone\GremlinDriver\InternalException $e)
+        {
+            $error_message = $e->getMessage();
+        }
+        $this->assertEquals("gremlin-php driver has thrown the following error : Connection timed out", $error_message);
+    }
+
+    /**
      * Testing wrong port connection errors
      *
      * @expectedException \Brightzone\GremlinDriver\InternalException

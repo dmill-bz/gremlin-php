@@ -1,11 +1,13 @@
-3.0.2 (unreleased)
-==================
-- Fixed an issue with deprecated use of references failing in `PHP 7+`. Corrects #4
+3.0.2
+=====
+- Fixed an issue with deprecated use of references failing in `PHP 7+`. Corrects #34
 - Corrected some travis issue. Bypassed travis `PHP 5.5` tests as they were failing (due to incorrect travis configuration)
 - Fixed an issue with `gremlin-server >= 3.2.5` error messages not being handled properly. Now gremlin-php driver displays stack traces correctly. 
 - Modified the structure for server files. Allows separate configuration per server version.
 - Corrected some deprecated gremlin queries in tests which created failure on gremlin server 3.3.x
 - Modified install scripts and 3.3.x configuration files for testing/travis
+- Corrected issue #37
+- Added an easy access web test php file that allows users to run the tests from the browser as a convenience. And updated the README.md to reflect this
 
 3.0.1
 =====
