@@ -5,7 +5,7 @@ export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export JRE_HOME=/usr/lib/jvm/java-8-oracle
 
 # Depending on the TP version file names may change 3.1.3 and 3.2.1 use old file names.
-if [ $GREMLINSERVER_VERSION -eq "3.2.1" -o $GREMLINSERVER_VERSION -eq "3.1.3" ]
+if [ $GREMLINSERVER_VERSION = "3.2.1" -o $GREMLINSERVER_VERSION = "3.1.3" ]
 then
     TPFILENAME=apache-gremlin-server-$GREMLINSERVER_VERSION
 else
@@ -13,7 +13,7 @@ else
 fi
 
 # Depending on the TP version we will want to use different configuration files for the server.
-if [ $GREMLINSERVER_VERSION -ge "3.3.0" ]
+if ! [ $GREMLINSERVER_VERSION \< "3.3.0" ]
 then
     TP_CONF_DIR="3.3.x"
 else
