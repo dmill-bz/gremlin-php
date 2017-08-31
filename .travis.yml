@@ -31,8 +31,9 @@ after_success:
   - sh -c ./build/deploy.sh
 
 env:
-  - GREMLINSERVER_VERSION="3.2.6"
-  - GREMLINSERVER_VERSION="3.3.0"
   global:
     - GH_REF: "github.com/PommeVerte/PommeVerte.github.io.git"
     - secure: "QqbRsl8iQVjEqm6gthFhlRPo/niUjgk9KiDN0u+pWGu08tzoGhykggwybrmDlEgFUBvJkgqGvxoTAQ0B/GagzpadUM4HlJNP1SGhhllKeKax60opKJkWwdodoZQxIG9KahtL+P8utliCzSx8R467EVWkd7YWpKF56FxmGgrfNJyCnvFwSmu/Zkc7uJi+HwBLLiwxF+nU96eZKMyC+vIY6awInxxJjRaDQLyl9X3R9cDXbM1RLgWQpBZofyIyx9TI64TyTmTscrtdUlMaJxhyV1rJJFWPwKVUj+yIw3gR2rszUqwF4zjpVmblDiEaBgDv2Rwfftm0qpiLRz/s5Zt+2AB5p8TSXa2t545oMHe59nA4RcRlWSZyotXel46Nz2DAhoywRTqEt9S/ekJhis+dwOac8dPfbr3/RJIdYtPf6IPHAIed1sAJtpmGCXjkAY3iFbooiaKqAckwYtO8eJDhKZ7/MkmQr/IfTRl9RD9KjSqsolM3337O3C5YEstq8EVDKXPyOKPC0qxeIa641XweVitOlm9jUANK7eDZAsPSM0/WEqKgw0/OCjK6WtXwx45DR12JtURCF6GYPBQkKgH+X/bLcP7EzK0myXpSjCS4bcaBSqfJCadhX3Kny267IVrx/wUWOeJCumixpzmf7xbQIoxvIe+hE1pCpUm+Kif1tLU="
+  matrix:
+    - GREMLINSERVER_VERSION="3.2.6"
+    - GREMLINSERVER_VERSION="3.3.0"
