@@ -147,7 +147,7 @@ class RexsterTest extends RexsterTestCase
         {
             $error_message = $e->getMessage();
         }
-        $this->assertEquals("gremlin-php driver has thrown the following error : Connection timed out", $error_message);
+        $this->assertTrue(!empty($error_message), "An error message should be set");
     }
 
     /**
