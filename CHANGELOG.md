@@ -1,6 +1,15 @@
+3.0.2 (unreleased)
+==================
+- Fixed an issue with deprecated use of references failing in `PHP 7+`. Corrects #4
+- Corrected some travis issue. Bypassed travis `PHP 5.5` tests as they were failing (due to incorrect travis configuration)
+- Fixed an issue with `gremlin-server >= 3.2.5` error messages not being handled properly. Now gremlin-php driver displays stack traces correctly. 
+- Modified the structure for server files. Allows separate configuration per server version.
+- Corrected some deprecated gremlin queries in tests which created failure on gremlin server 3.3.x
+- Modified install scripts and 3.3.x configuration files for testing/travis
+
 3.0.1
 =====
-- Fixed an issue where the retry strategy would be applied on an errorcode `500` when in reality it should have been applied on `597`
+- Fixed an issue where the retry strategy would be applied on an error code `500` when in reality it should have been applied on `597`
 
 3.0.0
 =====

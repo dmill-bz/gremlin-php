@@ -1,4 +1,5 @@
 <?php
+
 namespace Brightzone\GremlinDriver\Tests;
 
 use Brightzone\GremlinDriver\Connection;
@@ -59,8 +60,6 @@ class RexsterTest extends RexsterTestCase
         $this->assertNotEquals(bin2hex($converted), '2540BE400', 'The converted int is incorrect. ints above 4 bytes should have the extra bytes truncated'); // hex for 10000000000
         //the extra 3 bits should be taken off the begining of binary data. This test checks this
         $this->assertEquals(bin2hex($converted), '540be400', 'The converted int is incorrect. ints above 4 bytes should have the extra bytes truncated');
-
-
     }
 
     /**
@@ -88,26 +87,26 @@ class RexsterTest extends RexsterTestCase
     public function testConnectSuccess()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $this->assertTrue($db->open(), "did not succesfully connect");
 
         $db = new Connection([
-            'host' => 'localhost',
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $this->assertTrue($db->open(), "did not succesfully connect");
 
         $db = new Connection([
-            'host' => 'localhost',
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $this->assertTrue($db->open(), "did not succesfully connect");
     }
@@ -119,10 +118,10 @@ class RexsterTest extends RexsterTestCase
      *
      * @return void
      */
-    public function testConnectErrorsUknownHost()
+    public function testConnectErrorsUnknownHost()
     {
         $db = new Connection([
-            'host' => 'unknownhost'
+            'host' => 'unknownhost',
         ]);
         $db->timeout = 0.5;
         $db->open();
@@ -138,7 +137,7 @@ class RexsterTest extends RexsterTestCase
     public function testConnectErrorsWrongPort()
     {
         $db = new Connection([
-            'port' => 8187
+            'port' => 8187,
         ]);
         $db->timeout = 0.5;
         $db->open();
@@ -153,10 +152,10 @@ class RexsterTest extends RexsterTestCase
     {
         //do all connection checks
         $db = new Connection([
-            'host' => 'localhost',
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $db->open();
 
@@ -173,11 +172,11 @@ class RexsterTest extends RexsterTestCase
     public function testRunScriptNoSession()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
@@ -193,7 +192,6 @@ class RexsterTest extends RexsterTestCase
         $this->assertFALSE($db->isConnected(), 'Despite not throwing errors, Socket connection is not established');
     }
 
-
     /**
      * Testing Script run against DB
      * Sessions and transactions are linked ATM
@@ -203,11 +201,11 @@ class RexsterTest extends RexsterTestCase
     public function testRunScriptSession()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
 
@@ -226,7 +224,7 @@ class RexsterTest extends RexsterTestCase
         $this->assertFALSE($db->inTransaction(), 'Despite closing, transaction not closed');
     }
 
-     /**
+    /**
      * Testing That the server closes the session
      *
      * @expectedException \Brightzone\GremlinDriver\ServerException
@@ -236,11 +234,11 @@ class RexsterTest extends RexsterTestCase
     public function testSessionClose()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
 
@@ -254,9 +252,11 @@ class RexsterTest extends RexsterTestCase
         $this->assertEquals($result[0], 10, 'Script response message is not the right type. (Maybe it\'s an error)'); //check it's a session script reply
 
         //check disconnection
-        try {
+        try
+        {
             $db->close();
-        } catch(\Exception $e)
+        }
+        catch(\Exception $e)
         {
             $this->fail("Close shouldn't throw an exception");
         }
@@ -264,11 +264,11 @@ class RexsterTest extends RexsterTestCase
         $this->assertFALSE($db->inTransaction(), 'Despite closing, transaction not closed');
 
         $db2 = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db2->open();
 
@@ -278,7 +278,7 @@ class RexsterTest extends RexsterTestCase
         $msg->gremlin = 'cal';
         $msg->op = 'eval';
         $msg->processor = 'session';
-        $msg->setArguments(['session'=>$sessionUid]);
+        $msg->setArguments(['session' => $sessionUid]);
         $result = $db2->send($msg); // should throw an error as this should be next session
         $this->fail("Second request should have failed and this assert never run");
     }
@@ -291,11 +291,11 @@ class RexsterTest extends RexsterTestCase
     public function testRunScriptWithBindings()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
@@ -319,18 +319,18 @@ class RexsterTest extends RexsterTestCase
     public function testRunScriptWithVarsInSession()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
         $db->message->gremlin = 'cal = 5+5';
         $db->message->processor = 'session';
-        $db->message->setArguments(['session'=>$db->getSession()]);
+        $db->message->setArguments(['session' => $db->getSession()]);
         $result = $db->send(NULL);
 
         $this->assertNotEquals($result, FALSE, 'Running a script with bindings produced an error');
@@ -353,11 +353,11 @@ class RexsterTest extends RexsterTestCase
     public function testRunScriptWithBindingsInSession()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
@@ -460,11 +460,11 @@ class RexsterTest extends RexsterTestCase
     public function testIncorrectGremlin()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
@@ -482,11 +482,11 @@ class RexsterTest extends RexsterTestCase
     public function testEmptyResult()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
@@ -514,11 +514,11 @@ class RexsterTest extends RexsterTestCase
     public function testMessageIsset()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $db->open();
         $this->assertTrue(isset($db->message->gremlin), 'gremlin should not be set');
@@ -526,7 +526,6 @@ class RexsterTest extends RexsterTestCase
         $this->assertTrue(isset($db->message->gremlin), 'gremlin should be set');
         $this->assertTrue(isset($db->message->op), 'op should be set');
     }
-
 
     /**
      * Testing Message getter error
@@ -538,11 +537,11 @@ class RexsterTest extends RexsterTestCase
     public function testMessageGetError()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $db->open();
         $this->assertTrue(isset($db->message->gremlin), 'gremlin should not be set');
@@ -556,7 +555,7 @@ class RexsterTest extends RexsterTestCase
      */
     public function testConnectionConstruct()
     {
-        $db = new Connection(['host'=>'localhost', 'port'=>8182, 'graph' => 'graph']);
+        $db = new Connection(['host' => 'localhost', 'port' => 8182, 'graph' => 'graph']);
         $this->assertEquals($db->host, 'localhost', 'incorrect host');
         $this->assertEquals($db->port, 8182, 'incorrect port');
         $this->assertEquals($db->graph, 'graph', 'incorrect graph');
@@ -570,9 +569,9 @@ class RexsterTest extends RexsterTestCase
     public function testMergedStream()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph'
+            'host'  => 'localhost',
+            'port'  => 8182,
+            'graph' => 'graph',
         ]);
         $message = $db->open();
 
@@ -590,15 +589,15 @@ class RexsterTest extends RexsterTestCase
     public function testRetry()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
-            'retryAttempts' => 5
+            'host'          => 'localhost',
+            'port'          => 8182,
+            'graph'         => 'graph',
+            'retryAttempts' => 5,
         ]);
         $db->open();
 
         $count = 0;
-        $workload = new Workload(function(&$count){
+        $workload = new Workload(function(&$count) {
             $count++;
             throw new \Brightzone\GremlinDriver\ServerException("test error", 597);
         }, [&$count]);
@@ -612,7 +611,6 @@ class RexsterTest extends RexsterTestCase
             $this->assertEquals(5, $count, "incorrect number of attempts executed");
             throw $e;
         }
-
     }
 
     /**
@@ -623,10 +621,10 @@ class RexsterTest extends RexsterTestCase
     public function testMultipleOpen()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
-            'retryAttempts' => 5
+            'host'          => 'localhost',
+            'port'          => 8182,
+            'graph'         => 'graph',
+            'retryAttempts' => 5,
         ]);
         $db->open();
         $db->open();
@@ -649,13 +647,13 @@ class RexsterTest extends RexsterTestCase
         $expected = [
             'requestId' => $message->requestUuid,
             'processor' => '',
-            'op' => 'eval',
-            'args' => [
+            'op'        => 'eval',
+            'args'      => [
                 'gremlin' => 'something',
             ],
         ];
 
-        $connection = new \Brightzone\GremlinDriver\Tests\Stubs\Connection(["_acceptDiffResponseFormat"=>TRUE]);
+        $connection = new \Brightzone\GremlinDriver\Tests\Stubs\Connection(["_acceptDiffResponseFormat" => TRUE]);
         $connection->setSocket($this->invokeMethod($connection, 'webSocketPack', [$payload, $type = 'binary', $masked = TRUE]));
 
         $data = $this->invokeMethod($connection, 'socketGetMessage');
@@ -670,17 +668,16 @@ class RexsterTest extends RexsterTestCase
     public function testEmptyResultSetNoException()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'          => 'localhost',
+            'port'          => 8182,
+            'graph'         => 'graph',
             'retryAttempts' => 5,
-            'emptySet' => TRUE
+            'emptySet'      => TRUE,
         ]);
         $db->open();
 
         $result = $db->send("g.V().has('name', 'doesnotexist')");
         $this->assertTrue(empty($result), "the result set should be empty");
-
     }
 
     /**
@@ -693,10 +690,10 @@ class RexsterTest extends RexsterTestCase
     public function testEmptyResultSetException()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
-            'retryAttempts' => 5
+            'host'          => 'localhost',
+            'port'          => 8182,
+            'graph'         => 'graph',
+            'retryAttempts' => 5,
         ]);
         $db->open();
 
@@ -711,9 +708,9 @@ class RexsterTest extends RexsterTestCase
     public function testLargeResponseSet()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'          => 'localhost',
+            'port'          => 8182,
+            'graph'         => 'graph',
             'retryAttempts' => 5,
             //'emptySet' => TRUE
         ]);
@@ -732,7 +729,6 @@ class RexsterTest extends RexsterTestCase
         $db->close();
     }
 
-
     /**
      * Lets test returning a large set back from the database
      *
@@ -741,79 +737,81 @@ class RexsterTest extends RexsterTestCase
     public function testTree()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
-            'retryAttempts' => 5
+            'host'          => 'localhost',
+            'port'          => 8182,
+            'graph'         => 'graph',
+            'retryAttempts' => 5,
         ]);
         $db->open();
 
-        $expected = [[
-            1 =>[
-                'key' =>[
-                    'id' => 1,
-                    'label' => 'vertex',
-                    'type' => 'vertex',
-                    'properties' =>[
-                        'name' =>[['id' => 0, 'value' => 'marko']],
-                        'age' =>[['id' => 2, 'value' => 29]],
-                    ],
-                ],
-                'value' =>[
-                    2 =>[
-                        'key' =>[
-                            'id' => 2,
-                            'label' => 'vertex',
-                            'type' => 'vertex',
-                            'properties' =>[
-                                'name' =>[['id' => 3, 'value' => 'vadas']],
-                                'age' =>[['id' => 4, 'value' => 27]],
-                            ],
-                        ],
-                        'value' =>[
-                            3 =>[
-                                'key' =>['id' => 3, 'value' => 'vadas', 'label' => 'name'],
-                                'value' =>[],
-                            ],
+        $expected = [
+            [
+                1 => [
+                    'key'   => [
+                        'id'         => 1,
+                        'label'      => 'vertex',
+                        'type'       => 'vertex',
+                        'properties' => [
+                            'name' => [['id' => 0, 'value' => 'marko']],
+                            'age'  => [['id' => 2, 'value' => 29]],
                         ],
                     ],
-                    3 =>[
-                        'key' =>[
-                            'id' => 3,
-                            'label' => 'vertex',
-                            'type' => 'vertex',
-                            'properties' =>[
-                                'name' =>[['id' => 5, 'value' => 'lop']],
-                                'lang' =>[['id' => 6, 'value' => 'java']],
+                    'value' => [
+                        2 => [
+                            'key'   => [
+                                'id'         => 2,
+                                'label'      => 'vertex',
+                                'type'       => 'vertex',
+                                'properties' => [
+                                    'name' => [['id' => 3, 'value' => 'vadas']],
+                                    'age'  => [['id' => 4, 'value' => 27]],
+                                ],
+                            ],
+                            'value' => [
+                                3 => [
+                                    'key'   => ['id' => 3, 'value' => 'vadas', 'label' => 'name'],
+                                    'value' => [],
+                                ],
                             ],
                         ],
-                        'value' =>[
-                            5 =>[
-                                'key' =>['id' => 5, 'value' => 'lop', 'label' => 'name'],
-                                'value' =>[],
+                        3 => [
+                            'key'   => [
+                                'id'         => 3,
+                                'label'      => 'vertex',
+                                'type'       => 'vertex',
+                                'properties' => [
+                                    'name' => [['id' => 5, 'value' => 'lop']],
+                                    'lang' => [['id' => 6, 'value' => 'java']],
+                                ],
+                            ],
+                            'value' => [
+                                5 => [
+                                    'key'   => ['id' => 5, 'value' => 'lop', 'label' => 'name'],
+                                    'value' => [],
+                                ],
                             ],
                         ],
-                    ],
-                    4 =>[
-                        'key' =>[
-                            'id' => 4,
-                            'label' => 'vertex',
-                            'type' => 'vertex',
-                            'properties' =>[
-                                'name' =>[['id' => 7, 'value' => 'josh']],
-                                'age' =>[['id' => 8, 'value' => 32]],
+                        4 => [
+                            'key'   => [
+                                'id'         => 4,
+                                'label'      => 'vertex',
+                                'type'       => 'vertex',
+                                'properties' => [
+                                    'name' => [['id' => 7, 'value' => 'josh']],
+                                    'age'  => [['id' => 8, 'value' => 32]],
+                                ],
                             ],
-                        ],
-                        'value' =>[
-                            7 =>[
-                                'key' =>['id' => 7, 'value' => 'josh', 'label' => 'name'],
-                                'value' =>[],
+                            'value' => [
+                                7 => [
+                                    'key'   => ['id' => 7, 'value' => 'josh', 'label' => 'name'],
+                                    'value' => [],
+                                ],
                             ],
                         ],
                     ],
                 ],
             ],
-        ]];
+        ];
 
         $result = $db->send('g.V(1).out().properties("name").tree()');
 
@@ -821,7 +819,6 @@ class RexsterTest extends RexsterTestCase
 
         $db->close();
     }
-
 
     /**
      * Testing Aliases in message
@@ -836,7 +833,7 @@ class RexsterTest extends RexsterTestCase
 
         $db->message->gremlin = 'crazyname.V().count()';
         $db->message->setArguments([
-                'aliases' => ['crazyname'=>'g'],
+            'aliases' => ['crazyname' => 'g'],
         ]);
         $result = $db->send();
 
@@ -849,8 +846,8 @@ class RexsterTest extends RexsterTestCase
     public function testGlobalAliases()
     {
         $db = new Connection([
-            'graph' => 'graph',
-            'aliases' => ['crazyname'=>'g'],
+            'graph'   => 'graph',
+            'aliases' => ['crazyname' => 'g'],
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
@@ -860,7 +857,6 @@ class RexsterTest extends RexsterTestCase
 
         $this->assertEquals($result[0], 6, 'Script request did not return the correct count');
     }
-
 
     /**
      * Testing script evaluation timeout
@@ -877,7 +873,7 @@ class RexsterTest extends RexsterTestCase
 
         $db->message->gremlin = 'Thread.sleep(4000);g.V().count()';
         $db->message->setArguments([
-                'scriptEvaluationTimeout' => 100,
+            'scriptEvaluationTimeout' => 100,
         ]);
         $result = $db->send();
 
@@ -890,11 +886,11 @@ class RexsterTest extends RexsterTestCase
     public function testClearBindings()
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
@@ -917,7 +913,5 @@ class RexsterTest extends RexsterTestCase
         //check disconnection
         $message = $db->close();
         $this->assertNotEquals($message, FALSE, 'Disconnecting from a session where bindings were used created an error');
-
-
     }
 }
