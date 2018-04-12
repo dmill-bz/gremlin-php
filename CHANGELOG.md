@@ -1,3 +1,10 @@
+3.0.3 unreleased (master)
+=========================
+- Fixed an issue where no response from the server during the websocket handshake would throw an obscured error. Issue #43
+- Made changes to support the testing of `gremlin-server 3.2.8 & 3.3.2`. This change, however, affects the testing of the driver against `v3.3.0` (worth noting)
+- Updated the `README.md` file to reflect the correct `require` version for the library (ie: `3.*`)
+- Updated the server install script to allow for a more flexible selection of the server install directory
+
 3.0.2
 =====
 - Fixed an issue with deprecated use of references failing in `PHP 7+`. Corrects #34

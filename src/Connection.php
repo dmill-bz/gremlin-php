@@ -220,7 +220,11 @@ class Connection
 
             @fwrite($this->_socket, $header);
             $response = @fread($this->_socket, 1500);
-
+            if(!$response)
+            {
+                $this->error("Couldn't get a response from server", 500);
+            }
+                        
             preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches);
             $keyAccept = trim($matches[1]);
             $expectedResponse = base64_encode(pack('H*', sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
