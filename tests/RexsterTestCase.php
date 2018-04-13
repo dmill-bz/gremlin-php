@@ -1,4 +1,5 @@
 <?php
+
 namespace Brightzone\GremlinDriver\Tests;
 
 /**
@@ -10,7 +11,7 @@ namespace Brightzone\GremlinDriver\Tests;
  * @author   Dylan Millikin <dylan.millikin@brightzone.fr>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 apache2
  */
-class RexsterTestCase extends \PHPUnit_Framework_TestCase
+class RexsterTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var mixed the database username to use with tests, if any
@@ -43,11 +44,11 @@ class RexsterTestCase extends \PHPUnit_Framework_TestCase
      *
      * @return mixed Method return.
      */
-    public function invokeMethod(&$object, $methodName, array $parameters = array())
+    public function invokeMethod(&$object, $methodName, array $parameters = [])
     {
         $reflection = new \ReflectionClass(get_class($object));
         $method = $reflection->getMethod($methodName);
-        $method->setAccessible(true);
+        $method->setAccessible(TRUE);
 
         return $method->invokeArgs($object, $parameters);
     }

@@ -20,10 +20,10 @@
         "driver"
     ],
     "require-dev": {
-        "yiisoft/yii2-apidoc": "*",
+        "yiisoft/yii2-apidoc": "~2.0",
         "satooshi/php-coveralls": "dev-master",
-        "phpunit/php-code-coverage": "~2.2|~4.0",
-        "phpunit/phpunit": "~4.8|~5.7"
+        "phpunit/php-code-coverage": "~4.0||~5.3",
+        "phpunit/phpunit": "~5.7||~6.5"
     },
     "autoload": {
         "psr-4": {

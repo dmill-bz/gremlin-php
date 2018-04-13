@@ -651,6 +651,8 @@ class RexsterTest extends RexsterTestCase
         ]);
         $db->open();
         $db->open();
+
+        $this->assertTrue(TRUE); // just asserting we get here and no error is thrown.
     }
 
     /**
@@ -745,11 +747,13 @@ class RexsterTest extends RexsterTestCase
             }"
         );
 
-        $result = $db->send("g.V()");
+        $db->send("g.V()");
 
         $db->run("g.V().has('name', 'john').sideEffect{it.get().remove()}.iterate()");
 
         $db->close();
+
+        $this->assertTrue(TRUE); // just asserting we get here and no error is thrown.
     }
 
     /**
