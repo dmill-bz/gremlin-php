@@ -21,7 +21,7 @@
     ],
     "require-dev": {
         "yiisoft/yii2-apidoc": "~2.0",
-        "satooshi/php-coveralls": "dev-master",
+        "satooshi/php-coveralls": "~2.0",
         "phpunit/php-code-coverage": "~4.0||~5.3",
         "phpunit/phpunit": "~5.7||~6.5"
     },
