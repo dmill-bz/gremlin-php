@@ -93,6 +93,7 @@ class RexsterTest extends RexsterTestCase
             'password' => $this->password,
         ]);
         $this->assertTrue($db->open(), "did not succesfully connect");
+        $db->close();
 
         $db = new Connection([
             'host'     => 'localhost',
@@ -101,6 +102,7 @@ class RexsterTest extends RexsterTestCase
             'password' => $this->password,
         ]);
         $this->assertTrue($db->open(), "did not succesfully connect");
+        $db->close();
 
         $db = new Connection([
             'host'     => 'localhost',
@@ -109,6 +111,7 @@ class RexsterTest extends RexsterTestCase
             'password' => $this->password,
         ]);
         $this->assertTrue($db->open(), "did not succesfully connect");
+        $db->close();
     }
 
     /**
@@ -122,6 +125,26 @@ class RexsterTest extends RexsterTestCase
     {
         $db = new Connection([
             'host' => 'unknownhost',
+        ]);
+        $db->timeout = 0.5;
+        $db->open();
+    }
+
+    /**
+     * Testing connection issues with empty provided data
+     *
+     * @expectedException \Brightzone\GremlinDriver\InternalException
+     *
+     * @return void
+     */
+    public function testConnectErrorsEmptyData()
+    {
+        $db = new Connection([
+            'host'     => '',
+            'username' => '',
+            'password' => '',
+            'graph'    => '',
+            'port'     => '443',
         ]);
         $db->timeout = 0.5;
         $db->open();
