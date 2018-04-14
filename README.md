@@ -302,8 +302,10 @@ Unit testing
 Neo4J is required for the full test suit. It is not bundled with gremlin-server by default so you will need to manually install it with:
 
 ```bash
-bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.2.1
+bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.2.8
 ```
+(replace the version number by the one that corresponds to your gremlin-server version)
+
 Copy the following files :
 
 ```bash

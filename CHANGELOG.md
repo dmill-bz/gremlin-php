@@ -4,6 +4,7 @@
 - Made changes to support the testing of `gremlin-server 3.2.8 & 3.3.2`. This change, however, affects the testing of the driver against `v3.3.0` (worth noting)
 - Updated the `README.md` file to reflect the correct `require` version for the library (ie: `3.*`)
 - Updated the server install script to allow for a more flexible selection of the server install directory
+- Changed the travis configuration. Reinstated `php 5.5` testing and temporarily disabled testing for `hhvm` as there seems to be an issue surrounding phpunit
 
 3.0.2
 =====
