@@ -5,6 +5,8 @@
 - Updated the `README.md` file to reflect the correct `require` version for the library (ie: `3.*`)
 - Updated the server install script to allow for a more flexible selection of the server install directory
 - Changed the travis configuration. Reinstated `php 5.5` testing and temporarily disabled testing for `hhvm` as there seems to be an issue surrounding phpunit
+- Fixed the `webtest.php` file to support newer versions of PHPunit.
+- Added a simple GRAPHSON 3.0 serializer
 
 3.0.2
 =====

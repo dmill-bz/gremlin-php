@@ -1,4 +1,5 @@
 <?php
+
 namespace Brightzone\GremlinDriver\Tests;
 
 use Brightzone\GremlinDriver\Connection;
@@ -27,11 +28,11 @@ class GremlinServerTest extends RexsterTestCase
     private function sendParam($param)
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
         $db->open();
         $message = $db->message;
@@ -60,7 +61,7 @@ class GremlinServerTest extends RexsterTestCase
      */
     public function testMapParam()
     {
-        $this->sendParam(["key1" => "string1", "key2"=>"string2", "1"=>"12", 2=>3]);
+        $this->sendParam(["key1" => "string1", "key2" => "string2", "1" => "12", 2 => 3]);
     }
 
     /**
@@ -70,16 +71,16 @@ class GremlinServerTest extends RexsterTestCase
     {
         $this->sendParam([
             "key1" => "string1",
-            "key2"=>"string2",
-            "1"=>"12",
-            2=>3,
-            "map"=>[
-                "map"=>[
-                    "map"=>[
-                        "id"=>"lala"
-                    ]
-                ]
-            ]
+            "key2" => "string2",
+            "1"    => "12",
+            2      => 3,
+            "map"  => [
+                "map" => [
+                    "map" => [
+                        "id" => "lala",
+                    ],
+                ],
+            ],
         ]);
     }
 
@@ -90,27 +91,27 @@ class GremlinServerTest extends RexsterTestCase
     {
         $this->sendParam([
             [
-                "map"=>[
-                    "map"=>[
-                        "id"=>"first"
-                    ]
-                ]
+                "map" => [
+                    "map" => [
+                        "id" => "first",
+                    ],
+                ],
             ],
             [
-                "map"=>[
-                    "map"=>[
-                        "id"=>"second"
-                    ]
-                ]
+                "map" => [
+                    "map" => [
+                        "id" => "second",
+                    ],
+                ],
             ],
-            [1,2,3,4],
+            [1, 2, 3, 4],
             [
-                "map"=>[
-                    "map"=>[
-                        "id"=>"third"
-                    ]
-                ]
-            ]
+                "map" => [
+                    "map" => [
+                        "id" => "third",
+                    ],
+                ],
+            ],
         ]);
     }
 
@@ -124,15 +125,14 @@ class GremlinServerTest extends RexsterTestCase
             "string2",
             "12",
             3,
-            ["item1","item2"],
+            ["item1", "item2"],
             [
-                "map"=>[
-                    "map"=>[
-                        "id"=>"lala"
-                    ]
-                ]
-            ]
+                "map" => [
+                    "map" => [
+                        "id" => "lala",
+                    ],
+                ],
+            ],
         ]);
     }
-
 }
