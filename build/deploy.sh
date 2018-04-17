@@ -3,7 +3,7 @@
 if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then
 
     # run coveralls
-    php $TRAVIS_BUILD_DIR/vendor/bin/coveralls -v
+    php $TRAVIS_BUILD_DIR/vendor/bin/php-coveralls -v
 
     # configure git
     git config --global user.name "Travis CI"
@@ -15,7 +15,7 @@ if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then
 
     #generate docs
     $TRAVIS_BUILD_DIR/vendor/bin/apidoc api --interactive=0 $TRAVIS_BUILD_DIR/src/ $HOME/PommeVerte.github.io/gremlin-php/
-
+    [ -f $HOME/PommeVerte.github.io/gremlin-php/errors.txt ] && cat $HOME/PommeVerte.github.io/gremlin-php/errors.txt
     #update repo and push
     cd $HOME/PommeVerte.github.io
     git add .
