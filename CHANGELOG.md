@@ -1,5 +1,5 @@
-3.0.3 unreleased (master)
-=========================
+3.1.0
+=====
 - Fixed an issue where no response from the server during the websocket handshake would throw an obscured error. Issue #43
 - Made changes to support the testing of `gremlin-server 3.2.8 & 3.3.2`. This change, however, affects the testing of the driver against `v3.3.0` (worth noting)
 - Updated the `README.md` file to reflect the correct `require` version for the library (ie: `3.*`)
