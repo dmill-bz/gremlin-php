@@ -4,7 +4,7 @@ This driver currently supports TP3+.
 
 For a TP2 compatible php driver please check [rexpro-php](https://github.com/PommeVerte/rexpro-php)
 
-[![Build Status](https://travis-ci.org/PommeVerte/gremlin-php.svg?branch=master)](https://travis-ci.org/PommeVerte/gremlin-php) [![Latest Stable Version](https://poser.pugx.org/brightzone/gremlin-php/v/stable)](https://packagist.org/packages/brightzone/gremlin-php) [![Coverage Status](https://coveralls.io/repos/PommeVerte/gremlin-php/badge.svg?branch=master&service=github)](https://coveralls.io/github/PommeVerte/gremlin-php?branch=master) [![Total Downloads](https://poser.pugx.org/brightzone/gremlin-php/downloads)](https://packagist.org/packages/brightzone/gremlin-php) [![License](https://poser.pugx.org/brightzone/gremlin-php/license)](https://packagist.org/packages/brightzone/gremlin-php) [![Issue Stats](http://issuestats.com/github/PommeVerte/gremlin-php/badge/pr?style=flat)](http://issuestats.com/github/PommeVerte/gremlin-php) [![Issue Stats](http://issuestats.com/github/PommeVerte/gremlin-php/badge/issue?style=flat)](http://issuestats.com/github/PommeVerte/gremlin-php)
+[![Build Status](https://travis-ci.org/PommeVerte/gremlin-php.svg?branch=master)](https://travis-ci.org/PommeVerte/gremlin-php) [![Latest Stable Version](https://poser.pugx.org/brightzone/gremlin-php/v/stable)](https://packagist.org/packages/brightzone/gremlin-php) [![Coverage Status](https://coveralls.io/repos/PommeVerte/gremlin-php/badge.svg?branch=master&service=github)](https://coveralls.io/github/PommeVerte/gremlin-php?branch=master) [![Total Downloads](https://poser.pugx.org/brightzone/gremlin-php/downloads)](https://packagist.org/packages/brightzone/gremlin-php) [![License](https://poser.pugx.org/brightzone/gremlin-php/license)](https://packagist.org/packages/brightzone/gremlin-php)
 
 [![Join the chat at https://gitter.im/PommeVerte/gremlin-php](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PommeVerte/gremlin-php?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -14,25 +14,32 @@ Installation
 
 ### PHP Gremlin-Server Client
 
-Prefered method is through composer.
+Preferred method is through composer.
 
 Either run :
 
 ```bash
-php composer.phar require brightzone/gremlin-php "2.*"
+php composer.phar require brightzone/gremlin-php "3.*"
 ```
 
 Or add:
 
 ```json
-"brightzone/gremlin-php": "2.*"
+"brightzone/gremlin-php": "3.*"
 ```
 
 to the `require` section of your `composer.json` file
 
 ### Tinkerpop 3.3.x server Configuration 
 
-This driver does not yet support `GRAPHSON 3.0` so it is necessary to configure the server to use `GRAPHSON 1.0`. To do this, make sure to replace the `# application/json` serializer in your `gremlin-server.yaml` configuration file with the following:
+This driver now supports `GraphSON 3.0` with a basic beta serializer. You can use this serializer by doing : 
+
+```php
+  $db = ne Connection();
+  $db->message->registerSerializer('\Brightzone\GremlinDriver\Serializers\Gson3', TRUE);
+```
+
+If you wish to continue using the stable `GraphSON 1.0` serializer it is necessary to configure the server to use `GraphSON 1.0`. To do this, make sure to replace the `# application/json` serializer in your `gremlin-server.yaml` configuration file with the following:
 
 ```yaml
 - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0, config: { ioRegistries: [org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV1d0]  }}        # application/json
@@ -94,6 +101,8 @@ $db->send('g.V(2)');
 $db->close();
 ```
 
+Check the SSL section for an example using the configuration files provided by TP.
+
 You can find all the options available to the `Connection` class [here](http://pommeverte.github.io/gremlin-php/brightzone-gremlindriver-connection.html).
 
 ## Bindings
@@ -154,8 +163,8 @@ $db->open();
 
 $db->transactionStart();
 
-$db->send('n.addVertex("name","michael")');
-$db->send('n.addVertex("name","john")');
+$db->send('t.addV().property("name","michael")');
+$db->send('t.addV().property("name","john")');
 
 $db->transactionStop(FALSE); //rollback changes. Set to TRUE to commit.
 $db->close();
@@ -173,10 +182,10 @@ $db = new Connection([
 ]);
 $db->open();
 
-$db->transaction(function(&$db){
-    $db->send('n.addVertex("name","michael")');
-    $db->send('n.addVertex("name","john")');
-}, [&$db]);
+$db->transaction(function($db){
+    $db->send('t.addV().property("name","michael")');
+    $db->send('t.addV().property("name","john")');
+}, [$db]);
 
 $db->close();
 ```
@@ -194,10 +203,10 @@ $db = new Connection([
 ]);
 $db->open();
 
-$db->transaction(function(&$db){
-    $db->send('n.addVertex("name","michael")');
-    $db->send('n.addVertex("name","john")');
-}, [&$db]);
+$db->transaction(function($db){
+    $db->send('t.addV().property("name","michael")');
+    $db->send('t.addV().property("name","john")');
+}, [$db]);
 
 $db->close();
 ```
@@ -223,7 +232,7 @@ $message->op = 'eval'; // operation we want to run
 $message->processor = ''; // the opProcessor the server should use
 $message->setArguments([
                 'language' => 'gremlin-groovy',
-                'alias' => ['custom' => 'g'],
+                'aliases' => ['custom' => 'g'],
                 // ... etc
 ]);
 $message->registerSerializer('\Brightzone\GremlinDriver\Serializers\Json');
@@ -271,8 +280,8 @@ $db = new Connection([
     ]
 ]);
 ```
-
-For dev and testing purposes you can use [this configuration](https://github.com/PommeVerte/gremlin-php/blob/master/tests/AuthTest.php#L24-L29)
+If you're using the bundled `gremlin-server-secure.yaml` file, you can use [this configuration](https://github.com/PommeVerte/gremlin-php/blob/master/tests/AuthTest.php#L23-L35) to connect to it.
+For dev and testing purposes you can use [this configuration](https://github.com/PommeVerte/gremlin-php/blob/master/tests/AuthTest.php#L29-L34)
 
 ## Serializers
 
@@ -302,8 +311,10 @@ Unit testing
 Neo4J is required for the full test suit. It is not bundled with gremlin-server by default so you will need to manually install it with:
 
 ```bash
-bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.2.1
+bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin 3.2.8
 ```
+(replace the version number by the one that corresponds to your gremlin-server version)
+
 Copy the following files :
 
 ```bash

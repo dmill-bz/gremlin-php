@@ -1,4 +1,5 @@
 <?php
+
 namespace Brightzone\GremlinDriver\Tests;
 
 use Brightzone\GremlinDriver\Connection;
@@ -27,12 +28,13 @@ class GremlinServerTest extends RexsterTestCase
     private function sendParam($param)
     {
         $db = new Connection([
-            'host' => 'localhost',
-            'port' => 8182,
-            'graph' => 'graph',
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
             'username' => $this->username,
-            'password' => $this->password
+            'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
         $message = $db->message;
         $message->gremlin = "graph.addVertex('paramTest', B_PARAM_VALUE);";
@@ -60,7 +62,7 @@ class GremlinServerTest extends RexsterTestCase
      */
     public function testMapParam()
     {
-        $this->sendParam(["key1" => "string1", "key2"=>"string2", "1"=>"12", 2=>3]);
+        $this->sendParam(["key1" => "string1", "key2" => "string2", "1" => "12", 2 => 3]);
     }
 
     /**
@@ -70,16 +72,16 @@ class GremlinServerTest extends RexsterTestCase
     {
         $this->sendParam([
             "key1" => "string1",
-            "key2"=>"string2",
-            "1"=>"12",
-            2=>3,
-            "map"=>[
-                "map"=>[
-                    "map"=>[
-                        "id"=>"lala"
-                    ]
-                ]
-            ]
+            "key2" => "string2",
+            "1"    => "12",
+            2      => 3,
+            "map"  => [
+                "map" => [
+                    "map" => [
+                        "id" => "lala",
+                    ],
+                ],
+            ],
         ]);
     }
 
@@ -90,27 +92,27 @@ class GremlinServerTest extends RexsterTestCase
     {
         $this->sendParam([
             [
-                "map"=>[
-                    "map"=>[
-                        "id"=>"first"
-                    ]
-                ]
+                "map" => [
+                    "map" => [
+                        "id" => "first",
+                    ],
+                ],
             ],
             [
-                "map"=>[
-                    "map"=>[
-                        "id"=>"second"
-                    ]
-                ]
+                "map" => [
+                    "map" => [
+                        "id" => "second",
+                    ],
+                ],
             ],
-            [1,2,3,4],
+            [1, 2, 3, 4],
             [
-                "map"=>[
-                    "map"=>[
-                        "id"=>"third"
-                    ]
-                ]
-            ]
+                "map" => [
+                    "map" => [
+                        "id" => "third",
+                    ],
+                ],
+            ],
         ]);
     }
 
@@ -124,15 +126,155 @@ class GremlinServerTest extends RexsterTestCase
             "string2",
             "12",
             3,
-            ["item1","item2"],
+            ["item1", "item2"],
             [
-                "map"=>[
-                    "map"=>[
-                        "id"=>"lala"
-                    ]
-                ]
-            ]
+                "map" => [
+                    "map" => [
+                        "id" => "lala",
+                    ],
+                ],
+            ],
         ]);
     }
 
+    /**
+     * Test the vertex format for changes
+     */
+    public function testVertexPropertyFormat()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->open();
+        $result = $db->send("g.V(1).properties('name')");
+        $vertexProperty = [
+            0 => [
+                "id"    => 0,
+                "value" => "marko",
+                "label" => "name",
+            ],
+        ];
+        $this->assertEquals($this->ksortTree($vertexProperty), $this->ksortTree($result), "vertex property wasn't as expected");
+    }
+
+    /**
+     * Test the vertex format for changes
+     */
+    public function testVertexFormat()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->open();
+        $result = $db->send("g.V(1)");
+        $vertex = [
+            0 => [
+                "id"         => 1,
+                "label"      => "vertex",
+                "properties" => [
+                    "name" => [
+                        0 => [
+                            "id"    => 0,
+                            "value" => "marko",
+                            "label" => "name",
+                        ],
+                    ],
+                    "age"  => [
+                        0 => [
+                            "id"    => 2,
+                            "value" => 29,
+                            "label" => "age",
+                        ],
+                    ],
+                ],
+                "type"       => "vertex",
+            ],
+        ];
+        $this->assertEquals($this->ksortTree($vertex), $this->ksortTree($result), "vertex property wasn't as expected");
+    }
+
+    /**
+     * Test the edge format for changes
+     */
+    public function testEdgeFormat()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->open();
+        $result = $db->send("g.E(12)");
+        $edge = [
+            0 => [
+                "id"         => 12,
+                "label"      => "created",
+                "inVLabel"   => "vertex",
+                "outVLabel"  => "vertex",
+                "inV"        => 3,
+                "outV"       => 6,
+                "properties" => [
+                    "weight" => [
+                        "key"   => "weight",
+                        "value" => 0.2,
+                    ],
+                ],
+                "type"       => "edge",
+            ],
+        ];
+        $this->assertEquals($this->ksortTree($edge), $this->ksortTree($result), "vertex property wasn't as expected");
+    }
+
+    /**
+     * Test the property format for changes
+     */
+    public function testPropertyFormat()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->open();
+        $result = $db->send("g.E(12).properties('weight')");
+        $property = [
+            0 => [
+                "key"   => "weight",
+                "value" => 0.2,
+            ],
+        ];
+        $this->assertEquals($this->ksortTree($property), $this->ksortTree($result), "vertex property wasn't as expected");
+    }
+
+    private function ksortTree(&$array)
+    {
+        if(!is_array($array))
+        {
+            return FALSE;
+        }
+
+        ksort($array);
+        foreach($array as $k => $v)
+        {
+            $this->ksortTree($array[$k]);
+        }
+
+        return TRUE;
+    }
 }

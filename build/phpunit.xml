@@ -6,23 +6,34 @@
          verbose="true"
          bootstrap="../tests/bootstrap.php">
 
-  <testsuites>
-    <testsuite name="rexpro-php">
-      <directory suffix="Test.php">../tests/</directory>
-    </testsuite>
-  </testsuites>
+    <testsuites>
+        <testsuite name="graphson1">
+            <file>../tests/AuthTest.php</file>
+            <file>../tests/GremlinServerTest.php</file>
+            <file>../tests/RexsterTest.php</file>
+            <file>../tests/RexsterTransactionTest.php</file>
+            <file>../tests/RexsterExamplesTest.php</file>
+        </testsuite>
+        <testsuite name="graphson3">
+            <file>../tests/AuthGS3Test.php</file>
+            <file>../tests/GremlinServerGS3Test.php</file>
+            <file>../tests/RexsterGS3Test.php</file>
+            <file>../tests/RexsterTransactionGS3Test.php</file>
+            <file>../tests/RexsterExamplesGS3Test.php</file>
+        </testsuite>
+    </testsuites>
 
-  <logging>
-    <log type="coverage-html" target="../build/coverage" title="rexpro-php"
-         charset="UTF-8" yui="true" highlight="true"
-         lowUpperBound="35" highLowerBound="70"/>
-    <log type="coverage-clover" target="../build/logs/clover.xml"/>
-    <log type="junit" target="../build/logs/junit.xml" logIncompleteSkipped="false"/>
-  </logging>
-  <filter>
-  <whitelist processUncoveredFilesFromWhitelist="true">
-    <directory suffix=".php">../src</directory>
-  </whitelist>
-</filter>
+    <logging>
+        <log type="coverage-html" target="../build/coverage" title="rexpro-php"
+             charset="UTF-8" yui="true" highlight="true"
+             lowUpperBound="35" highLowerBound="70"/>
+        <log type="coverage-clover" target="../build/logs/clover.xml"/>
+        <log type="junit" target="../build/logs/junit.xml" logIncompleteSkipped="false"/>
+    </logging>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../src</directory>
+        </whitelist>
+    </filter>
 
 </phpunit>

@@ -6,9 +6,18 @@
  * Just make the gremlin-php folder accessible on the web path and load this php file in your browser
  */
 
+
 require_once(__DIR__ . '/../vendor/autoload.php');
 
 echo "<pre>";
-$command = new PHPUnit_TextUI_Command;
+if(class_exists("PHPUnit_TextUI_Command"))
+{
+    $command = new \PHPUnit_TextUI_Command;
+}
+else
+{
+
+    $command = new \PHPUnit\TextUI\Command;
+}
 $command->run(['phpunit', '--conf', '../build/phpunit.xml'], TRUE);
 echo "</pre>";
