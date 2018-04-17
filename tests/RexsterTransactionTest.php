@@ -26,6 +26,7 @@ class RexsterTransactionTest extends RexsterTestCase
         $db = new Connection([
             'graph' => 'graphT',
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -70,6 +71,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -111,6 +113,7 @@ class RexsterTransactionTest extends RexsterTestCase
     public function testTransactionWithNoGraphObj()
     {
         $db = new Connection();
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
         $db->transactionStart();
     }
@@ -129,6 +132,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
         $db->transactionStart();
         $db->transactionStart();
@@ -148,6 +152,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
         $db->transactionStop();
     }
@@ -156,8 +161,8 @@ class RexsterTransactionTest extends RexsterTestCase
      * Testing transaction retry error on already open transaction
      *
      * @expectedException \Brightzone\GremlinDriver\InternalException
-     *
      * @return void
+     * @throws \Exception
      */
     public function testTransactionRetryAlreadyOpen()
     {
@@ -166,6 +171,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
         $db->transactionStart();
         $count = 0;
@@ -186,8 +192,8 @@ class RexsterTransactionTest extends RexsterTestCase
      * Testing transaction retry
      *
      * @expectedException \Brightzone\GremlinDriver\ServerException
-     *
      * @return void
+     * @throws \Exception
      */
     public function testTransactionRetry()
     {
@@ -197,6 +203,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'graph'         => 'graphT',
             'retryAttempts' => 5,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
 
         $count = 0;
@@ -227,6 +234,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'graph'         => 'graphT',
             'retryAttempts' => 5,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -282,6 +290,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
 
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
@@ -311,12 +320,14 @@ class RexsterTransactionTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
 
         $db2 = new Connection([
             'graph'    => 'graphT',
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db2->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -345,6 +356,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -353,6 +365,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db2->message->registerSerializer(static::$serializer, TRUE);
         $message = $db2->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -385,6 +398,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -393,6 +407,7 @@ class RexsterTransactionTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db2->message->registerSerializer(static::$serializer, TRUE);
         $message = $db2->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -425,6 +440,7 @@ class RexsterTransactionTest extends RexsterTestCase
         $db = new Connection([
             'graph' => 'graphT',
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 

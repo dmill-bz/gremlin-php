@@ -2,6 +2,8 @@
 
 namespace Brightzone\GremlinDriver;
 
+use Brightzone\GremlinDriver\Serializers\SerializerInterface;
+
 /**
  * Gremlin-server PHP Driver client Messages class
  * Builds and parses binary messages for communication with Gremlin-server
@@ -51,8 +53,6 @@ class Message
 
     /**
      * Overriding construct to populate _serializer
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -102,6 +102,7 @@ class Message
      * @param string $name name of the variable you want to get
      *
      * @return string
+     * @throws InternalException
      */
     public function __get($name)
     {
@@ -165,6 +166,7 @@ class Message
      * Constructs full binary message for use in script execution
      *
      * @return string Returns binary data to be packed and sent to socket
+     * @throws InternalException
      */
     public function buildMessage()
     {
@@ -172,21 +174,23 @@ class Message
         $this->createUuid();
 
         //build message array
-        $message = array(
-                'requestId' => $this->requestUuid,
-                'processor' => $this->processor,
-                'op' => $this->op,
-                'args' => $this->args
-                );
+        $message = new RequestMessage([
+            'requestId' => $this->requestUuid,
+            'processor' => $this->processor,
+            'op'        => $this->op,
+            'args'      => $this->args,
+        ]);
         //serialize message
         if(!isset($this->_serializers['default']))
         {
             throw new InternalException("No default serializer set", 500);
         }
+
         $this->_serializers['default']->serialize($message);
         $mimeType = $this->_serializers['default']->getMimeType();
 
         $finalMessage = pack('C', strlen($mimeType)) . $mimeType . $message;
+
         return $finalMessage;
     }
 
@@ -209,6 +213,7 @@ class Message
 
             return $serializer->unserialize($payload);
         }
+
         return $this->_serializers['default']->unserialize($payload);
     }
 
@@ -232,6 +237,7 @@ class Message
                 return $serializer;
             }
         }
+
         return FALSE;
     }
 
@@ -242,6 +248,7 @@ class Message
      * @param bool  $default whether or not to use this serializer as the default one
      *
      * @return void
+     * @throws InternalException
      */
     public function registerSerializer($value, $default = TRUE)
     {
@@ -257,6 +264,10 @@ class Message
                 $this->_serializers['default'] = $value;
             }
             $this->_serializers[$value->getMimeType()] = $value;
+        }
+        else
+        {
+            throw new InternalException("Serializer could not be set", 500);
         }
     }
 

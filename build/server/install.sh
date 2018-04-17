@@ -51,13 +51,25 @@ echo '<ivysettings>
 # get gremlin-server configuration files
 echo "Copying configuration files"
 cp ./build/server/$TP_CONF_DIR/gremlin-php-script.groovy $SERVER_INSTALL_DIR/$TPFILENAME/scripts/
-cp ./build/server/$TP_CONF_DIR/gremlin-server-php.yaml $SERVER_INSTALL_DIR/$TPFILENAME/conf/
+
+if [ $GRAPHSON_VERSION = "3.0" ]
+then
+    cp ./build/server/$TP_CONF_DIR/gremlin-server-php-graphson.yaml $SERVER_INSTALL_DIR/$TPFILENAME/conf/gremlin-server-php.yaml
+else
+    cp ./build/server/$TP_CONF_DIR/gremlin-server-php.yaml $SERVER_INSTALL_DIR/$TPFILENAME/conf/
+fi
+
 cp ./build/server/$TP_CONF_DIR/neo4j-empty.properties $SERVER_INSTALL_DIR/$TPFILENAME/conf/
 
 # get gremlin-server secure configuration files
 echo "Copying secure configuration files"
 cp ./build/server/$TP_CONF_DIR/gremlin-php-script-secure.groovy $SERVER_INSTALL_DIR/secure/$TPFILENAME/scripts/
-cp ./build/server/$TP_CONF_DIR/gremlin-server-php-secure.yaml $SERVER_INSTALL_DIR/secure/$TPFILENAME/conf/
+if [ $GRAPHSON_VERSION = "3.0" ]
+then
+    cp ./build/server/$TP_CONF_DIR/gremlin-server-php-secure-graphson.yaml $SERVER_INSTALL_DIR/secure/$TPFILENAME/conf/gremlin-server-php-secure.yaml
+else
+    cp ./build/server/$TP_CONF_DIR/gremlin-server-php-secure.yaml $SERVER_INSTALL_DIR/secure/$TPFILENAME/conf/
+fi
 
 # get neo4j dependencies
 cat ~/.groovy/grapeConfig.xml

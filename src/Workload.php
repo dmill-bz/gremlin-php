@@ -68,6 +68,7 @@ class Workload
      * @param int $attempts the number of times to retry
      *
      * @return mixed the result of the executable code
+     * @throws ServerException
      */
     public function linearRetry($attempts)
     {

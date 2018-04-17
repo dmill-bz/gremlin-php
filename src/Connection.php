@@ -3,7 +3,7 @@
 namespace Brightzone\GremlinDriver;
 
 use Brightzone\GremlinDriver\Serializers\Json;
-use Brightzone\GremlinDriver\ServerException;
+use Brightzone\GremlinDriver\Serializers\SerializerInterface;
 
 /**
  * Gremlin-server PHP Driver client Connection class
@@ -91,13 +91,13 @@ class Connection
     /**
      * @var bool tells us if we're inside a transaction
      */
-    private $_inTransaction = FALSE;
+    protected $_inTransaction = FALSE;
 
     /**
      * @var string The session ID for this connection.
      * Session ID allows us to access variable bindings made in previous requests. It is binary data
      */
-    private $_sessionUuid;
+    protected $_sessionUuid;
 
     /**
      * @var resource rexpro socket connection
@@ -117,18 +117,18 @@ class Connection
     public $saslMechanism = "PLAIN";
 
     /**
-     * @var the strategy to use for retry
+     * @var string the strategy to use for retry
      */
     public $retryStrategy = 'linear';
 
     /**
-     * @var the number of attempts before total failure
+     * @var int the number of attempts before total failure
      */
     public $retryAttempts = 1;
 
     /**
-     * @var bool whether or not to accept different return formats from the on the message was sent with.
-     * This is an extreemly rare occurence. Only happens if using a custom serializer.
+     * @var bool whether or not to accept different return formats from the one the message was sent with.
+     * This is an extremely rare occurrence. Only happens if using a custom serializer.
      */
     private $_acceptDiffResponseFormat = FALSE;
 
@@ -136,7 +136,7 @@ class Connection
      * Overloading constructor to instantiate a Message instance and
      * provide it with a default serializer.
      *
-     * @return void
+     * @param array $options The class options
      */
     public function __construct($options = [])
     {
@@ -163,6 +163,8 @@ class Connection
 
             return $this->makeHandshake();
         }
+
+        return FALSE;
     }
 
     /**
@@ -194,7 +196,7 @@ class Connection
      *
      * @param bool $origin whether or not to provide the origin header. currently unsupported
      *
-     * @return bool TRUE on succes FALSE on failure
+     * @return bool TRUE on success FALSE on failure
      */
     protected function makeHandshake($origin = FALSE)
     {
@@ -224,7 +226,7 @@ class Connection
             {
                 $this->error("Couldn't get a response from server", 500);
             }
-                        
+
             preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches);
             $keyAccept = trim($matches[1]);
             $expectedResponse = base64_encode(pack('H*', sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
@@ -234,6 +236,8 @@ class Connection
         catch(\Exception $e)
         {
             $this->error("Could not finalise handshake, Maybe the server was unreachable", 500, TRUE);
+
+            return FALSE;
         }
     }
 
@@ -390,6 +394,8 @@ class Connection
         if(!$fp)
         {
             $this->error($errorMessage, $errno, TRUE);
+
+            return FALSE;
         }
 
         $this->_socket = $fp;
@@ -402,12 +408,13 @@ class Connection
      *
      *
      * @param mixed  $msg            (Message|String|NULL) the message to send, NULL means use $this->message
-     * @param string $op             Operation to run against opProcessor.
      * @param string $processor      opProcessor to use.
+     * @param string $op             Operation to run against opProcessor.
      * @param array  $args           Arguments to overwrite.
      * @param bool   $expectResponse Arguments to overwrite.
      *
      * @return void
+     * @throws \Exception
      */
     public function run($msg = NULL, $processor = '', $op = 'eval', $args = [], $expectResponse = TRUE)
     {
@@ -482,11 +489,12 @@ class Connection
      *
      *
      * @param mixed  $msg       (Message|String|NULL) the message to send, NULL means use $this->message
-     * @param string $op        Operation to run against opProcessor.
      * @param string $processor opProcessor to use.
+     * @param string $op        Operation to run against opProcessor.
      * @param array  $args      Arguments to overwrite.
      *
      * @return array reply from server.
+     * @throws ServerException
      */
     public function send($msg = NULL, $processor = '', $op = 'eval', $args = [])
     {
@@ -545,6 +553,8 @@ class Connection
 
             return TRUE;
         }
+
+        return FALSE;
     }
 
     /**
@@ -555,12 +565,12 @@ class Connection
      */
     public function closeSession()
     {
-        if(isset($this->_sessionUuid))
+        if($this->isSessionOpen())
         {
             $msg = new Message();
             $msg->op = "close";
             $msg->processor = "session";
-            $msg->setArguments(['session' => $this->_sessionUuid]);
+            $msg->setArguments(['session' => $this->getSession()]);
             $msg->registerSerializer(new Json());
             $this->run($msg, NULL, NULL, NULL, FALSE); // Tell run not to expect a return
             $this->_sessionUuid = NULL;
@@ -819,7 +829,13 @@ class Connection
      * Custom error throwing method.
      * We use this to run rollbacks when errors occur
      *
+     * @param string $description Description of the error
+     * @param int    $code        The error code
+     * @param bool   $internal    true for internal, false for server error
+     *
      * @return void
+     * @throws InternalException
+     * @throws ServerException
      */
     private function error($description, $code, $internal = FALSE)
     {
@@ -851,7 +867,7 @@ class Connection
      */
     public function getSession()
     {
-        if(!isset($this->_sessionUuid))
+        if(!$this->isSessionOpen())
         {
             $this->_sessionUuid = Helper::createUuid();
         }
@@ -860,20 +876,50 @@ class Connection
     }
 
     /**
-     * Builds an authentication message when challenged by the server
+     * Checks if the session is currently open
      *
-     * @return void
+     * @return bool TRUE if it's open is FALSE if not.
+     */
+    public function isSessionOpen()
+    {
+        if(!isset($this->_sessionUuid))
+        {
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    /**
+     * Builds an authentication message when challenged by the server
+     * Once you respond and authenticate you will receive the response for the request you made prior to the challenge
+     *
+     * @return array The server response.
      */
     protected function authenticate()
     {
         $msg = new Message();
         $msg->op = "authentication";
-        $msg->processor = "";
-        $msg->setArguments([
+
+        $args = [
             'sasl'          => base64_encode(utf8_encode("\x00" . trim($this->username) . "\x00" . trim($this->password))),
             'saslMechanism' => $this->saslMechanism,
-        ]);
-        $msg->registerSerializer(new Json());
+        ];
+
+        if($this->isSessionOpen())
+        {
+            $msg->processor = "session";
+            $args["session"] = $this->getSession();
+        }
+        else
+        {
+            $msg->processor = "";
+        }
+
+        $msg->setArguments($args);
+
+        //['session' => $this->_sessionUuid]
+        $msg->registerSerializer($this->message->getSerializer());
 
         return $this->send($msg);
     }

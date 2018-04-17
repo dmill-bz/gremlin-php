@@ -3,6 +3,7 @@
 namespace Brightzone\GremlinDriver\Serializers;
 
 use Brightzone\GremlinDriver\InternalException;
+use Brightzone\GremlinDriver\RequestMessage;
 
 /**
  * Gremlin-server PHP JSON Serializer class
@@ -35,6 +36,7 @@ class Gson3 implements SerializerInterface
         "integer",
         "array",
         "object",
+        "NULL",
     ];
 
     /**
@@ -80,7 +82,7 @@ class Gson3 implements SerializerInterface
     /**
      * Unserializes the data
      *
-     * @param array $data data to be unserialized
+     * @param mixed $data data to be unserialized
      *
      * @return array unserialized message
      */
@@ -169,6 +171,18 @@ class Gson3 implements SerializerInterface
             "@type"  => $intSize[PHP_INT_SIZE],
             "@value" => $int,
         ];
+    }
+
+    /**
+     * Convert a NULL into it's graphson 3.0 form
+     *
+     * @param null $null The NULL to convert
+     *
+     * @return null converted NULL
+     */
+    public function convertNULL($null)
+    {
+        return $null;
     }
 
     /**
@@ -263,11 +277,25 @@ class Gson3 implements SerializerInterface
      *
      * @param object $object The array to convert
      *
+     * @return array the converted object
      * @throws InternalException
      */
     public function convertObject($object)
     {
-        throw new InternalException("Objects aren't currently supported by the " . self::$name . " serializer (" . __CLASS__ . "). Error produced by: " . get_class($object), 500);
+        if($object instanceof RequestMessage)
+        {
+            $converted = [];
+            foreach($object->jsonSerialize() as $key => $value)
+            {
+                $converted[$key] = $this->convert($value);
+            }
+
+            return $converted;
+        }
+        else
+        {
+            throw new InternalException("Objects other than RequestMessage aren't currently supported by the " . self::$name . " serializer (" . __CLASS__ . "). Error produced by: " . get_class($object), 500);
+        }
     }
 
     /**
@@ -519,7 +547,19 @@ class Gson3 implements SerializerInterface
      */
     public function deconvertTree($tree)
     {
-        return $this->deconvert($tree);
+        $deconvert = [];
+        $result = $this->deconvert($tree);
+        foreach($result as $value)
+        {
+            if(isset($value["key"]) && isset($value["key"]["id"]))
+            {
+                $deconvert[$value["key"]["id"]] = $value;
+            }
+            else
+                $deconvert[] = $value;
+        }
+
+        return $deconvert;
     }
 
     /**

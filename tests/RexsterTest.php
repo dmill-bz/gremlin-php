@@ -5,6 +5,8 @@ namespace Brightzone\GremlinDriver\Tests;
 use Brightzone\GremlinDriver\Connection;
 use Brightzone\GremlinDriver\Helper;
 use Brightzone\GremlinDriver\Message;
+use Brightzone\GremlinDriver\RequestMessage;
+use Brightzone\GremlinDriver\Serializers\Json;
 use Brightzone\GremlinDriver\Workload;
 
 /**
@@ -92,6 +94,8 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+
         $this->assertTrue($db->open(), "did not succesfully connect");
         $db->close();
 
@@ -101,6 +105,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $this->assertTrue($db->open(), "did not succesfully connect");
         $db->close();
 
@@ -110,6 +115,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $this->assertTrue($db->open(), "did not succesfully connect");
         $db->close();
     }
@@ -126,6 +132,7 @@ class RexsterTest extends RexsterTestCase
         $db = new Connection([
             'host' => 'unknownhost',
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->timeout = 0.5;
         $db->open();
     }
@@ -146,6 +153,7 @@ class RexsterTest extends RexsterTestCase
             'graph'    => '',
             'port'     => '443',
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->timeout = 0.5;
         $db->open();
     }
@@ -161,6 +169,7 @@ class RexsterTest extends RexsterTestCase
         $db = new Connection([
             'host' => 'unknownhost',
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->timeout = 0.5;
         try
         {
@@ -185,6 +194,7 @@ class RexsterTest extends RexsterTestCase
         $db = new Connection([
             'port' => 8187,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->timeout = 0.5;
         $db->open();
     }
@@ -203,6 +213,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
 
         //check disconnection
@@ -224,6 +235,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
@@ -253,6 +265,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
 
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
@@ -286,6 +299,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
 
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
@@ -316,6 +330,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db2->message->registerSerializer(static::$serializer, TRUE);
         $message = $db2->open();
 
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
@@ -343,6 +358,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -371,6 +387,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -405,6 +422,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -434,6 +452,7 @@ class RexsterTest extends RexsterTestCase
     public function testSendMessageWithoutConnection()
     {
         $db = new Connection();
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $msg = new Message();
         $db->send($msg);
     }
@@ -449,6 +468,7 @@ class RexsterTest extends RexsterTestCase
     public function testRunScriptWithoutConnection()
     {
         $db = new Connection();
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->send();
     }
 
@@ -512,6 +532,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
@@ -534,6 +555,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
@@ -566,6 +588,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
         $this->assertTrue(isset($db->message->gremlin), 'gremlin should not be set');
         $db->message->gremlin = "5 + 5";
@@ -589,6 +612,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
         $this->assertTrue(isset($db->message->gremlin), 'gremlin should not be set');
         $what = $db->message->something;
@@ -602,6 +626,7 @@ class RexsterTest extends RexsterTestCase
     public function testConnectionConstruct()
     {
         $db = new Connection(['host' => 'localhost', 'port' => 8182, 'graph' => 'graph']);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $this->assertEquals($db->host, 'localhost', 'incorrect host');
         $this->assertEquals($db->port, 8182, 'incorrect port');
         $this->assertEquals($db->graph, 'graph', 'incorrect graph');
@@ -619,6 +644,7 @@ class RexsterTest extends RexsterTestCase
             'port'  => 8182,
             'graph' => 'graph',
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
 
         $result = $db->send('g.V().emit().repeat(__.both()).times(5)');
@@ -629,8 +655,8 @@ class RexsterTest extends RexsterTestCase
      * Test Workload retry strategy
      *
      * @expectedException \Brightzone\GremlinDriver\ServerException
-     *
      * @return void
+     * @throws \Exception
      */
     public function testRetry()
     {
@@ -640,6 +666,7 @@ class RexsterTest extends RexsterTestCase
             'graph'         => 'graph',
             'retryAttempts' => 5,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
 
         $count = 0;
@@ -672,6 +699,7 @@ class RexsterTest extends RexsterTestCase
             'graph'         => 'graph',
             'retryAttempts' => 5,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
         $db->open();
 
@@ -722,6 +750,7 @@ class RexsterTest extends RexsterTestCase
             'retryAttempts' => 5,
             'emptySet'      => TRUE,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
 
         $result = $db->send("g.V().has('name', 'doesnotexist')");
@@ -743,6 +772,7 @@ class RexsterTest extends RexsterTestCase
             'graph'         => 'graph',
             'retryAttempts' => 5,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
 
         $result = $db->send("g.V().has('name', 'doesnotexist')");
@@ -762,6 +792,7 @@ class RexsterTest extends RexsterTestCase
             'retryAttempts' => 5,
             //'emptySet' => TRUE
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
 
         $db->send("
@@ -792,6 +823,7 @@ class RexsterTest extends RexsterTestCase
             'graph'         => 'graph',
             'retryAttempts' => 5,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $db->open();
 
         $expected = [
@@ -864,10 +896,28 @@ class RexsterTest extends RexsterTestCase
         ];
 
         $result = $db->send('g.V(1).out().properties("name").tree()');
+        $this->ksortTree($result);
+        $this->ksortTree($expected);
 
         $this->assertEquals($expected, $result, "the response is not formated as expected.");
 
         $db->close();
+    }
+
+    private function ksortTree(&$array)
+    {
+        if(!is_array($array))
+        {
+            return FALSE;
+        }
+
+        ksort($array);
+        foreach($array as $k => $v)
+        {
+            $this->ksortTree($array[$k]);
+        }
+
+        return TRUE;
     }
 
     /**
@@ -878,6 +928,7 @@ class RexsterTest extends RexsterTestCase
         $db = new Connection([
             'graph' => 'graph',
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -899,6 +950,7 @@ class RexsterTest extends RexsterTestCase
             'graph'   => 'graph',
             'aliases' => ['crazyname' => 'g'],
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -918,6 +970,7 @@ class RexsterTest extends RexsterTestCase
         $db = new Connection([
             'graph' => 'graph',
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 
@@ -942,6 +995,7 @@ class RexsterTest extends RexsterTestCase
             'username' => $this->username,
             'password' => $this->password,
         ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
         $message = $db->open();
         $this->assertNotEquals($message, FALSE);
 

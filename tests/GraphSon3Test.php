@@ -2,6 +2,7 @@
 
 namespace Brightzone\GremlinDriver\Tests;
 
+use Brightzone\GremlinDriver\Connection;
 use Brightzone\GremlinDriver\Serializers\Gson3;
 use stdClass;
 
@@ -1033,5 +1034,32 @@ class GraphSon3Test extends RexsterTestCase
             ],
             30,
         ], $data, "incorrect GraphSON 3.0 was generated");
+    }
+
+    public function testConnect()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+
+        $db->message->registerSerializer(new Gson3, TRUE);
+
+        $message = $db->open();
+        $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
+
+        $result = $db->send('5+5');
+        print_r($result);
+        $this->assertEquals(10, $result[0], 'Script response message is not the right type. (Maybe it\'s an error)');
+
+        $result = $db->send('g.V()');
+        $this->assertEquals(6, count($result), 'Script response message is not the right type. (Maybe it\'s an error)');
+
+        //check disconnection
+        $db->close();
+        $this->assertFALSE($db->isConnected(), 'Despite not throwing errors, Socket connection is not established');
     }
 }

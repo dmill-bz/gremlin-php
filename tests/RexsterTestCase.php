@@ -2,6 +2,9 @@
 
 namespace Brightzone\GremlinDriver\Tests;
 
+use Brightzone\GremlinDriver\Serializers\Json;
+use Brightzone\GremlinDriver\Serializers\SerializerInterface;
+
 /**
  * Unit testing test case
  * Allows for developpers to use command line args to set username and password for test database
@@ -22,6 +25,21 @@ class RexsterTestCase extends \PHPUnit\Framework\TestCase
      * @var mixed the database password to use with tests, if any
      */
     protected $password;
+
+    /**
+     * @var SerializerInterface the serializer to use
+     */
+    protected static $serializer;
+
+    /**
+     * Set the serializer up here
+     *
+     * @return void
+     */
+    public static function setUpBeforeClass()
+    {
+        static::$serializer = new Json();
+    }
 
     /**
      * Overriding setup to catch database arguments if set.
