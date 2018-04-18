@@ -20,6 +20,7 @@
             <file>../tests/RexsterGS3Test.php</file>
             <file>../tests/RexsterTransactionGS3Test.php</file>
             <file>../tests/RexsterExamplesGS3Test.php</file>
+            <file>../tests/GraphSon3Test.php</file>
         </testsuite>
     </testsuites>
 
@@ -33,6 +34,9 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">../src</directory>
+            <exclude>
+                <file>../src/Serializers/SerializerInterface.php</file>
+            </exclude>
         </whitelist>
     </filter>
 

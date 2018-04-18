@@ -139,6 +139,26 @@ class RexsterTransactionTest extends RexsterTestCase
     }
 
     /**
+     * Testing db close during transaction running transaction
+     *
+     * @return void
+     */
+    public function testClosingDbOnRunningTransaction()
+    {
+        $db = new Connection([
+            'graph'    => 'graphT',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->open();
+        $db->transactionStart();
+        $db->close();
+
+        $this->assertTrue(TRUE); // should execute this without hitting any errors
+    }
+
+    /**
      * Testing transactionStop() with no running transaction
      *
      * @expectedException \Brightzone\GremlinDriver\InternalException

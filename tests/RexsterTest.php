@@ -7,6 +7,7 @@ use Brightzone\GremlinDriver\Helper;
 use Brightzone\GremlinDriver\Message;
 use Brightzone\GremlinDriver\RequestMessage;
 use Brightzone\GremlinDriver\Serializers\Json;
+use Brightzone\GremlinDriver\Tests\Stubs\IncorrectlyFormattedMessage;
 use Brightzone\GremlinDriver\Workload;
 
 /**
@@ -200,6 +201,63 @@ class RexsterTest extends RexsterTestCase
     }
 
     /**
+     * Testing connection when sending an incorrect request
+     *
+     * @expectedException \Brightzone\GremlinDriver\ServerException
+     *
+     * @return void
+     */
+    public function testConnectErrorsWrongRequest()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->timeout = 0.5;
+        $db->open();
+        $msg = new IncorrectlyFormattedMessage();
+        $msg->registerSerializer(static::$serializer);
+        $msg->gremlin = '5+5';
+        $msg->op = 'eval';
+        $msg->processor = '';
+
+        $db->send($msg);
+    }
+
+    /**
+     * Testing internalerror on run
+     *
+     * @expectedException \Brightzone\GremlinDriver\InternalException
+     *
+     * @return void
+     */
+    public function testConnectInetrnalErrorOnRun()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->timeout = 0.5;
+        $db->open();
+        $msg = new IncorrectlyFormattedMessage();
+        $msg->throwErrorOnParse = TRUE;
+        $msg->registerSerializer(static::$serializer);
+        $msg->gremlin = '5+5';
+        $msg->op = 'eval';
+        $msg->processor = '';
+
+        $db->send($msg);
+    }
+
+    /**
      * Testing connection close
      *
      * @return void
@@ -335,7 +393,7 @@ class RexsterTest extends RexsterTestCase
 
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
         $msg = new Message();
-        $msg->registerSerializer('\Brightzone\GremlinDriver\Serializers\Json');
+        $msg->registerSerializer(static::$serializer);
         $msg->gremlin = 'cal';
         $msg->op = 'eval';
         $msg->processor = 'session';
@@ -619,6 +677,65 @@ class RexsterTest extends RexsterTestCase
     }
 
     /**
+     * Testing Message serializer unknown getter error
+     *
+     * @expectedException \Brightzone\GremlinDriver\InternalException
+     *
+     * @return void
+     */
+    public function testMessageGetSerializerError()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->open();
+        $db->message->getSerializer("mimeType/noexist");
+    }
+
+    /**
+     * Testing Message serializer non interfaced setter error
+     *
+     * @expectedException \Brightzone\GremlinDriver\InternalException
+     *
+     * @return void
+     */
+    public function testMessageNonInterfacedSerializerError()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(new Connection(), TRUE); // provide incorrect class
+    }
+
+    /**
+     * Testing Message serializer non existing class setter error
+     *
+     * @expectedException \Brightzone\GremlinDriver\InternalException
+     *
+     * @return void
+     */
+    public function testMessageNonExistingClassSerializerError()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer('\something\that\doesnot\Exist', TRUE); // provide incorrect class
+    }
+
+    /**
      * Test Connection Construct
      *
      * @return void
@@ -798,6 +915,38 @@ class RexsterTest extends RexsterTestCase
         $db->send("
             for(i in 1..35){
                 graph.addVertex('name', 'john', 'age', 25, 'somefillertext', 'FFFFFFFFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF')
+            }"
+        );
+
+        $db->send("g.V()");
+
+        $db->run("g.V().has('name', 'john').sideEffect{it.get().remove()}.iterate()");
+
+        $db->close();
+
+        $this->assertTrue(TRUE); // just asserting we get here and no error is thrown.
+    }
+
+    /**
+     * Lets test sending large payload and retrieving large payload
+     *
+     * @return void
+     */
+    public function testLargePayload()
+    {
+        $db = new Connection([
+            'host'          => 'localhost',
+            'port'          => 8182,
+            'graph'         => 'graph',
+            'retryAttempts' => 5,
+            //'emptySet' => TRUE
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->open();
+
+        $db->send("
+            for(i in 1..35){
+                graph.addVertex('name', 'john', 'age', 25, 'somefillertext', 'FFFFFFFFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF FFFFFFFFFFFFFFFFFF')
             }"
         );
 

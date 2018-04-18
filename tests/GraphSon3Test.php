@@ -3,6 +3,7 @@
 namespace Brightzone\GremlinDriver\Tests;
 
 use Brightzone\GremlinDriver\Connection;
+use Brightzone\GremlinDriver\RequestMessage;
 use Brightzone\GremlinDriver\Serializers\Gson3;
 use stdClass;
 
@@ -108,6 +109,46 @@ class GraphSon3Test extends RexsterTestCase
 
         // List
         $serializer->convertObject($object);
+    }
+
+    /**
+     * Test converting a Request message object to graphson 3.0 format
+     *
+     * @return void
+     */
+    public function testConvertObjectRequestMessage()
+    {
+        $serializer = new Gson3;
+        $intType = $this->getintType();
+        $object = new RequestMessage([3 => [123, TRUE, 5.34, "string"]]);
+
+
+        $converted = $serializer->convertObject($object);
+
+        $this->assertEquals([
+            3 => [
+                "@type"  => "g:List",
+                "@value" => [
+                    ["@type" => $intType, "@value" => 123],
+                    TRUE,
+                    ["@type" => "g:Double", "@value" => 5.34],
+                    "string",
+                ],
+            ],
+        ], $converted, "Incorrect GS3 conversion for RequestMessage object");
+    }
+
+    /**
+     * Test converting an NULL to graphson 3.0 format
+     *
+     * @return void
+     */
+    public function testConvertNull()
+    {
+        $serializer = new Gson3;
+
+        $deconverted = $serializer->convertNULL(NULL);
+        $this->assertEquals(NULL, $deconverted, "Incorrect deconversion for Double");
     }
 
     /**
@@ -349,11 +390,11 @@ class GraphSon3Test extends RexsterTestCase
     }
 
     /**
-     * Test converting an unsupported item
+     * Test converting an unsupported object
      *
      * @expectedException \Brightzone\GremlinDriver\InternalException
      */
-    public function testConvertUnsupported()
+    public function testConvertUnsupportedObject()
     {
         $serializer = new Gson3;
 
@@ -361,6 +402,20 @@ class GraphSon3Test extends RexsterTestCase
         $object->title = 'Test Object';
 
         $serializer->convert($object);
+    }
+
+    /**
+     * Test converting an unsupported type
+     *
+     * @expectedException \Brightzone\GremlinDriver\InternalException
+     */
+    public function testConvertUnsupportedType()
+    {
+        $serializer = new Gson3;
+
+        $type = stream_context_create();
+
+        $serializer->convert($type);
     }
 
     /**
@@ -678,6 +733,467 @@ class GraphSon3Test extends RexsterTestCase
     }
 
     /**
+     * Test deconverting a Path from graphson 3.0 format to native
+     *
+     * @return void
+     */
+    public function testDeconvertPath()
+    {
+        $serializer = new Gson3;
+
+        $deconverted = $serializer->deconvertPath([
+            "@type"  => "g:Path",
+            "@value" => [
+                "labels"  => [[], [], []],
+                "objects" => [
+                    [
+                        "@type"  => "g:Vertex",
+                        "@value" => [
+                            "id"    => [
+                                "@type"  => "g:Int32",
+                                "@value" => 1,
+                            ],
+                            "label" => "person",
+                        ],
+                    ], [
+                        "@type"  => "g:Vertex",
+                        "@value" => [
+                            "id"         => [
+                                "@type"  => "g:Int32",
+                                "@value" => 10,
+                            ],
+                            "label"      => "software",
+                            "properties" => [
+                                "name" => [
+                                    [
+                                        "@type"  => "g:VertexProperty",
+                                        "@value" => [
+                                            "id"     => [
+                                                "@type"  => "g:Int64",
+                                                "@value" => 4,
+                                            ],
+                                            "value"  => "gremlin",
+                                            "vertex" => [
+                                                "@type"  => "g:Int32",
+                                                "@value" => 10,
+                                            ],
+                                            "label"  => "name",
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ], [
+                        "@type"  => "g:Vertex",
+                        "@value" => [
+                            "id"         => [
+                                "@type"  => "g:Int32",
+                                "@value" => 11,
+                            ],
+                            "label"      => "software",
+                            "properties" => [
+                                "name" => [
+                                    [
+                                        "@type"  => "g:VertexProperty",
+                                        "@value" => [
+                                            "id"     => [
+                                                "@type"  => "g:Int64",
+                                                "@value" => 5,
+                                            ],
+                                            "value"  => "tinkergraph",
+                                            "vertex" => [
+                                                "@type"  => "g:Int32",
+                                                "@value" => 11,
+                                            ],
+                                            "label"  => "name",
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertEquals([
+
+            "labels"  => [[], [], []],
+            "objects" => [
+                [
+                    "id"    => 1,
+                    "label" => "person",
+                    "type"  => "vertex",
+
+                ], [
+                    "id"         => 10,
+                    "label"      => "software",
+                    "properties" => [
+                        "name" => [
+                            [
+                                "id"     => 4,
+                                "value"  => "gremlin",
+                                "vertex" => 10,
+                                "label"  => "name",
+                            ],
+                        ],
+                    ],
+                    "type"       => "vertex",
+                ], [
+                    "id"         => 11,
+                    "label"      => "software",
+                    "properties" => [
+                        "name" => [
+                            [
+                                "id"     => 5,
+                                "value"  => "tinkergraph",
+                                "vertex" => 11,
+                                "label"  => "name",
+                            ],
+                        ],
+                    ],
+                    "type"       => "vertex",
+                ],
+            ],
+
+        ], $deconverted, "Incorrect deconversion for Path");
+    }
+
+    /**
+     * Test deconverting a Tree from graphson 3.0 format to native
+     *
+     * @return void
+     */
+    public function testDeconvertTree()
+    {
+        $serializer = new Gson3;
+
+        $deconverted = $serializer->deconvertTree([
+            '@type'  => 'g:List',
+            '@value' => [
+                0 => [
+                    '@type'  => 'g:Tree',
+                    '@value' => [
+                        0 => [
+                            'key'   => [
+                                '@type'  => 'g:Vertex',
+                                '@value' => [
+                                    'id'         => [
+                                        '@type'  => 'g:Int64',
+                                        '@value' => 1,
+                                    ],
+                                    'label'      => 'vertex',
+                                    'properties' => [
+                                        'name' => [
+                                            0 => [
+                                                '@type'  => 'g:VertexProperty',
+                                                '@value' => [
+                                                    'id'    => [
+                                                        '@type'  => 'g:Int64',
+                                                        '@value' => 0,
+                                                    ],
+                                                    'value' => 'marko',
+                                                    'label' => 'name',
+                                                ],
+                                            ],
+                                        ],
+                                        'age'  => [
+                                            0 => [
+                                                '@type'  => 'g:VertexProperty',
+                                                '@value' => [
+                                                    'id'    => [
+                                                        '@type'  => 'g:Int64',
+                                                        '@value' => 2,
+                                                    ],
+                                                    'value' => [
+                                                        '@type'  => 'g:Int32',
+                                                        '@value' => 29,
+                                                    ],
+                                                    'label' => 'age',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            'value' => [
+                                '@type'  => 'g:Tree',
+                                '@value' => [
+                                    0 => [
+                                        'key'   => [
+                                            '@type'  => 'g:Vertex',
+                                            '@value' => [
+                                                'id'         => [
+                                                    '@type'  => 'g:Int64',
+                                                    '@value' => 2,
+                                                ],
+                                                'label'      => 'vertex',
+                                                'properties' => [
+                                                    'name' => [
+                                                        0 => [
+                                                            '@type'  => 'g:VertexProperty',
+                                                            '@value' => [
+                                                                'id'    => [
+                                                                    '@type'  => 'g:Int64',
+                                                                    '@value' => 3,
+                                                                ],
+                                                                'value' => 'vadas',
+                                                                'label' => 'name',
+                                                            ],
+                                                        ],
+                                                    ],
+                                                    'age'  => [
+                                                        0 => [
+                                                            '@type'  => 'g:VertexProperty',
+                                                            '@value' => [
+                                                                'id'    => [
+                                                                    '@type'  => 'g:Int64',
+                                                                    '@value' => 4,
+                                                                ],
+                                                                'value' => [
+                                                                    '@type'  => 'g:Int32',
+                                                                    '@value' => 27,
+                                                                ],
+                                                                'label' => 'age',
+                                                            ],
+                                                        ],
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                        'value' => [
+                                            '@type'  => 'g:Tree',
+                                            '@value' => [
+                                                0 => [
+                                                    'key'   => [
+                                                        '@type'  => 'g:VertexProperty',
+                                                        '@value' => [
+                                                            'id'    => [
+                                                                '@type'  => 'g:Int64',
+                                                                '@value' => 3,
+                                                            ],
+                                                            'value' => 'vadas',
+                                                            'label' => 'name',
+                                                        ],
+                                                    ],
+                                                    'value' => [
+                                                        '@type'  => 'g:Tree',
+                                                        '@value' => [],
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    1 => [
+                                        'key'   => [
+                                            '@type'  => 'g:Vertex',
+                                            '@value' => [
+                                                'id'         => [
+                                                    '@type'  => 'g:Int64',
+                                                    '@value' => 3,
+                                                ],
+                                                'label'      => 'vertex',
+                                                'properties' => [
+                                                    'name' => [
+                                                        0 => [
+                                                            '@type'  => 'g:VertexProperty',
+                                                            '@value' => [
+                                                                'id'    => [
+                                                                    '@type'  => 'g:Int64',
+                                                                    '@value' => 5,
+                                                                ],
+                                                                'value' => 'lop',
+                                                                'label' => 'name',
+                                                            ],
+                                                        ],
+                                                    ],
+                                                    'lang' => [
+                                                        0 => [
+                                                            '@type'  => 'g:VertexProperty',
+                                                            '@value' => [
+                                                                'id'    => [
+                                                                    '@type'  => 'g:Int64',
+                                                                    '@value' => 6,
+                                                                ],
+                                                                'value' => 'java',
+                                                                'label' => 'lang',
+                                                            ],
+                                                        ],
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                        'value' => [
+                                            '@type'  => 'g:Tree',
+                                            '@value' => [
+                                                0 => [
+                                                    'key'   => [
+                                                        '@type'  => 'g:VertexProperty',
+                                                        '@value' => [
+                                                            'id'    => [
+                                                                '@type'  => 'g:Int64',
+                                                                '@value' => 5,
+                                                            ],
+                                                            'value' => 'lop',
+                                                            'label' => 'name',
+                                                        ],
+                                                    ],
+                                                    'value' => [
+                                                        '@type'  => 'g:Tree',
+                                                        '@value' => [],
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                    2 => [
+                                        'key'   => [
+                                            '@type'  => 'g:Vertex',
+                                            '@value' => [
+                                                'id'         => [
+                                                    '@type'  => 'g:Int64',
+                                                    '@value' => 4,
+                                                ],
+                                                'label'      => 'vertex',
+                                                'properties' => [
+                                                    'name' => [
+                                                        0 => [
+                                                            '@type'  => 'g:VertexProperty',
+                                                            '@value' => [
+                                                                'id'    => [
+                                                                    '@type'  => 'g:Int64',
+                                                                    '@value' => 7,
+                                                                ],
+                                                                'value' => 'josh',
+                                                                'label' => 'name',
+                                                            ],
+                                                        ],
+                                                    ],
+                                                    'age'  => [
+                                                        0 => [
+                                                            '@type'  => 'g:VertexProperty',
+                                                            '@value' => [
+                                                                'id'    => [
+                                                                    '@type'  => 'g:Int64',
+                                                                    '@value' => 8,
+                                                                ],
+                                                                'value' => [
+                                                                    '@type'  => 'g:Int32',
+                                                                    '@value' => 32,
+                                                                ],
+                                                                'label' => 'age',
+                                                            ],
+                                                        ],
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                        'value' => [
+                                            '@type'  => 'g:Tree',
+                                            '@value' => [
+                                                0 => [
+                                                    'key'   => [
+                                                        '@type'  => 'g:VertexProperty',
+                                                        '@value' => [
+                                                            'id'    => [
+                                                                '@type'  => 'g:Int64',
+                                                                '@value' => 7,
+                                                            ],
+                                                            'value' => 'josh',
+                                                            'label' => 'name',
+                                                        ],
+                                                    ],
+                                                    'value' => [
+                                                        '@type'  => 'g:Tree',
+                                                        '@value' => [],
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'meta'   => [
+                '@type'  => 'g:Map',
+                '@value' => [],
+            ],
+        ]);
+
+        $this->assertEquals([
+            [
+                1 => [
+                    'key'   => [
+                        'id'         => 1,
+                        'label'      => 'vertex',
+                        'type'       => 'vertex',
+                        'properties' => [
+                            'name' => [['id' => 0, 'value' => 'marko', 'label' => 'name']],
+                            'age'  => [['id' => 2, 'value' => 29, 'label' => 'age']],
+                        ],
+                    ],
+                    'value' => [
+                        2 => [
+                            'key'   => [
+                                'id'         => 2,
+                                'label'      => 'vertex',
+                                'type'       => 'vertex',
+                                'properties' => [
+                                    'name' => [['id' => 3, 'value' => 'vadas', 'label' => 'name']],
+                                    'age'  => [['id' => 4, 'value' => 27, 'label' => 'age']],
+                                ],
+                            ],
+                            'value' => [
+                                3 => [
+                                    'key'   => ['id' => 3, 'value' => 'vadas', 'label' => 'name'],
+                                    'value' => [],
+                                ],
+                            ],
+                        ],
+                        3 => [
+                            'key'   => [
+                                'id'         => 3,
+                                'label'      => 'vertex',
+                                'type'       => 'vertex',
+                                'properties' => [
+                                    'name' => [['id' => 5, 'value' => 'lop', 'label' => 'name']],
+                                    'lang' => [['id' => 6, 'value' => 'java', 'label' => 'lang']],
+                                ],
+                            ],
+                            'value' => [
+                                5 => [
+                                    'key'   => ['id' => 5, 'value' => 'lop', 'label' => 'name'],
+                                    'value' => [],
+                                ],
+                            ],
+                        ],
+                        4 => [
+                            'key'   => [
+                                'id'         => 4,
+                                'label'      => 'vertex',
+                                'type'       => 'vertex',
+                                'properties' => [
+                                    'name' => [['id' => 7, 'value' => 'josh', 'label' => 'name']],
+                                    'age'  => [['id' => 8, 'value' => 32, 'label' => 'age']],
+                                ],
+                            ],
+                            'value' => [
+                                7 => [
+                                    'key'   => ['id' => 7, 'value' => 'josh', 'label' => 'name'],
+                                    'value' => [],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], $deconverted, "Incorrect deconversion for Path");
+    }
+
+    /**
      * Test deconverting a Complex List from graphson 3.0 format to native
      *
      * @return void
@@ -814,6 +1330,48 @@ class GraphSon3Test extends RexsterTestCase
             20     => TRUE,
             "time" => 456789,
         ], $deconverted, "Incorrect deconversion for Map");
+    }
+
+    /**
+     * Test deconverting a broken Map from graphson 3.0 format to native
+     * If a map has an odd number of items it should throw an error
+     *
+     * @expectedException \Brightzone\GremlinDriver\InternalException
+     */
+    public function testDeconvertOddNumberMap()
+    {
+        $serializer = new Gson3;
+
+        $serializer->deconvertMap([
+            "test",
+            "friend",
+            ["@type" => "g:Int32", "@value" => 2009],
+            ["@type" => "g:Int32", "@value" => 20],
+            ["@type" => "g:Int32", "@value" => 20],
+            TRUE,
+            "time",
+        ]);
+    }
+
+    /**
+     * Test deconverting a broken Map from graphson 3.0 format to native
+     * If a map has a key other than int or string
+     *
+     * @expectedException \Brightzone\GremlinDriver\InternalException
+     */
+    public function testDeconvertNonStandardKeyMap()
+    {
+        $serializer = new Gson3;
+
+        $serializer->deconvertMap([
+            "test",
+            "friend",
+            ["@type" => "g:List", "@value" => [20]],
+            ["@type" => "g:Int32", "@value" => 2009],
+            ["@type" => "g:Int32", "@value" => 20],
+            TRUE,
+            "time",
+        ]);
     }
 
     /**
@@ -1036,6 +1594,10 @@ class GraphSon3Test extends RexsterTestCase
         ], $data, "incorrect GraphSON 3.0 was generated");
     }
 
+    /**
+     * Test a basic graphson3 client-server exchange
+     * @return void
+     */
     public function testConnect()
     {
         $db = new Connection([
@@ -1052,7 +1614,6 @@ class GraphSon3Test extends RexsterTestCase
         $this->assertNotEquals($message, FALSE, 'Failed to connect to db');
 
         $result = $db->send('5+5');
-        print_r($result);
         $this->assertEquals(10, $result[0], 'Script response message is not the right type. (Maybe it\'s an error)');
 
         $result = $db->send('g.V()');

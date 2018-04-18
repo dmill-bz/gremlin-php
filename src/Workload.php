@@ -72,13 +72,13 @@ class Workload
      */
     public function linearRetry($attempts)
     {
+        $result = NULL;
         while($attempts >= 1)
         {
             try
             {
                 $result = call_user_func_array($this->callback, $this->params);
-
-                return $result;
+                break;
             }
             catch(\Exception $e)
             {
@@ -93,5 +93,7 @@ class Workload
                 }
             }
         }
+
+        return $result;
     }
 }

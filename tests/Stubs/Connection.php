@@ -13,7 +13,7 @@ class Connection extends BaseConnection
      */
     public function setSocket($frame)
     {
-        $stream = fopen('php://memory','r+');
+        $stream = fopen('php://memory', 'r+');
         fwrite($stream, $frame);
         rewind($stream);
         $this->_socket = $stream;
@@ -35,5 +35,7 @@ class Connection extends BaseConnection
 
             return TRUE;
         }
+
+        return TRUE;
     }
 }

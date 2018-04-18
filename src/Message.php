@@ -222,7 +222,8 @@ class Message
      *
      * @param string $mimeType the mimeType of the serializer you want to retrieve
      *
-     * @return SerializerInterface|bool serializer object or FALSE if none exist.
+     * @return SerializerInterface serializer object or throw error if none exist.
+     * @throws InternalException if no serializer is set for the provided mimeType
      */
     public function getSerializer($mimeType = '')
     {
@@ -238,7 +239,7 @@ class Message
             }
         }
 
-        return FALSE;
+        throw new InternalException("No serializer found for mimeType: [" . $mimeType . "]", 500);
     }
 
     /**
@@ -252,9 +253,16 @@ class Message
      */
     public function registerSerializer($value, $default = TRUE)
     {
-        if(is_string($value) && class_exists($value))
+        if(is_string($value))
         {
-            $value = new $value();
+            if(class_exists($value))
+            {
+                $value = new $value();
+            }
+            else
+            {
+                throw new InternalException("Class [" . $value . "] doesn't exist", 500);
+            }
         }
 
         if(in_array('Brightzone\GremlinDriver\Serializers\SerializerInterface', class_implements($value)))
@@ -267,7 +275,7 @@ class Message
         }
         else
         {
-            throw new InternalException("Serializer could not be set", 500);
+            throw new InternalException("Serializer could not be set to [" . get_class($value) . "]. Check that the class implements SerializerInterface", 500);
         }
     }
 

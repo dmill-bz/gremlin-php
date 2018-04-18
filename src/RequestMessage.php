@@ -57,6 +57,6 @@ class RequestMessage implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        return $this->data;
+        return $this->getData();
     }
 }
