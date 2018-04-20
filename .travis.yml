@@ -45,6 +45,7 @@ deploy:
   local-dir: ./build/logs/PommeVerte.github.io
   target-branch: master
   verbose: true
+  project-name: PommeVerte/gremlin-php
   on:
     branch: master
     condition: $TRAVIS_PHP_VERSION = "5.6" && $GRAPHSON_VERSION = "3.0"
