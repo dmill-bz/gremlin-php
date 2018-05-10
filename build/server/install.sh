@@ -6,6 +6,15 @@ export JRE_HOME=/usr/lib/jvm/java-8-oracle
 
 SERVER_INSTALL_DIR=$HOME
 
+# Defines the base URL to get the artifacts from. This changes if you're trying to access
+# dev artifacts instead of stable releases.
+if [ $ARTIFACT_STABILITY = "dev" ]
+then
+    TPURL=https://archive.apache.org/dist/tinkerpop
+else
+    TPURL=https://archive.apache.org/dist/tinkerpop
+fi
+
 # Depending on the TP version file names may change 3.1.3 and 3.2.1 use old file names.
 if [ $GREMLINSERVER_VERSION = "3.2.1" -o $GREMLINSERVER_VERSION = "3.1.3" ]
 then
@@ -24,7 +33,7 @@ fi
 
 # Install gremlin-server
 echo "Downloading & Extracting gremlin-server"
-wget --no-check-certificate -O $SERVER_INSTALL_DIR/$TPFILENAME-bin.zip https://archive.apache.org/dist/tinkerpop/$GREMLINSERVER_VERSION/$TPFILENAME-bin.zip
+wget --no-check-certificate -O $SERVER_INSTALL_DIR/$TPFILENAME-bin.zip $TPURL/$GREMLINSERVER_VERSION/$TPFILENAME-bin.zip
 unzip -q $SERVER_INSTALL_DIR/$TPFILENAME-bin.zip -d $SERVER_INSTALL_DIR/
 # make a secure server
 echo "Extracting secure gremlin-server"

@@ -31,6 +31,8 @@ after_success:
   - sh -c ./build/deploy.sh
 
 env:
+  global:
+    - ARTIFACT_STABILITY="dev"
   matrix:
     - GREMLINSERVER_VERSION="3.2.8" GRAPHSON_VERSION="1.0"
     - GREMLINSERVER_VERSION="3.3.2" GRAPHSON_VERSION="1.0"
