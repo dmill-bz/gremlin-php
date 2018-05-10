@@ -10,7 +10,7 @@ SERVER_INSTALL_DIR=$HOME
 # dev artifacts instead of stable releases.
 if [ $ARTIFACT_STABILITY = "dev" ]
 then
-    TPURL=https://archive.apache.org/dist/tinkerpop
+    TPURL=https://dist.apache.org/repos/dist/dev/tinkerpop
 else
     TPURL=https://archive.apache.org/dist/tinkerpop
 fi
