@@ -61,6 +61,7 @@ class Gson3 implements SerializerInterface
         "tinker:graph",
         "g:Edge",
         "g:Property",
+        "g:T", // ids and labels
     ];
 
     /**
@@ -426,6 +427,18 @@ class Gson3 implements SerializerInterface
     public function deconvertUUID($uuid)
     {
         return $uuid;
+    }
+    
+     /**
+     * Deconvert a T into it's native form (ids and labels)
+     *
+     * @param string $t The id or label to convert
+     *
+     * @return string deconverted id or label
+     */
+    public function deconvertT($t)
+    {
+        return $t;
     }
 
     /**
