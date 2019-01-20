@@ -226,8 +226,8 @@ class Connection
             {
                 $this->error("Couldn't get a response from server", 500);
             }
-
-            preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches);
+            
+            preg_match('#Sec-WebSocket-Accept:\s(.*)$#miU', $response, $matches);
             $keyAccept = trim($matches[1]);
             $expectedResponse = base64_encode(pack('H*', sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
 
@@ -391,6 +391,7 @@ class Connection
             STREAM_CLIENT_CONNECT,
             $context
         );
+
         if(!$fp)
         {
             $this->error($errorMessage, $errno, TRUE);

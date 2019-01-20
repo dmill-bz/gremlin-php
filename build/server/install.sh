@@ -79,7 +79,13 @@ fi
 cat ~/.groovy/grapeConfig.xml
 echo "Installing Neo4J dependency"
 cd $SERVER_INSTALL_DIR/$TPFILENAME
-bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin $GREMLINSERVER_VERSION
+
+if ! [ $GREMLINSERVER_VERSION \< "3.4.0" ]
+then
+    bin/gremlin-server.sh install org.apache.tinkerpop neo4j-gremlin $GREMLINSERVER_VERSION
+else
+    bin/gremlin-server.sh -i org.apache.tinkerpop neo4j-gremlin $GREMLINSERVER_VERSION
+fi
 
 # Start gremlin-server in the background and wait for it to be available
 echo "Starting regular server"
