@@ -55,7 +55,6 @@ echo '<ivysettings>
 # get gremlin-server configuration files
 echo "Copying configuration files"
 cp ./build/server/$TP_CONF_DIR/gremlin-php-script.groovy $SERVER_INSTALL_DIR/$TPFILENAME/scripts/
-cp ./build/server/$TP_CONF_DIR/gremlin-php-script-secure.groovy $SERVER_INSTALL_DIR/$TPFILENAME/scripts/
 
 if [ $GRAPHSON_VERSION = "3.0" ]
 then
@@ -75,6 +74,10 @@ then
 else
     cp ./build/server/$TP_CONF_DIR/gremlin-server-php-secure.yaml $SERVER_INSTALL_DIR/secure/$TPFILENAME/conf/
 fi
+# set up keys if necessary
+echo "Setting up key for secure testing"
+keytool -genkey -noprompt -alias localhost -keyalg RSA -keystore server.jks -storepass changeit -keypass changeit -dname "CN=testing"
+
 
 # get neo4j dependencies
 cat ~/.groovy/grapeConfig.xml
