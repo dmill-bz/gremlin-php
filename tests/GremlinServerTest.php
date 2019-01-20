@@ -188,14 +188,12 @@ class GremlinServerTest extends RexsterTestCase
                         0 => [
                             "id"    => 0,
                             "value" => "marko",
-                            "label" => "name",
                         ],
                     ],
                     "age"  => [
                         0 => [
                             "id"    => 2,
                             "value" => 29,
-                            "label" => "age",
                         ],
                     ],
                 ],
@@ -231,10 +229,7 @@ class GremlinServerTest extends RexsterTestCase
                 "inV"        => 3,
                 "outV"       => 6,
                 "properties" => [
-                    "weight" => [
-                        "key"   => "weight",
-                        "value" => 0.2,
-                    ],
+                    "weight" => 0.2,
                 ],
                 "type"       => "edge",
             ],
@@ -329,14 +324,14 @@ class GremlinServerTest extends RexsterTestCase
     }
 
     /**
-     * Private ksort for tree that helps with testing.
+     * Protected ksort for tree that helps with testing.
      *
      * @param $array
      *
      * @return bool
      */
 
-    private function ksortTree(&$array)
+    protected function ksortTree(&$array)
     {
         if(!is_array($array))
         {
