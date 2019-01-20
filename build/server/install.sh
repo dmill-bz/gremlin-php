@@ -5,7 +5,6 @@ export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export JRE_HOME=/usr/lib/jvm/java-8-oracle
 
 SERVER_INSTALL_DIR=$HOME
-
 # Depending on the TP version file names may change 3.1.3 and 3.2.1 use old file names.
 if [ $GREMLINSERVER_VERSION = "3.2.1" -o $GREMLINSERVER_VERSION = "3.1.3" ]
 then
@@ -17,7 +16,12 @@ fi
 # Depending on the TP version we will want to use different configuration files for the server.
 if ! [ $GREMLINSERVER_VERSION \< "3.3.0" ]
 then
-    TP_CONF_DIR="3.3.x"
+    if ! [ $GREMLINSERVER_VERSION \< "3.4.0" ]
+    then
+        TP_CONF_DIR="3.4.x"
+    else
+        TP_CONF_DIR="3.3.x"
+    fi
 else
     TP_CONF_DIR="3.2.x"
 fi
@@ -92,4 +96,3 @@ bin/gremlin-server.sh conf/gremlin-server-php-secure.yaml > /dev/null 2>&1 &
 cd $TRAVIS_BUILD_DIR
 
 sleep 30
-

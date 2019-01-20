@@ -159,7 +159,9 @@ class GremlinServerTest extends RexsterTestCase
                 "label" => "name",
             ],
         ];
-        $this->assertEquals($this->ksortTree($vertexProperty), $this->ksortTree($result), "vertex property wasn't as expected");
+        $this->ksortTree($vertexProperty);
+        $this->ksortTree($result);
+        $this->assertEquals($vertexProperty, $result, "vertex property wasn't as expected");
     }
 
     /**
@@ -200,7 +202,9 @@ class GremlinServerTest extends RexsterTestCase
                 "type"       => "vertex",
             ],
         ];
-        $this->assertEquals($this->ksortTree($vertex), $this->ksortTree($result), "vertex property wasn't as expected");
+        $this->ksortTree($vertex);
+        $this->ksortTree($result);
+        $this->assertEquals($vertex, $result, "vertex property wasn't as expected");
     }
 
     /**
@@ -235,7 +239,9 @@ class GremlinServerTest extends RexsterTestCase
                 "type"       => "edge",
             ],
         ];
-        $this->assertEquals($this->ksortTree($edge), $this->ksortTree($result), "vertex property wasn't as expected");
+        $this->ksortTree($edge);
+        $this->ksortTree($result);
+        $this->assertEquals($edge, $result, "vertex property wasn't as expected");
     }
 
     /**
@@ -259,8 +265,76 @@ class GremlinServerTest extends RexsterTestCase
                 "value" => 0.2,
             ],
         ];
-        $this->assertEquals($this->ksortTree($property), $this->ksortTree($result), "vertex property wasn't as expected");
+        $this->ksortTree($property);
+        $this->ksortTree($result);
+        $this->assertEquals($property, $result, "vertex property wasn't as expected");
     }
+
+    /**
+     * Test the valuemap() with empty param
+     */
+    public function testValueMap()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->open();
+        $result = $db->send("g.V(1).valueMap()");
+
+        $property = [
+            0 => [
+                "name" => ["marko"],
+                "age"  => [29],
+            ],
+        ];
+        $this->ksortTree($property);
+        $this->ksortTree($result);
+
+        $this->assertEquals($property, $result, "Not the expected value map");
+    }
+
+    /**
+     * Test valueMap(true) which should return id and label
+     */
+    public function testValueMapTrue()
+    {
+        $db = new Connection([
+            'host'     => 'localhost',
+            'port'     => 8182,
+            'graph'    => 'graph',
+            'username' => $this->username,
+            'password' => $this->password,
+        ]);
+        $db->message->registerSerializer(static::$serializer, TRUE);
+        $db->open();
+        $result = $db->send("g.V(1).valueMap(true)");
+
+        $property = [
+            0 => [
+                "name"  => ["marko"],
+                "age"   => [29],
+                "id"    => 1,
+                "label" => "vertex",
+            ],
+        ];
+        $this->ksortTree($property);
+        $this->ksortTree($result);
+
+        $this->assertEquals($property, $result, "Not the expected value map");
+    }
+
+    /**
+     * Private ksort for tree that helps with testing.
+     *
+     * @param $array
+     *
+     * @return bool
+     */
 
     private function ksortTree(&$array)
     {
