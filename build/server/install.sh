@@ -74,9 +74,10 @@ then
 else
     cp ./build/server/$TP_CONF_DIR/gremlin-server-php-secure.yaml $SERVER_INSTALL_DIR/secure/$TPFILENAME/conf/
 fi
+
 # set up keys if necessary
 echo "Setting up key for secure testing"
-keytool -genkey -noprompt -alias localhost -keyalg RSA -keystore server.jks -storepass changeit -keypass changeit -dname "CN=testing"
+keytool -genkey -noprompt -alias localhost -keyalg RSA -keystore $SERVER_INSTALL_DIR/secure/server.jks -storepass changeit -keypass changeit -dname "CN=testing"
 
 
 # get neo4j dependencies
@@ -100,4 +101,4 @@ sleep 30
 # Start the secure server
 echo "Starting secure server"
 cd $SERVER_INSTALL_DIR/secure/$TPFILENAME
-bin/gremlin-server.sh conf/gremlin-server-php-secure.yaml 
+bin/gremlin-server.sh conf/gremlin-server-php-secure.yaml
