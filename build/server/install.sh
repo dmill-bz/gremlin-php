@@ -77,7 +77,7 @@ fi
 
 # set up keys if necessary
 echo "Setting up key for secure testing"
-keytool -genkey -noprompt -alias localhost -keyalg RSA -keystore $SERVER_INSTALL_DIR/secure/server.jks -storepass changeit -keypass changeit -dname "CN=testing"
+keytool -genkey -noprompt -alias localhost -keyalg RSA -keystore $SERVER_INSTALL_DIR/secure/$TPFILENAME/server.jks -storepass changeit -keypass changeit -dname "CN=testing"
 
 
 # get neo4j dependencies
