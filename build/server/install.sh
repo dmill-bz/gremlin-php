@@ -100,9 +100,4 @@ sleep 30
 # Start the secure server
 echo "Starting secure server"
 cd $SERVER_INSTALL_DIR/secure/$TPFILENAME
-bin/gremlin-server.sh conf/gremlin-server-php-secure.yaml > /dev/null 2>&1 &
-
-# Wait for all to load
-cd $TRAVIS_BUILD_DIR
-
-sleep 30
+bin/gremlin-server.sh conf/gremlin-server-php-secure.yaml 
