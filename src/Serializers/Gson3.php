@@ -61,6 +61,7 @@ class Gson3 implements SerializerInterface
         "tinker:graph",
         "g:Edge",
         "g:Property",
+        "g:T",
     ];
 
     /**
@@ -69,6 +70,7 @@ class Gson3 implements SerializerInterface
      * @param array &$data data to be serialized
      *
      * @return int length of generated string
+     * @throws InternalException
      */
     public function serialize(&$data)
     {
@@ -85,6 +87,7 @@ class Gson3 implements SerializerInterface
      * @param mixed $data data to be unserialized
      *
      * @return array unserialized message
+     * @throws InternalException
      */
     public function unserialize($data)
     {
@@ -219,6 +222,7 @@ class Gson3 implements SerializerInterface
      * @param array $array The array to convert
      *
      * @return array converted array
+     * @throws InternalException
      */
     public function convertArray($array)
     {
@@ -233,6 +237,7 @@ class Gson3 implements SerializerInterface
      * @param array $array The array to convert
      *
      * @return array converted to GS3 List
+     * @throws InternalException
      */
     public function convertList($array)
     {
@@ -255,6 +260,7 @@ class Gson3 implements SerializerInterface
      * @param array $array The array to convert
      *
      * @return array converted to GS3 Map
+     * @throws InternalException
      */
     public function convertMap($array)
     {
@@ -434,6 +440,7 @@ class Gson3 implements SerializerInterface
      * @param array $list The List to convert
      *
      * @return array deconverted List
+     * @throws InternalException
      */
     public function deconvertList($list)
     {
@@ -452,6 +459,7 @@ class Gson3 implements SerializerInterface
      * @param array $set The Set to convert
      *
      * @return array deconverted Set
+     * @throws InternalException
      */
     public function deconvertSet($set)
     {
@@ -496,6 +504,7 @@ class Gson3 implements SerializerInterface
      * @param array $prop The Property to convert
      *
      * @return mixed deconverted Property
+     * @throws InternalException
      */
     public function deconvertProperty($prop)
     {
@@ -508,6 +517,7 @@ class Gson3 implements SerializerInterface
      * @param array $vertexProp The VertexProperty to convert
      *
      * @return mixed deconverted VertexProperty
+     * @throws InternalException
      */
     public function deconvertVertexProperty($vertexProp)
     {
@@ -520,6 +530,7 @@ class Gson3 implements SerializerInterface
      * @param array $path The Path to convert
      *
      * @return array deconverted Path
+     * @throws InternalException
      */
     public function deconvertPath($path)
     {
@@ -532,6 +543,7 @@ class Gson3 implements SerializerInterface
      * @param array $tinkergraph The TinkerGraph to convert
      *
      * @return array deconverted TinkerGraph
+     * @throws InternalException
      */
     public function deconvertTinkergraph($tinkergraph)
     {
@@ -544,6 +556,7 @@ class Gson3 implements SerializerInterface
      * @param array $tree The Tree to convert
      *
      * @return array deconverted Tree
+     * @throws InternalException
      */
     public function deconvertTree($tree)
     {
@@ -581,6 +594,7 @@ class Gson3 implements SerializerInterface
      * @param array $vertex The Vertex to convert
      *
      * @return array deconverted Vertex
+     * @throws InternalException
      */
     public function deconvertVertex($vertex)
     {
@@ -595,11 +609,24 @@ class Gson3 implements SerializerInterface
      * @param array $edge The Edge to convert
      *
      * @return array deconverted Edge
+     * @throws InternalException
      */
     public function deconvertEdge($edge)
     {
         $edge["type"] = "edge";
 
         return $this->deconvert($edge);
+    }
+
+    /**
+     * Deconvert a Token (T) into it's string form
+     *
+     * @param string $t the token to deconvert
+     *
+     * @return string either "id" or "label"
+     */
+    public function deconvertT($t)
+    {
+        return $t;
     }
 }

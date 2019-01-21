@@ -1,3 +1,11 @@
+3.1.1
+=====
+- Fixed issue #51 by implementing deserialization support for `g:T`
+- Added testing around issue #51
+- Added support for `gremlin-server 3.4.0`
+- Fixed some incorrect tests
+- Fixed an issue where the driver's websocket handshake confirmation did not acknowledge `HTTP` header case insensitivity. This created issues with `gremlin-server 3.4.0` as it's upgraded netty version was sending headers in all lowercase.
+
 3.1.0
 =====
 - Fixed an issue where no response from the server during the websocket handshake would throw an obscured error. Issue #43
