@@ -35,7 +35,7 @@ to the `require` section of your `composer.json` file
 This driver now supports `GraphSON 3.0` with a basic beta serializer. You can use this serializer by doing : 
 
 ```php
-  $db = ne Connection();
+  $db = new Connection();
   $db->message->registerSerializer('\Brightzone\GremlinDriver\Serializers\Gson3', TRUE);
 ```
 
