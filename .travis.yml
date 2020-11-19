@@ -1,9 +1,9 @@
 language: php
 
 php:
-  - 5.5
-  - 5.6
-  - 7.0
+  #- 5.5
+  - 5.6.37
+  - 7.0.32
 #  - hhvm
   - nightly
 
