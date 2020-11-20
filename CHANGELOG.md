@@ -1,3 +1,8 @@
+3.1.2 (in progress)
+=====
+- Dropped CI testing for `php 5.5`. This library should still be compatible, with `5.5` and `5.4` but travis setups are failing because of a potential `GnuTLs` or `pycurl` bug ([Launchpad Bug #926548](https://bugs.launchpad.net/ubuntu/+source/pycurl/+bug/926548))
+
+
 3.1.1
 =====
 - Fixed issue #51 by implementing deserialization support for `g:T`
@@ -17,7 +22,7 @@
 - Fixed an issue where using authentication and sessions could fail to maintain the session
 - Added a basic GraphSON 3.0 serializer. Until gremlin server `3.2.x` is no longer maintained, bellow will be the correct way of setting the serializer up.
   ```php
-  $db = ne Connection();
+  $db = new Connection();
   $db->message->registerSerializer('\Brightzone\GremlinDriver\Serializers\Gson3', TRUE);
   ```
   This will later be changed to the default. After which a serializer option will be added to `Connection`
@@ -183,7 +188,7 @@
 =====
 2.0 supports TP 3.0.1 with authentication features. There was a major overhaul of the code in order to make the API clearer and to stick to PSR-4 namespaces. Bellow are the BC breaking changes you will need to make if you are upgrading from v1.0 :
 
-#####Breaking changes
+##### Breaking changes
 - Namespaces currently changed from `\brightzone\rexpro\*` to `\Brightzone\GremlinDriver\*` and so forth all in CamelCase. You will need to change these in your code to reflect the change.
 - The Message class has been changed from `\Brightzone\GremlinDriver\Messages` to `\Brightzone\GremlinDriver\Message`. I you use messages directly in your code you will need to switch for the newer one.
 - Tests have been moved from `src/tests` to `tests/`. This probably doesn't affect you, but just incase.

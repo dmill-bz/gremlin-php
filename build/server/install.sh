@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Add environment java vars
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-export JRE_HOME=/usr/lib/jvm/java-8-oracle
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export JRE_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 SERVER_INSTALL_DIR=$HOME
 # Depending on the TP version file names may change 3.1.3 and 3.2.1 use old file names.
@@ -44,10 +44,14 @@ echo '<ivysettings>
         <ivy pattern="${user.home}/.groovy/grapes/[organisation]/[module]/ivy-[revision].xml"/>
         <artifact pattern="${user.home}/.groovy/grapes/[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
       </filesystem>
+      <ibiblio name="localm2" root="file:${user.home}/.m2/repository/" checkmodified="true" changingPattern=".*" changingMatcher="regexp" m2compatible="true"/>
+
       <ibiblio name="codehaus" root="http://repository.codehaus.org/" m2compatible="true"/>
       <ibiblio name="central" root="http://central.maven.org/maven2/" m2compatible="true"/>
       <ibiblio name="jitpack" root="https://jitpack.io" m2compatible="true"/>
       <ibiblio name="java.net2" root="http://download.java.net/maven/2/" m2compatible="true"/>
+      <ibiblio name="jcenter" root="https://jcenter.bintray.com/" m2compatible="true"/>
+      <ibiblio name="ibiblio" m2compatible="true"/>
     </chain>
   </resolvers>
 </ivysettings>' > ~/.groovy/grapeConfig.xml
