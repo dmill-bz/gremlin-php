@@ -44,4 +44,4 @@ deploy:
   project-name: PommeVerte/gremlin-php
   on:
     branch: master
-    condition: $TRAVIS_PHP_VERSION = "5.6" && $GRAPHSON_VERSION = "3.0"
+    condition: $TRAVIS_PHP_VERSION = "5.6" && $GRAPHSON_VERSION = "3.0" && $GREMLINSERVER_VERSION="3.3.11"
