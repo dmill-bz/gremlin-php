@@ -31,33 +31,33 @@ scriptEvaluationTimeout: 30000
 serializedResponseTimeout: 30000
 channelizer: org.apache.tinkerpop.gremlin.server.channel.WebSocketChannelizer
 graphs: {
-  graph: conf/tinkergraph-empty.properties}
+  graph: conf/tinkergraph-empty.properties }
 plugins:
   - tinkerpop.tinkergraph
 scriptEngines: {
   gremlin-groovy: {
-    imports: [java.lang.Math],
-    staticImports: [java.lang.Math.PI],
-    scripts: [scripts/gremlin-php-script-secure.groovy],
+    imports: [ java.lang.Math ],
+    staticImports: [ java.lang.Math.PI ],
+    scripts: [ scripts/gremlin-php-script-secure.groovy ],
     config: {
       compilerCustomizerProviders: {
-              "org.apache.tinkerpop.gremlin.groovy.jsr223.customizer.ThreadInterruptCustomizerProvider":[],
-              "org.apache.tinkerpop.gremlin.groovy.jsr223.customizer.TimedInterruptCustomizerProvider":[10000]
-              }}}}
+        "org.apache.tinkerpop.gremlin.groovy.jsr223.customizer.ThreadInterruptCustomizerProvider": [ ],
+        "org.apache.tinkerpop.gremlin.groovy.jsr223.customizer.TimedInterruptCustomizerProvider": [ 10000 ]
+      } } } }
 serializers:
-  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { useMapperFromGraph: graph }}            # application/vnd.gremlin-v1.0+gryo
-  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { serializeResultToString: true }}        # application/vnd.gremlin-v1.0+gryo-stringd
-  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV1d0, config: { useMapperFromGraph: graph }} # application/vnd.gremlin-v1.0+json
-  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0, config: { useMapperFromGraph: graph }}        # application/json
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { useMapperFromGraph: graph } }            # application/vnd.gremlin-v1.0+gryo
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { serializeResultToString: true } }        # application/vnd.gremlin-v1.0+gryo-stringd
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV1d0, config: { useMapperFromGraph: graph } } # application/vnd.gremlin-v1.0+json
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0, config: { useMapperFromGraph: graph } }        # application/json
 processors:
-  - { className: org.apache.tinkerpop.gremlin.server.op.session.SessionOpProcessor, config: { sessionTimeout: 28800000 }}
+  - { className: org.apache.tinkerpop.gremlin.server.op.session.SessionOpProcessor, config: { sessionTimeout: 28800000 } }
 metrics: {
-  consoleReporter: {enabled: true, interval: 180000},
-  csvReporter: {enabled: true, interval: 180000, fileName: /tmp/gremlin-server-metrics.csv},
-  jmxReporter: {enabled: true},
-  slf4jReporter: {enabled: true, interval: 180000},
-  gangliaReporter: {enabled: false, interval: 180000, addressingMode: MULTICAST},
-  graphiteReporter: {enabled: false, interval: 180000}}
+  consoleReporter: { enabled: true, interval: 180000 },
+  csvReporter: { enabled: true, interval: 180000, fileName: /tmp/gremlin-server-metrics.csv },
+  jmxReporter: { enabled: true },
+  slf4jReporter: { enabled: true, interval: 180000 },
+  gangliaReporter: { enabled: false, interval: 180000, addressingMode: MULTICAST },
+  graphiteReporter: { enabled: false, interval: 180000 } }
 strictTransactionManagement: false
 maxInitialLineLength: 4096
 maxHeaderSize: 8192
@@ -70,6 +70,10 @@ writeBufferHighWaterMark: 65536
 authentication: {
   className: org.apache.tinkerpop.gremlin.server.auth.SimpleAuthenticator,
   config: {
-    credentialsDb: conf/tinkergraph-credentials.properties}}
+    credentialsDb: conf/tinkergraph-credentials.properties } }
 ssl: {
-  enabled: true}
+  enabled: true,
+  sslEnabledProtocols: [ TLSv1.2 ],
+  keyStore: server.jks,
+  keyStorePassword: changeit
+}

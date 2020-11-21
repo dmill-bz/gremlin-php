@@ -1,29 +1,23 @@
 language: php
-
 php:
-  - 5.5
   - 5.6
-  - 7.0
-#  - hhvm
-  - nightly
+  - 7.2
 
-dist: trusty
-
-matrix:
-  allow_failures:
-    - php: nightly
+dist: xenial
+addons:
+  apt:
+    packages:
+      - openjdk-8-jdk
 
 before_install:
   - sudo apt-get update > /dev/null
 
 install:
-  # install Oracle JDK8
-  - sh -c ./build/server/jdk8-install.sh
   # install gremlin-server
   - sh -c ./build/server/install.sh
+  # set and install composer dependencies
   - if [ -n "$GH_TOKEN" ]; then composer config --global github-oauth.github.com ${GH_TOKEN}; else echo "no token"; fi
-  - composer global require "fxp/composer-asset-plugin:~1.4"
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.6" ]] || [[ ${TRAVIS_PHP_VERSION:0:3} == "5.5" ]]; then composer update -v; else composer install; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.6" ]] || [[ ${TRAVIS_PHP_VERSION:0:3} == "5.5" ]]; then composer update -v; else composer install -v; fi
 
 script: if [[ ${GRAPHSON_VERSION} == "3.0" ]]; then vendor/bin/phpunit --configuration build/phpunit.xml --testsuit graphson3; else vendor/bin/phpunit --configuration build/phpunit.xml --testsuit graphson1; fi
 
@@ -32,11 +26,11 @@ after_success:
 
 env:
   matrix:
-    - GREMLINSERVER_VERSION="3.2.8" GRAPHSON_VERSION="1.0"
-    - GREMLINSERVER_VERSION="3.3.2" GRAPHSON_VERSION="1.0"
-    - GREMLINSERVER_VERSION="3.3.2" GRAPHSON_VERSION="3.0"
-    - GREMLINSERVER_VERSION="3.4.0" GRAPHSON_VERSION="1.0"
-    - GREMLINSERVER_VERSION="3.4.0" GRAPHSON_VERSION="3.0"
+    - GREMLINSERVER_VERSION="3.2.11" GRAPHSON_VERSION="1.0"
+    - GREMLINSERVER_VERSION="3.3.11" GRAPHSON_VERSION="1.0"
+    - GREMLINSERVER_VERSION="3.3.11" GRAPHSON_VERSION="3.0"
+    - GREMLINSERVER_VERSION="3.4.8" GRAPHSON_VERSION="1.0"
+    - GREMLINSERVER_VERSION="3.4.8" GRAPHSON_VERSION="3.0"
 
 deploy:
   provider: pages
