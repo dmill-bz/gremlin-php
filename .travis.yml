@@ -1,14 +1,13 @@
 language: php
+php:
+  - 5.6
+  - 7.2
 
 dist: xenial
 addons:
   apt:
     packages:
       - openjdk-8-jdk
-
-php:
-  - 5.6
-  - 7.2
 
 before_install:
   - sudo apt-get update > /dev/null

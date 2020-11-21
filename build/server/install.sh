@@ -23,6 +23,8 @@ else
   TP_CONF_DIR="3.2.x"
 fi
 
+echo "Configuration directory:"$TP_CONF_DIR
+
 # Install gremlin-server
 echo "Downloading & Extracting gremlin-server"
 wget --no-check-certificate -O $SERVER_INSTALL_DIR/$TPFILENAME-bin.zip https://archive.apache.org/dist/tinkerpop/$GREMLINSERVER_VERSION/$TPFILENAME-bin.zip
@@ -102,4 +104,4 @@ bin/gremlin-server.sh conf/gremlin-server-php-secure.yaml >/dev/null 2>&1 &
 # Wait for all to load
 cd $TRAVIS_BUILD_DIR
 
-sleep 60
+sleep 30

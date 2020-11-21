@@ -28,25 +28,25 @@ port: 8184
 scriptEvaluationTimeout: 30000
 channelizer: org.apache.tinkerpop.gremlin.server.channel.WebSocketChannelizer
 graphs: {
-  graph: conf/tinkergraph-empty.properties}
+  graph: conf/tinkergraph-empty.properties }
 scriptEngines: {
   gremlin-groovy: {
-    plugins: { org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin: {},
-               org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin: {},
-               org.apache.tinkerpop.gremlin.jsr223.ImportGremlinPlugin: {classImports: [java.lang.Math], methodImports: [java.lang.Math#*]},
-               org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin: {files: [scripts/gremlin-php-script-secure.groovy]}}}}
+    plugins: { org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin: { },
+               org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin: { },
+               org.apache.tinkerpop.gremlin.jsr223.ImportGremlinPlugin: { classImports: [ java.lang.Math ], methodImports: [ java.lang.Math#* ] },
+               org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin: { files: [ scripts/gremlin-php-script-secure.groovy ] } } } }
 serializers:
-  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0, config: { ioRegistries: [org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0] }}            # application/vnd.gremlin-v3.0+gryo
-  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0, config: { serializeResultToString: true }}                                                                      # application/vnd.gremlin-v3.0+gryo-stringd
-  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0, config: { ioRegistries: [org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV1d0]  }}        # application/json
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0, config: { ioRegistries: [ org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0 ] } }            # application/vnd.gremlin-v3.0+gryo
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0, config: { serializeResultToString: true } }                                                                      # application/vnd.gremlin-v3.0+gryo-stringd
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0, config: { ioRegistries: [ org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV1d0 ] } }        # application/json
 processors:
-  - { className: org.apache.tinkerpop.gremlin.server.op.session.SessionOpProcessor, config: { sessionTimeout: 28800000 }}
-  - { className: org.apache.tinkerpop.gremlin.server.op.traversal.TraversalOpProcessor, config: { cacheExpirationTime: 600000, cacheMaxSize: 1000 }}
+  - { className: org.apache.tinkerpop.gremlin.server.op.session.SessionOpProcessor, config: { sessionTimeout: 28800000 } }
+  - { className: org.apache.tinkerpop.gremlin.server.op.traversal.TraversalOpProcessor, config: { cacheExpirationTime: 600000, cacheMaxSize: 1000 } }
 metrics: {
-  consoleReporter: {enabled: true, interval: 180000},
-  csvReporter: {enabled: true, interval: 180000, fileName: /tmp/gremlin-server-metrics.csv},
-  jmxReporter: {enabled: true},
-  slf4jReporter: {enabled: true, interval: 180000}}
+  consoleReporter: { enabled: true, interval: 180000 },
+  csvReporter: { enabled: true, interval: 180000, fileName: /tmp/gremlin-server-metrics.csv },
+  jmxReporter: { enabled: true },
+  slf4jReporter: { enabled: true, interval: 180000 } }
 strictTransactionManagement: false
 maxInitialLineLength: 4096
 maxHeaderSize: 8192
@@ -59,6 +59,10 @@ writeBufferHighWaterMark: 65536
 authentication: {
   authenticator: org.apache.tinkerpop.gremlin.server.auth.SimpleAuthenticator,
   config: {
-    credentialsDb: conf/tinkergraph-credentials.properties}}
+    credentialsDb: conf/tinkergraph-credentials.properties } }
 ssl: {
-  enabled: true}
+  enabled: true,
+  sslEnabledProtocols: [ TLSv1.2 ],
+  keyStore: server.jks,
+  keyStorePassword: changeit
+}
